@@ -1,10 +1,10 @@
 <?php
 
-namespace mediactive-digital\medkit\Facades;
+namespace MediactiveDigital\MedKit\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class medkit extends Facade
+class MedKit extends Facade
 {
     /**
      * Get the registered name of the component.

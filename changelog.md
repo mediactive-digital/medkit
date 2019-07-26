@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `medkit` will be documented in this file.
+All notable changes to `MedKit` will be documented in this file.
 
 ## Version 1.0
 

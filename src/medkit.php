@@ -1,8 +1,8 @@
 <?php
 
-namespace mediactive-digital\medkit;
+namespace MediactiveDigital\MedKit;
 
-class medkit
+class MedKit
 {
     // Build wonderful things
 }

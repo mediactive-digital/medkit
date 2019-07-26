@@ -1,10 +1,10 @@
 <?php
 
-namespace mediactive-digital\medkit;
+namespace MediactiveDigital\MedKit;
 
 use Illuminate\Support\ServiceProvider;
 
-class medkitServiceProvider extends ServiceProvider
+class MedKitServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
@@ -13,8 +13,8 @@ class medkitServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'mediactive-digital');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'mediactive-digital');
+        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'mediactivedigital');
+        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'mediactivedigital');
         // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         // $this->loadRoutesFrom(__DIR__.'/routes.php');
 
@@ -35,7 +35,7 @@ class medkitServiceProvider extends ServiceProvider
 
         // Register the service the package provides.
         $this->app->singleton('medkit', function ($app) {
-            return new medkit;
+            return new MedKit;
         });
     }
 
@@ -63,17 +63,17 @@ class medkitServiceProvider extends ServiceProvider
 
         // Publishing the views.
         /*$this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/mediactive-digital'),
+            __DIR__.'/../resources/views' => base_path('resources/views/vendor/mediactivedigital'),
         ], 'medkit.views');*/
 
         // Publishing assets.
         /*$this->publishes([
-            __DIR__.'/../resources/assets' => public_path('vendor/mediactive-digital'),
+            __DIR__.'/../resources/assets' => public_path('vendor/mediactivedigital'),
         ], 'medkit.views');*/
 
         // Publishing the translation files.
         /*$this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/mediactive-digital'),
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/mediactivedigital'),
         ], 'medkit.views');*/
 
         // Registering package commands.

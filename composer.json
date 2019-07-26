@@ -1,5 +1,5 @@
 {
-    "name": "mediactive-digital/medkit",
+    "name": "mediactivedigital/medkit",
     "description": ":description",
     "license": "license",
     "authors": [
@@ -9,8 +9,8 @@
             "homepage": "author homepage"
         }
     ],
-    "homepage": "https://github.com/mediactive-digital/medkit",
-    "keywords": ["Laravel", "medkit"],
+    "homepage": "https://github.com/mediactivedigital/medkit",
+    "keywords": ["Laravel", "MedKit"],
     "require": {
         "illuminate/support": "~5"
     },
@@ -22,21 +22,21 @@
     },
     "autoload": {
         "psr-4": {
-            "mediactive-digital\\medkit\\": "src/"
+            "MediactiveDigital\\MedKit\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "mediactive-digital\\medkit\\Tests\\": "tests"
+            "MediactiveDigital\\MedKit\\Tests\\": "tests"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "mediactive-digital\\medkit\\medkitServiceProvider"
+                "MediactiveDigital\\MedKit\\MedKitServiceProvider"
             ],
             "aliases": {
-                "medkit": "mediactive-digital\\medkit\\Facades\\medkit"
+                "MedKit": "MediactiveDigital\\MedKit\\Facades\\MedKit"
             }
         }
     }

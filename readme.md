@@ -1,4 +1,4 @@
-# medkit
+# MedKit
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
@@ -12,7 +12,7 @@ This is where your description should go. Take a look at [contributing.md](contr
 Via Composer
 
 ``` bash
-$ composer require mediactive-digital/medkit
+$ composer require mediactivedigital/medkit
 ```
 
 ## Usage
@@ -44,14 +44,14 @@ If you discover any security related issues, please email author email instead o
 
 license. Please see the [license file](license.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/mediactive-digital/medkit.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/mediactive-digital/medkit.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/mediactive-digital/medkit/master.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/mediactivedigital/medkit.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/mediactivedigital/medkit.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/mediactivedigital/medkit/master.svg?style=flat-square
 [ico-styleci]: https://styleci.io/repos/12345678/shield
 
-[link-packagist]: https://packagist.org/packages/mediactive-digital/medkit
-[link-downloads]: https://packagist.org/packages/mediactive-digital/medkit
-[link-travis]: https://travis-ci.org/mediactive-digital/medkit
+[link-packagist]: https://packagist.org/packages/mediactivedigital/medkit
+[link-downloads]: https://packagist.org/packages/mediactivedigital/medkit
+[link-travis]: https://travis-ci.org/mediactivedigital/medkit
 [link-styleci]: https://styleci.io/repos/12345678
-[link-author]: https://github.com/mediactive-digital
+[link-author]: https://github.com/mediactivedigital
 [link-contributors]: ../../contributors
