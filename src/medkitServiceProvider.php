@@ -1,8 +1,8 @@
 <?php
 
 namespace MediactiveDigital\MedKit;
-
 use Illuminate\Support\ServiceProvider;
+use MediactiveDigital\MedKit\Commands\InstallCommand;
 
 class MedKitServiceProvider extends ServiceProvider
 {
@@ -21,6 +21,7 @@ class MedKitServiceProvider extends ServiceProvider
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
+            
         }
     }
 
@@ -35,8 +36,11 @@ class MedKitServiceProvider extends ServiceProvider
 
         // Register the service the package provides.
         $this->app->singleton('medkit', function ($app) {
-            return new MedKit;
+            return new MedKit( );
         });
+
+        $this->registerCommands();
+        
     }
 
     /**
@@ -78,5 +82,13 @@ class MedKitServiceProvider extends ServiceProvider
 
         // Registering package commands.
         // $this->commands([]);
+    }
+
+
+
+    private function registerCommands(){
+        $this->commands([
+            InstallCommand::class,
+        ]);
     }
 }

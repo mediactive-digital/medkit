@@ -1,0 +1,5 @@
+
+/**
+*   Back office routes
+*/
+require_once('back/web.php');
