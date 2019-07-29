@@ -9,12 +9,22 @@ This is where your description should go. Take a look at [contributing.md](contr
 
 ## Installation
 
-Via Composer
+Require via Composer
 
 ``` bash
 $ composer require mediactivedigital/medkit
 ```
 
+
+Do : 
+
+```bash
+
+php artisan key:generate
+php artisan medkit:install
+
+
+```
 ## Usage
 
 ## Change log

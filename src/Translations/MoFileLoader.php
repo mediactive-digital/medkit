@@ -1,6 +1,6 @@
 <?php
 
-namespace MedKit\Translations;
+namespace MediactiveDigital\MedKit\Translations;
 
 use Xinax\LaravelGettext\FileLoader\MoFileLoader as MoFileLoaderContract;
 

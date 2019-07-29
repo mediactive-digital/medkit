@@ -1,6 +1,6 @@
 <?php
 
-namespace MedKit\Helpers;
+namespace MediactiveDigital\MedKit\Helpers;
 
 class AccessHelper {
 

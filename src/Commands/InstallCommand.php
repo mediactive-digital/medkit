@@ -152,7 +152,7 @@ class InstallCommand extends Command
         $src = $this->pathToPackageRoot.'publishable';
         $this->info('Copying publishable files...' );
         if( !file_exists( $src ) ){
-            $this->error( $src.' does not exists');
+            $this->error( ' #ERR2 [SKIP] '.$src.' does not exists');
         }
         $res = $this->filesystem->copyDirectory( $src, base_path() );
 

@@ -2,6 +2,6 @@
 
 namespace App\Helpers;
 
-class TranslationHelper extends \MedKit\Helpers\FormatHelper{
+class TranslationHelper extends \MediactiveDigital\MedKit\Helpers\FormatHelper{
 
 }

@@ -2,6 +2,6 @@
 
 namespace App\Helpers;
 
-class AccessHelper extends \MedKit\Helpers\AccessHelper {
+class AccessHelper extends \MediactiveDigital\MedKit\Helpers\AccessHelper {
 
 }

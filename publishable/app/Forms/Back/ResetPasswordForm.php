@@ -2,7 +2,7 @@
 
 namespace App\Forms\Back;
 
-class ResetPasswordForm extends \MedKit\Forms\ResetPasswordForm {
+class ResetPasswordForm extends \MediactiveDigital\MedKit\Forms\ResetPasswordForm {
 
     
     /*public function buildForm() {

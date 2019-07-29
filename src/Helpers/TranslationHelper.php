@@ -1,6 +1,6 @@
 <?php
 
-namespace MedKit\Helpers;
+namespace MediactiveDigital\MedKit\Helpers;
 
 use \LaravelGettext;
 use MedKit\Translations\MoFileLoader;

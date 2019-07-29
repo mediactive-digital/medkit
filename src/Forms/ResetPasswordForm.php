@@ -1,6 +1,6 @@
 <?php
 
-namespace MedKit\Forms;
+namespace MediactiveDigital\MedKit\Forms;
 
 use Kris\LaravelFormBuilder\Form;
 
