@@ -2,7 +2,9 @@
 
 namespace App\Forms\Back;
 
-class LoginForm extends \MediactiveDigital\MedKit\Forms\LoginForm {
+use \MediactiveDigital\MedKit\Forms\LoginForm as MedKitLoginForm;
+
+class LoginForm extends MedKitLoginForm {
 
     
     /*public function buildForm() {

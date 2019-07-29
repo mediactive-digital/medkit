@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Back\Auth;
+namespace MediactiveDigital\MedKit\Http\Controllers\Back\Auth;
 
-use App\Http\Controllers\Controller;
+use MediactiveDigital\MedKit\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;

@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Back\Auth;
+namespace MediactiveDigital\MedKit\Http\Controllers\Back\Auth;
 
-use App\Http\Controllers\Controller;
+use MediactiveDigital\MedKit\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Routing\Controller as BaseController;
+
 use Kris\LaravelFormBuilder\FormBuilder;
 
 class ForgotPasswordController extends BaseController {

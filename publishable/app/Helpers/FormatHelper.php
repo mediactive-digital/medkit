@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Helpers;
+use \MediactiveDigital\MedKit\Helpers\FormatHelper as MedKitFormatHelper;
 
-class FormatHelper extends \MediactiveDigital\MedKit\Helpers\FormatHelper{
+class FormatHelper extends MedKitFormatHelper{
 
 }
