@@ -3,7 +3,7 @@
 namespace MediactiveDigital\MedKit\Helpers;
 
 use \LaravelGettext;
-use MedKit\Translations\MoFileLoader;
+use MediactiveDigital\MedKit\Translations\MoFileLoader;
 
 class TranslationHelper {
 

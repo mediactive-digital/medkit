@@ -22,6 +22,7 @@ Do :
 
 php artisan key:generate
 php artisan medkit:install
+php artisan vendor:publish
 
 
 ```

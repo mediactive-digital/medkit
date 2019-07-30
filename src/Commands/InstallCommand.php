@@ -59,9 +59,11 @@ class InstallCommand extends Command
 
 
             /**
-             * Edit App files
+             * Edit config/auth file
              */
             $this->addAdminGuard();
+
+
 
             /**
              * Finish the install : dump autoload
@@ -72,6 +74,9 @@ class InstallCommand extends Command
 
         //$this->table(array('test'), array( array( "Starterkit installation..") ) );
     }
+
+
+
 
 
 
@@ -159,6 +164,9 @@ class InstallCommand extends Command
             $this->error(' #ERR2 [SKIP] ' . $src . ' does not exists');
         }
         $res = $this->filesystem->copyDirectory($src, base_path());
+
+
+        $this->info('Update app/Kernel.php');
     }
 
 
@@ -182,9 +190,9 @@ class InstallCommand extends Command
          * Add guard
          */
         $authConfigGuards = ['guards' => array_merge( $authConfig['guards'], [
-            'admins' => [
-                'driver' => 'eloquent',
-                'model' => \App\Models\Admin::class,
+            'admin' => [
+                'driver' => 'session',
+                'provider' => 'admins'
             ],
             'admin-api' => [
                 'driver' => 'token',
@@ -199,6 +207,7 @@ class InstallCommand extends Command
        /**
         * Add Provider
         */
+        $authConfig = include( $fileToEdit );//reload conf
         $authConfigProvider = ['providers' => array_merge( $authConfig['providers'], [
             'admins' => [
                 'driver' => 'eloquent',
@@ -214,6 +223,7 @@ class InstallCommand extends Command
        /**
         * Add password broker
         */
+        $authConfig = include( $fileToEdit );   //reload conf
         $authConfigPasswordBroker = ['passwords' => array_merge( $authConfig['passwords'], [
             'admins' => [
                 'provider' => 'admins',
@@ -225,76 +235,6 @@ class InstallCommand extends Command
        $sectionTitle = "Resetting Passwords";
        ConfigHelper::replaceArrayInConfig( $fileToEdit, $sectionTitle, null, $authConfigPasswordBroker );
 
-    }
-
-
-
-    /**
-     * Undocumented function
-     *
-     * @param [type] $configFile
-     * @param [type] $sectionTitle
-     * @param [type] $nextSectionTitle
-     * @param [type] $authConfigGuards
-     * @return void
-     */
-    private function replaceArrayInConfig( $configFile, $sectionTitle, $nextSectionTitle, $authConfigGuards ){
-
-        $sectionTitle = "| ".$sectionTitle;
-        $nextSectionTitle = "| ".$nextSectionTitle;
-
-        $config = $this->filesystem->get($configFile);
-
-        $startSectionPos = strpos( $config, $sectionTitle,0 );      //find start title
-        $endOfSectionDescription = strpos( $config, '*/', $startSectionPos ) +2;    //find end of start comment
-
-        $nextSectionPos = strpos( $config, $nextSectionTitle, $endOfSectionDescription )-4;   //find next start title line
-
-
-        $startSectionComment = "    /*\n    |--------------------------------------------------------------------------\r\n";
-
-        /**
-         * Replacement
-         */
-        $newConfig = FormatHelper::writeArrayToPhp( $authConfigGuards );
-        $config = substr( $config, 0, $endOfSectionDescription )."\n\n" /* Start of file */
-                    .$newConfig."\n\n"  /* new Array config */
-                    .$startSectionComment /* Next Title */
-                    .substr( $config, $nextSectionPos ); /* End of file */
-
-        // write to file
-        return $this->filesystem->put($configFile, $config );
-
-    }
-
-
-    
-
-    /**
-     * Ajoute une chaine apres une autre dans un fichier
-     *
-     * @param string $fileToEdit Path to file to edit
-     * @param string $insertAfter Chaine après laquelle insérer. #TAB# = 4 espaces
-     * @param string $stub Chaine à insérer
-     * @param string $control Chaine à controler pour lancer l'erreur
-     * @param int $errorNumber  Numéro de l'erreur (debug)
-     * @return void
-     */
-    private function appendInFileAfter($fileToEdit, $insertAfter, $stub, $control, $errorNumber)
-    {
-        $content = $this->filesystem->get($fileToEdit);
-        $insertAfter = str_replace('#TAB#', '    ', $insertAfter);    //indentation
-
-        if (strpos($content, $insertAfter) === false) {   //string not found in found. ERROR
-            $this->error(' #ERR' . $errorNumber . ' [SKIP] string not found');
-        }
-
-        if (strpos($content, $control) === false) {
-            $content = str_replace($insertAfter, $insertAfter . $stub, $content);
-        } else {
-            $this->error(' #ERR' . $errorNumber . ' [SKIP] already have this stub');
-        }
-        $this->filesystem->put($fileToEdit, $content);
     }
 
 }
