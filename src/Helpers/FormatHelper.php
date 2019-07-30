@@ -210,4 +210,64 @@ class FormatHelper {
 
         return $value && is_string($value) ? preg_replace('/\s+/', '', $value) : $value;
     }
+
+
+
+
+
+    /**
+     * Transform PHP Array to Config string array
+     *
+     * @param array $arr
+     * @param integer $level 
+     * @return string
+     */
+    public static function writeArrayToPhp( array $arr, $level=1 ){
+        $tab = "    ";
+        $tab = str_repeat( $tab, $level );
+        $str = "";
+        $linebreak = ( $level == 2 ) ? "\n" : "";
+        foreach( $arr as $key => $value ){
+            
+            $str .= $linebreak.$tab."'".$key."' => ".self::writeValueToPhp( $value, $level ).",\n";
+        }
+        
+        return $str;
+    }
+
+
+    /**
+     * Convert something to PHP declaration
+     *
+     * @param various $value
+     * @param integer $level
+     * @return string
+     */
+    public static function writeValueToPhp( $value, $level ): string
+    {
+        $tab = "    ";
+        $tab = str_repeat( $tab, $level );
+
+        if (is_string($value) && strpos($value, "'") === false) {
+            $replaceValue = "\"".$value."\"";
+        }
+        elseif (is_string($value) && strpos($value, '"') === false) {
+            $replaceValue = '"'.$value.'"';
+        }
+        elseif (is_bool($value)) {
+            $replaceValue = ($value ? 'true' : 'false');
+        }
+        elseif (is_null($value)) {
+            $replaceValue = 'null';
+        }
+        elseif (is_array($value) ) {
+            $replaceValue = "[\n".self::writeArrayToPhp( (array)$value, ++$level )."$tab]";
+        }
+        else {
+            $replaceValue = $value;
+        }
+        $replaceValue = str_replace('$', '\$', $replaceValue);
+        
+        return $replaceValue;
+    }
 }
