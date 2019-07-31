@@ -3,6 +3,7 @@
 namespace MediactiveDigital\MedKit;
 use Illuminate\Support\ServiceProvider;
 use MediactiveDigital\MedKit\Commands\InstallCommand;
+use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
 
 class MedKitServiceProvider extends ServiceProvider
 {
@@ -89,6 +90,7 @@ class MedKitServiceProvider extends ServiceProvider
     private function registerCommands(){
         $this->commands([
             InstallCommand::class,
+            CreateSuperAdminCommand::class,
         ]);
     }
 }

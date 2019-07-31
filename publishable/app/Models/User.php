@@ -1,26 +1,20 @@
 <?php
-
 namespace App\Models;
-use MediactiveDigital\MedKit\Models\Admin as MedKitModelAdmin;
 
+use MediactiveDigital\MedKit\Models\User as MedKitUser;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Notifications\Back\ResetPassword;
 use Wildside\Userstamps\Userstamps;
-use App\Observers\AdminObserver;
 
-class Admin extends MedKitModelAdmin
-{
+use Hash;
+
+class User extends MedKitUser {
 
     use Notifiable;
     use HasRoles;
     use SoftDeletes;
     use Userstamps;
-
-    protected $table = 'users';
-    protected $guard_name = 'admin';
 
     /**
      * The attributes that are mass assignable.
@@ -56,4 +50,17 @@ class Admin extends MedKitModelAdmin
         'updated_at', 
         'deleted_at'
     ];
+
+    /**
+     * Hash password if needed.
+     *
+     * @param string $password
+     * @return string
+     */
+    public function setPasswordAttribute($password) {
+
+        $this->attributes['password'] = Hash::needsRehash($password) ? Hash::make($password) : $password;
+    }
+
+ 
 }
