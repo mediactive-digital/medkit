@@ -5,6 +5,8 @@ namespace MediactiveDigital\MedKit\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use App\Observers\AdminObserver;
+use App\Notifications\ResetPassword;
+
 
 class Admin extends Authenticatable {
 
