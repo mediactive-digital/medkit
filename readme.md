@@ -24,6 +24,7 @@ php artisan key:generate
 php artisan vendor:publish
 php artisan medkit:install
 php artisan migrate --seed
+php artisan vendor:publish --tag=laravelThemeLight
 
 
 ```
