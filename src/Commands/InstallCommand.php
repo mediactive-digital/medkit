@@ -62,7 +62,7 @@ class InstallCommand extends Command
              * Edit config/auth file
              */
             $this->addAdminGuard();
-
+            $this->addFacades();
 
 
             /**
@@ -234,6 +234,26 @@ class InstallCommand extends Command
         ]) ];
        $sectionTitle = "Resetting Passwords";
        ConfigHelper::replaceArrayInConfig( $fileToEdit, $sectionTitle, null, $authConfigPasswordBroker );
+
+    }
+
+
+
+    public function addFacades()
+    {
+        $this->info("Add Facades to config/app.php");
+        $fileToEdit = base_path('config') . '/app.php';
+        $appConfig = include( $fileToEdit );
+
+        /**
+         * Add facades
+         */
+        $appConfigFacades = ['aliases' => array_merge( $appConfig['aliases'], [
+                'Debugbar' => \Barryvdh\Debugbar\Facade::class,
+                'Translation' => \App\Helpers\TranslationHelper::class,
+        ]) ];
+       $sectionTitle = "Class Aliases";
+       ConfigHelper::replaceArrayInConfig( $fileToEdit, $sectionTitle, null, $appConfigFacades );
 
     }
 

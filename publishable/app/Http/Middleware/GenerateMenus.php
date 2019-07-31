@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 use App\Helpers\AccessHelper;
+use Lavary\Menu\Facade as Menu;
+
 use Closure;
 
 class GenerateMenus
@@ -63,7 +65,7 @@ class GenerateMenus
      */
     public function front(){
 
-        \Menu::make('menu', function($menu) {
+        Menu::make('menu', function($menu) {
 
             /*$menu->add(_i('Tableau de bord'), [
                     'route' => 'front.index'
@@ -89,7 +91,7 @@ class GenerateMenus
      */
     public function backoffice(){
         
-        \Menu::make('menu', function ($menu) {
+        Menu::make('menu', function ($menu) {
 
             $menu->add('Home');
             //$menu->add('Users', 'users');

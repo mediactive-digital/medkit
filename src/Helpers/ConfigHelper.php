@@ -48,11 +48,14 @@ class ConfigHelper {
         /**
          * Replacement
          */
+        //$newConfig = var_export( $newConfig, true );
         $newConfig = FormatHelper::writeArrayToPhp( $newConfig );
+        
         $config = substr( $config, 0, $endOfSectionDescription )."\n\n" /* Start of file */
                     .$newConfig  /* new Array config */
                     .$eof;
 
+            
         // write to file
         return $filesystem->put($configFile, $config );
 

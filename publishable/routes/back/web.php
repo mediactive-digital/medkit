@@ -1,4 +1,20 @@
 <?php
+
+/**
+ * Logout route
+ */
+Route::group([
+    'middleware' => [
+        'auth:admin'
+    ]
+], function() {
+
+    // Logout route
+    Route::get('/logout', 'Back\Auth\LoginController@logout')->name('logout');
+
+});
+
+
 /**
  * Back
  */
