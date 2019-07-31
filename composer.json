@@ -2,6 +2,7 @@
     "name": "mediactive-digital/medkit",
     "description": ":description",
     "license": "license",
+    "minimum-stability": "dev",
     "authors": [
         {
             "name": "Mediactive Digital",
@@ -38,7 +39,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MediactiveDigital\\MedKit\\": "src/"
+            "MedKit\\": "src/"
         }
     },
     "autoload-dev": {
