@@ -4,7 +4,6 @@ namespace App\Models;
 use MediactiveDigital\MedKit\Models\Admin as MedKitModelAdmin;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Notifications\Back\ResetPassword;
@@ -56,4 +55,13 @@ class Admin extends MedKitModelAdmin
         'updated_at', 
         'deleted_at'
     ];
+
+
+
+
+    public static function boot() {
+
+        parent::boot();
+        static::observe(new AdminObserver);
+    }
 }

@@ -5,6 +5,7 @@ namespace MediactiveDigital\MedKit\Commands;
 use Illuminate\Console\Command;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
 
 class CreateSuperAdminCommand extends Command
 {
@@ -56,6 +57,8 @@ class CreateSuperAdminCommand extends Command
                 $superadmin->email = "dev@mediactive.fr";
 
                 $superadmin->save();
+
+                $superadmin->assignRole( Role::SUPER_ADMIN);
                 $this->info('User ' . $login . ' created.');
             } else {
                 $this->error('Missing parameter');

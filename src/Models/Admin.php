@@ -4,14 +4,13 @@ namespace MediactiveDigital\MedKit\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use App\Observers\AdminObserver;
 
 class Admin extends Authenticatable {
 
 
     public static function boot() {
-
         parent::boot();
-        static::observe(new AdminObserver);
     }
 
     /**
