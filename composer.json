@@ -19,6 +19,7 @@
         "kris/laravel-form-builder": "^1.2",
         "lavary/laravel-menu": "^1.7",
         "mediactive-digital/laravel-asset-aliases": "0.*",
+        "mediactive-digital/laravel-theme-light": "0.*",
         "spatie/laravel-permission": "^2.3",
         "wildside/userstamps": "^0.5",
         "zerospam/laravel-gettext": "^7.1"
