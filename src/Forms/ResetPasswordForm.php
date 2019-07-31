@@ -8,8 +8,8 @@ class ResetPasswordForm extends Form {
 
 	public function buildForm() {
 		$this
-			->add('email', 'email', [
-				'label'	 => _i('Email'),
+			->add('password', 'text', [
+				'label'	 => _i('TODO'),
 				'attr'	 => [
 					'autofocus'	 => 'autofocus',
 					'required'	 => 'required'
