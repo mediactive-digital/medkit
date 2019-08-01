@@ -17,7 +17,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'medkit:install {--theme=light}';
+    protected $signature = 'medkit:install {--theme=mediactive-digital/medkit-theme-light}';
     protected $description = 'Installation du starterkit';
 
     private $pathToPackageRoot = __DIR__ . '/../../';
@@ -62,13 +62,10 @@ class InstallCommand extends Command
 
 
 
-
+sleep(1);
             /**
              * Finish the install : dump autoload
              */
-            $this->line('---------------------');
-            $this->line('| Last step... ');
-            $this->line('---------------------');
             $this->finish();
         }
 
@@ -95,17 +92,13 @@ class InstallCommand extends Command
             "xethron/migrations-generator"
         ];
 
-        $this->doCommand("composer require " . implode(' ', $packages) . " --dev");
+        //$this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
 
 
-        if ($this->arguments('--theme') ) {
-
-            $requirePackages = [
-                "mediactive-digital/medkit-theme:^".$this->arguments('--theme')
-            ];
-
-            $this->doCommand("composer require " . implode(' ', $packages));
+        if ($this->hasOption('theme')) {
+            $this->doCommand('composer require ' . $this->option('theme').'');
         }
+        
     }
 
 
@@ -150,18 +143,21 @@ class InstallCommand extends Command
         $this->line('| Publish vendor files');
         $this->line('---------------------');
         $this->doCommand("php artisan vendor:publish --force --no-interaction");
+        sleep(1);
 
         $this->line('---------------------');
         $this->line('| Migrations & Seeds');
         $this->line('---------------------');
         $this->doCommand("php artisan migrate:refresh --seed");
+        sleep(1);
 
-        if ($this->arguments('--theme')) {
+        if ($this->hasOption('theme')) {
             $this->line('---------------------');
-            $this->line('| Theme ' . $this->arguments('--theme'));
+            $this->line('| Theme: ' . $this->option('theme'));
             $this->line('---------------------');
             $this->doCommand("php artisan medkit-theme:install --force");
         }
+        sleep(1);
 
         $this->line('---------------------');
         $this->info('composer dump-autoload');
