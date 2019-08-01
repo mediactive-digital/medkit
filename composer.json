@@ -1,7 +1,7 @@
 {
     "name": "mediactive-digital/medkit",
-    "description": ":description",
-    "license": "license",
+    "description": "Package to init a ready-to-dev Laravel application",
+    "license": "MIT",
     "authors": [
         {
             "name": "Mediactive Digital",
