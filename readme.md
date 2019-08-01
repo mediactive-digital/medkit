@@ -23,8 +23,8 @@ Do :
 php artisan key:generate
 php artisan vendor:publish
 php artisan medkit:install
-php artisan migrate --seed
-php artisan vendor:publish --tag=laravelThemeLight
+php artisan migrate:refresh --seed
+php artisan medkit-theme-light:install
 
 
 ```
