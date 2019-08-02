@@ -18,17 +18,17 @@
         "caouecs/laravel-lang": "^4.0",
         "kris/laravel-form-builder": "^1.2",
         "lavary/laravel-menu": "^1.7",
-        "mediactive-digital/laravel-asset-aliases": "0.*",
         "spatie/laravel-permission": "^2.3",
         "wildside/userstamps": "^0.5",
-        "zerospam/laravel-gettext": "^7.1"
+        "zerospam/laravel-gettext": "^7.1",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "~7.0",
         "mockery/mockery": "^1.1",
         "orchestra/testbench": "~3.0",
         "sempro/phpunit-pretty-print": "^1.0"
-        
+
     },
     "autoload": {
         "psr-4": {
