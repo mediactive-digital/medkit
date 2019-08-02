@@ -21,6 +21,7 @@ Do :
 ```bash
 
 php artisan key:generate
+composer clear-cache
 php artisan medkit:install
 
 
