@@ -60,7 +60,7 @@ class AssetHelper
 
             if (!filter_var($file, FILTER_VALIDATE_URL)) {
 
-                $values = $configs[$file];
+                $values = $configs["$type.$file"];
 
                 $fileAlias = isset($values[0]) ? $values[0] : (isset($values['file']) ? $values['file'] : '');
                 $isUrl = $fileAlias ? filter_var($fileAlias, FILTER_VALIDATE_URL) : false;
