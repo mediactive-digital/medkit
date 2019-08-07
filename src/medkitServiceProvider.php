@@ -1,9 +1,11 @@
 <?php
 
 namespace MediactiveDigital\MedKit;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use MediactiveDigital\MedKit\Commands\InstallCommand;
 use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
+use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
 class MedKitServiceProvider extends ServiceProvider
 {
@@ -22,7 +24,7 @@ class MedKitServiceProvider extends ServiceProvider
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
-            
+
         }
     }
 
@@ -40,8 +42,17 @@ class MedKitServiceProvider extends ServiceProvider
             return new MedKit( );
         });
 
+        $this->app->singleton('assetConfJson', function (){
+            return json_decode(file_get_contents(public_path("mdassets-autoload.json")),true);
+        });
+
+        $this->app->booting(function() {
+            $loader = AliasLoader::getInstance();
+            $loader->alias('MDAsset', AssetHelper::class);
+        });
+
         $this->registerCommands();
-        
+
     }
 
     /**
@@ -53,7 +64,7 @@ class MedKitServiceProvider extends ServiceProvider
     {
         return ['medkit'];
     }
-    
+
     /**
      * Console-specific booting.
      *
