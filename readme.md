@@ -12,7 +12,7 @@ This is where your description should go. Take a look at [contributing.md](contr
 Require via Composer
 
 ``` bash
-$ composer require mediactivedigital/medkit
+$ composer require mediactive-digital/medkit
 ```
 
 
