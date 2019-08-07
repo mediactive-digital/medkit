@@ -1,7 +1,7 @@
 {
     "name": "mediactive-digital/medkit",
     "description": ":description",
-    "license": "license",
+    "license": "MIT",
     "minimum-stability": "dev",
     "authors": [
         {
