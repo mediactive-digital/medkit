@@ -41,6 +41,6 @@ class ResetPassword extends ResetPasswordContract
 
         return (new MailMessage)
             ->subject(_i('Demande de réinitialisation du mot de passe'))
-            ->view('emails.html.reset', compact('fullName', 'date', 'link'));
+            ->view('medKitTheme::emails.html.reset', compact('fullName', 'date', 'link'));
     }
 }

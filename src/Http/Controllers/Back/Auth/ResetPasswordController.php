@@ -50,13 +50,13 @@ class ResetPasswordController extends BaseController {
 	 * @param type $token
 	 */
 	public function showResetForm( FormBuilder $formBuilder ){
- 
+
 		$form = $formBuilder->create('App\Forms\Back\ResetPasswordForm', [
             'method' => 'POST',
             'url' => route('back.password.email')
         ]);
         // return view( 'back.auth.passwords.reset' )->with(['form' => $form , 'token' => $token, 'email' => $request->email]);
-       return view( 'users.back.auth.reinitialisation', compact('form'));
+       return view( 'medKitTheme::users.back.auth.reinitialisation', compact('form'));
 
 		//return view('back.auth.passwords.reset')->with(['token' => $token, 'email' => $request->email]);
 	}

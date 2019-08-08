@@ -37,7 +37,7 @@ class ForgotPasswordController extends BaseController {
 		]);
 
 		// return view('back.auth.passwords.email');
-		return view('users.back.auth.demande_reinitialisation', compact('form'));
+		return view('medKitTheme::users.back.auth.demande_reinitialisation', compact('form'));
 	}
 
 	/**

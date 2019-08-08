@@ -32,7 +32,7 @@ Route::group([
     Route::post('/password/email', 'Back\Auth\ForgotPasswordController@sendResetLinkEmail' )->name('back.password.email');
     Route::get('/password/reset/{token}', 'Back\Auth\ResetPasswordController@showResetForm' )->name('back.password.reset');
     Route::post('/password/reset', 'Back\Auth\ResetPasswordController@reset');
-    
+
 });
 
 Route::group([
@@ -42,11 +42,11 @@ Route::group([
         'menu:backoffice'
     ]
 ], function() {
-        
+
     Route::get('/', function() {
-        return view('dashboard.back.index');
+        return view('medKitTheme::dashboard.back.index');
     })->name('back.index');
-    
+
     // UI kit
     Route::get('/ui-kit', 'Back\UiController@index')->name('back.ui_kit');
 

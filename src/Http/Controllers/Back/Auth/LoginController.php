@@ -53,7 +53,7 @@ class LoginController extends BaseController {
 			'url'	 => route('back.login')
 		]);
 
-		return view('users.back.auth.login', compact('form'));
+		return view('medKitTheme::users.back.auth.login', compact('form'));
 	}
 
 	/**

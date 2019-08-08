@@ -13,6 +13,6 @@ class UiController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return MedKit::view('kit-ui.back.index');
+        return MedKit::view('medKitTheme::kit-ui.back.index');
     }
 }
