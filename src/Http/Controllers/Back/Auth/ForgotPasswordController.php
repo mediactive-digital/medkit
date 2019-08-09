@@ -31,7 +31,7 @@ class ForgotPasswordController extends BaseController {
 
 	public function showLinkRequestForm(FormBuilder $formBuilder) {
 
-		$form = $formBuilder->create('App\Forms\Back\ResetPasswordForm', [
+		$form = $formBuilder->create('App\Forms\Back\ForgotPasswordForm', [
 			'method' => 'POST',
 			'url'	 => route('back.password.email')
 		]);

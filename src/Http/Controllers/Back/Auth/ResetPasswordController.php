@@ -46,19 +46,20 @@ class ResetPasswordController extends BaseController {
 	 * Show mdp oublié Form
 	 *
 	 * @param FormBuilder $formBuilder
-	 * @param Request $request
-	 * @param type $token
+	 * @param string $token
+	 * @return \Illuminate\Http\Response
 	 */
-	public function showResetForm( FormBuilder $formBuilder ){
+	public function showResetForm(FormBuilder $formBuilder, string $token) {
 
+		$email = request()->email;
+ 
 		$form = $formBuilder->create('App\Forms\Back\ResetPasswordForm', [
             'method' => 'POST',
-            'url' => route('back.password.email')
+            'url' => route('back.password.request'),
+            'data' => compact('token', 'email')
         ]);
-        // return view( 'back.auth.passwords.reset' )->with(['form' => $form , 'token' => $token, 'email' => $request->email]);
-       return view( 'medKitTheme::users.back.auth.reinitialisation', compact('form'));
 
-		//return view('back.auth.passwords.reset')->with(['token' => $token, 'email' => $request->email]);
+       	return view('medKitTheme::users.back.auth.reinitialisation', compact('email', 'form'));
 	}
 
 	/**
@@ -69,10 +70,10 @@ class ResetPasswordController extends BaseController {
 	 */
 	public function reset(Request $request) {
 
-		$this->validate($request, [
+		$request->validate([
 			'token'		 => 'required',
 			'email'		 => 'required|max:120|email',
-			'password'	 => 'required|min:6|max:120|confirmed'
+			'password'	 => 'required|min:8|max:120|confirmed'
 			], $this->validationErrorMessages());
 
 		// Here we will attempt to reset the user's password. If it is successful we
@@ -81,9 +82,8 @@ class ResetPasswordController extends BaseController {
 		$response = $this->broker()->reset(
 			$this->credentials($request), function ($user, $password) {
 
-			$this->resetPassword($user, $password);
-		}
-		);
+				$this->resetPassword($user, $password);
+			});
 
 		// If the password was successfully reset, we will redirect the user back to
 		// the application's home authenticated view. If there is an error we can
