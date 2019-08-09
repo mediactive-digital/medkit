@@ -3,36 +3,33 @@
 namespace MediactiveDigital\MedKit\Forms;
 
 use Kris\LaravelFormBuilder\Form;
+use Kris\LaravelFormBuilder\Field;
 
 class LoginForm extends Form {
 
 	public function buildForm() {
-		$this
-			->add('login', 'text', [
+
+		$this->add('login', Field::TEXT, [
 				'label' => _i('Identifiant'),
 				'attr' => [
 					'autofocus' => 'autofocus',
 					'required' => 'required'
-				],
+				]
 			])
-			->add('password', 'password', [
+			->add('password', Field::PASSWORD, [
 				'label' => _i('Mot de passe'),
 				'attr' => [ 
 					'required' => 'required'
-				],
+				]
 			])
-			->add('remember', 'checkbox', [
+			->add('remember', Field::CHECKBOX, [
 				'label' => _i('Se souvenir de moi')
 			])
-			->add('submit', 'submit', [
-				'label'		 => _i('Se connecter'),
-				//'attr' => ['class' => 'btn-primary'],
-				'help_block' => [
-					'text'	 => '<a class="ml-1" href="' . route('back.password.request') . '">' . _i('Mot de passe oublié') . ' </a>',
-					'tag'	 => 'p',
-					'attr'	 => ['class' => 'help-block']
-				],
-		]);
+			->add('submit', Field::BUTTON_SUBMIT, [
+				'label' => _i('Se connecter'),
+				'attr' => [
+					'class' => 'btn btn-primary btn-block'
+				]
+			]);
 	}
-
 }
