@@ -92,13 +92,13 @@ sleep(1);
             "xethron/migrations-generator"
         ];
 
-        //$this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
+        $this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
 
 
         if ($this->hasOption('theme')) {
             $this->doCommand('composer require ' . $this->option('theme').'');
         }
-        
+
     }
 
 
