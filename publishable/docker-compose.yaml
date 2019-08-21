@@ -1,39 +1,89 @@
 version: '3'
 services:
-    core_services:
-        build: .
-        container_name: core
-        ports:
-            - "8080:80"
-        volumes:
-            - ./:/var/www/
-            - ./public/:/var/www/html/
-        networks:
-            - backend
-    mysql:
-        container_name: db_mysql
-        image: mysql:5.7
-        ports:
-            - "33062:3306"
-        environment:
-            - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
-        volumes:
-            - "./db/mysql/data:/var/lib/mysql"
-            - "./db/mysql/initdb.d:/docker-entrypoint-initdb.d"
-        networks:
-            - backend
-    pma:
-        container_name: pma
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "44679:80"
-        environment:
-            - "PMA_HOST=db_mysql"
-            - "MYSQL_DATABASE=${DB_DATABASE}"
-            - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
-        networks:
-            - backend
+  core_services:
+    build:
+      context: ./docker_data/core/
+    container_name: core_$DB_DATABASE
+    ports:
+      - 8080:80
+    volumes:
+      - "./:/var/www/"
+      - "./public/:/var/www/html/"
+    networks:
+      - backend
+  mysql:
+    container_name: db_mysql_$DB_DATABASE
+    image: mysql:5.7
+    ports:
+      - 33062:3306
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
+    volumes:
+      - "./docker_data/db/mysql/data:/var/lib/mysql"
+      - "./docker_data/db/mysql/initdb.d:/docker-entrypoint-initdb.d"
+    networks:
+      - backend
+  pma:
+    container_name: pma_$DB_DATABASE
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      - "PMA_HOST=db_mysql"
+      - "MYSQL_DATABASE=${DB_DATABASE}"
+      - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
+    networks:
+      - backend
+
+  elasticsearch:
+    build:
+      context: ./docker_data/elasticsearch/
+      args:
+        ELK_VERSION: 7.3.1
+    volumes:
+      - "./docker_data/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ELASTIC_PASSWORD: changeme
+    networks:
+      - backend
+
+  logstash:
+    build:
+      context: ./docker_data/logstash/
+      args:
+        ELK_VERSION: 7.3.1
+    volumes:
+      - "./docker_data/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml"
+      - "./docker_data/logstash/pipeline:/usr/share/logstash/pipeline"
+    ports:
+      - 5000:5000
+      - 9600:9600
+      - 12201:12201/udp
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - backend
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: ./docker_data/kibana/
+      args:
+        ELK_VERSION: 7.3.1
+    volumes:
+      - "./docker_data/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml"
+    ports:
+      - 8082:5601
+    networks:
+      - backend
+    depends_on:
+      - elasticsearch
 
 networks:
-    backend:
-        driver: bridge
+  backend:
+    driver: bridge
