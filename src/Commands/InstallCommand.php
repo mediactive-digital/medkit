@@ -87,7 +87,6 @@ sleep(1);
             "barryvdh/laravel-debugbar",
             "barryvdh/laravel-ide-helper",
             "laravel/dusk",
-            "noeldemartin/laravel-dusk-mocking",
             "reliese/laravel",
             "xethron/migrations-generator"
         ];
@@ -98,7 +97,7 @@ sleep(1);
         if ($this->hasOption('theme')) {
             $this->doCommand('composer require ' . $this->option('theme').'');
         }
-        
+
     }
 
 
