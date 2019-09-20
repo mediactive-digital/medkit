@@ -21,7 +21,8 @@
         "spatie/laravel-permission": "^2.3",
         "wildside/userstamps": "^0.5",
         "zerospam/laravel-gettext": "^7.1",
-        "ext-json": "*"
+        "ext-json": "*",
+        "genealabs/laravel-model-caching": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "~7.0",
