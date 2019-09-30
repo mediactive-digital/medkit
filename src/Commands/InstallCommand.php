@@ -3,9 +3,9 @@
 namespace MediactiveDigital\MedKit\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Illuminate\Filesystem\Filesystem;
-use MediactiveDigital\MedKit\Helpers\FormatHelper as FormatHelper;
 use MediactiveDigital\MedKit\Helpers\ConfigHelper as ConfigHelper;
 
 class InstallCommand extends Command
@@ -33,8 +33,7 @@ class InstallCommand extends Command
         5=>"Add Route",
         6=>"Add AdminGuard",
         7=>"Add Facades",
-        8=>"Refresh Migrations and Seeds",
-        9=>"install Theme",
+        8=>"install Theme",
     ];
 
     /**
@@ -68,7 +67,6 @@ class InstallCommand extends Command
                     $this->addRoutes();
                     $this->addAdminGuard();
                     $this->addFacades();
-                    $this->refreshMigration();
                     $this->installTheme();
                     $this->composerDump();
 
@@ -101,10 +99,6 @@ class InstallCommand extends Command
                     break;
 
                 case 8 :
-                    $this->refreshMigration();
-                    break;
-
-                case 9 :
                     $this->installTheme();
                     $this->composerDump();
                     break;
@@ -122,12 +116,12 @@ class InstallCommand extends Command
     private function addRequirePackages()
     {
         $devPackages = [
-            "orangehill/iseed",
-            "barryvdh/laravel-debugbar",
-            "barryvdh/laravel-ide-helper",
-            "laravel/dusk",
-            "reliese/laravel",
-            "xethron/migrations-generator"
+            "orangehill/iseed:*",
+            "barryvdh/laravel-debugbar:*",
+            "barryvdh/laravel-ide-helper:*",
+            "laravel/dusk:*",
+            "reliese/laravel:*",
+            "xethron/migrations-generator:*"
         ];
         $this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
 
@@ -178,13 +172,6 @@ class InstallCommand extends Command
         $this->line('| Publish vendor files');
         $this->line('---------------------');
         $this->doCommand("php artisan vendor:publish --force --no-interaction");
-    }
-
-    private function refreshMigration(){
-        $this->line('---------------------');
-        $this->line('| Migrations & Seeds');
-        $this->line('---------------------');
-        $this->doCommand("php artisan migrate:refresh --seed");
     }
 
     private function installTheme() {
