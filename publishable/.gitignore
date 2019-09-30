@@ -14,4 +14,4 @@ yarn-error.log
 .idea
 composer.lock
 yarn.lock
-
+docker_data/mysql/db/*

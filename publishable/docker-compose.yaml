@@ -1,32 +1,33 @@
 version: '3'
 services:
     core_services:
-        build: .
-        container_name: core
+        build:
+            context: ./docker_data/core/
+        container_name: core_$DB_DATABASE
         ports:
-            - "8080:80"
+            - 8080:80
         volumes:
-            - ./:/var/www/
-            - ./public/:/var/www/html/
+            - "./:/var/www/"
+            - "./public/:/var/www/html/"
         networks:
             - backend
     mysql:
-        container_name: db_mysql
+        container_name: db_mysql_$DB_DATABASE
         image: mysql:5.7
         ports:
-            - "33062:3306"
+            - 33062:3306
         environment:
             - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
         volumes:
-            - "./db/mysql/data:/var/lib/mysql"
-            - "./db/mysql/initdb.d:/docker-entrypoint-initdb.d"
+            - "./docker_data/mysql/db/data:/var/lib/mysql"
+            - "./docker_data/mysql/db/initdb.d:/docker-entrypoint-initdb.d"
         networks:
             - backend
     pma:
-        container_name: pma
+        container_name: pma_$DB_DATABASE
         image: phpmyadmin/phpmyadmin
         ports:
-            - "44679:80"
+            - 8081:80
         environment:
             - "PMA_HOST=db_mysql"
             - "MYSQL_DATABASE=${DB_DATABASE}"
