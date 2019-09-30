@@ -15,3 +15,10 @@ yarn-error.log
 composer.lock
 yarn.lock
 docker_data/mysql/db/*
+
+#Generation auto via npm
+public/css/*
+public/fonts/*
+public/js/*
+public/json/*
+public/mdassets-autoload.json
