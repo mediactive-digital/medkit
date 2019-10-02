@@ -13,7 +13,7 @@
     "keywords": ["Laravel", "MedKit", "boilerplate"],
     "require": {
         "php": "7.*",
-        "laravel/framework": "^6.0",
+        "laravel/framework": "6.0.4",
         "illuminate/support": "^6.0",
         "caouecs/laravel-lang": "^4.0",
         "kris/laravel-form-builder": "^1.2",
@@ -22,7 +22,8 @@
         "wildside/userstamps": "^0.5",
         "zerospam/laravel-gettext": "dev-master",
         "ext-json": "*",
-        "genealabs/laravel-model-caching": "*"
+        "genealabs/laravel-model-caching": "*",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

@@ -5,29 +5,48 @@
 [![Build Status][ico-travis]][link-travis]
 [![StyleCI][ico-styleci]][link-styleci]
 
-This is where your description should go. Take a look at [contributing.md](contributing.md) to see a to do list.
+MedKit is a toolbox used by Mediactive Digital.
 
 ## Installation
 
-Require via Composer
+Create a new project, then require medKit
+``` bash
+$ laravel new projectZero #version 6.0.4 
+$ cd projectZero/ 
+$ composer require mediactive-digital/medkit
+$ php artisan medkit:install
+```
+> update your .env, create your bdd
+
+## Run the migrations (with docker)
+
+Update your .env for access between docker containers : 
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=db_mysql_$DB_DATABASE
+DB_PORT=3306
+DB_DATABASE=$DB_DATABASE
+DB_USERNAME=root
+DB_PASSWORD=toor
+```
+> Replace $DB_DATABASE by your db name
+
+Install docker comunity edition, then run
+```bash
+$ docker-compose up
+``` 
+> configurations are in docker-compose.yaml
+
+Then run the wizzard inside Docker.
+```bash
+$ docker-compose exec core_services php /var/www/artisan medkit:migrate
+```
+
+## Run the migrations (with your own services)
 
 ``` bash
-$ composer require mediactive-digital/medkit
+$ php artisan medkit:migrate
 ```
-
-
-Do : 
-
-```bash
-
-php artisan key:generate
-composer clear-cache
-php artisan medkit:install
-
-
-
-```
-## Usage
 
 ## Change log
 

@@ -3,9 +3,9 @@
 namespace MediactiveDigital\MedKit\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Illuminate\Filesystem\Filesystem;
-use MediactiveDigital\MedKit\Helpers\FormatHelper as FormatHelper;
 use MediactiveDigital\MedKit\Helpers\ConfigHelper as ConfigHelper;
 
 class InstallCommand extends Command
@@ -24,87 +24,111 @@ class InstallCommand extends Command
     private $promptConfirmation = false;
     private $filesystem = null;
 
-
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
+    private $refActionUser = [
+        0=>"Exit",
+        1=>"Run All",
+        2=>"Add Require Packages",
+        3=>"Copy Source",
+        4=>"Publish packages sources",
+        5=>"Add Route",
+        6=>"Add AdminGuard",
+        7=>"Add Facades",
+        8=>"install Theme",
+    ];
 
     /**
      * Execute the console command.
      * @param \Illuminate\Filesystem\Filesystem $filesystem
      * @return mixed
      */
-    public function handle(Filesystem $filesystem)
-    {
+    public function handle(Filesystem $filesystem) {
         $this->filesystem = $filesystem;
 
-        if (!$this->promptConfirmation || $this->confirm("Confirm installation ?")) {
+        do {
+            $this->getOutput()->section("Medkit installation");
 
+            $rep = 1;
+            if (!$this->promptConfirmation){
+                $rep = array_flip($this->refActionUser)[
+                $this->getOutput()->choice("Quel etapes voulez vous executer ?",$this->refActionUser,$this->refActionUser[0])
+                ]; // On récupere l'indice
+            }
 
+            switch ($rep) {
+                case 0 :
+                    return true;
+                    break;
 
-            $this->addRequirePackages();
+                case 1 :
+                    $this->addRequirePackages();
+                    $this->composerDump();
+                    $this->copySource();
+                    $this->publishPackagesSource();
+                    $this->addRoutes();
+                    $this->addAdminGuard();
+                    $this->addFacades();
+                    $this->installTheme();
+                    $this->composerDump();
 
-            $this->line('---------------------');
-            $this->line('| Medkit installation ');
-            $this->line('---------------------');
+                    return true;
+                    break;
 
-            $this->copyPublishables();
-            $this->addRoutes();
-            $this->addAdminGuard();
-            $this->addFacades();
+                case 2 :
+                    $this->addRequirePackages();
+                    $this->composerDump();
+                    break;
 
+                case 3 :
+                    $this->copySource();
+                    break;
 
+                case 4 :
+                    $this->publishPackagesSource();
+                    break;
 
-sleep(1);
-            /**
-             * Finish the install : dump autoload
-             */
-            $this->finish();
-        }
+                case 5 :
+                    $this->addRoutes();
+                    break;
 
+                case 6 :
+                    $this->addAdminGuard();
+                    break;
 
-        //$this->table(array('test'), array( array( "Starterkit installation..") ) );
+                case 7 :
+                    $this->addFacades();
+                    break;
+
+                case 8 :
+                    $this->installTheme();
+                    $this->composerDump();
+                    break;
+            }
+
+        } while($rep !== 0);
+
+        return true;
     }
 
 
-
-
-
-
-
-
+    /**
+     * Add composers required package
+     */
     private function addRequirePackages()
     {
         $devPackages = [
-            "orangehill/iseed",
-            "barryvdh/laravel-debugbar",
-            "barryvdh/laravel-ide-helper",
-            "laravel/dusk",
-            "reliese/laravel",
-            "xethron/migrations-generator"
+            "orangehill/iseed:*",
+            "barryvdh/laravel-debugbar:*",
+            "barryvdh/laravel-ide-helper:*",
+            "laravel/dusk:*",
+            "reliese/laravel:*",
+            "xethron/migrations-generator:*"
         ];
-
-        //$this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
-
+        $this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
 
         if ($this->hasOption('theme')) {
             $this->doCommand('composer require ' . $this->option('theme').'');
         }
-
     }
-
-
-
-
-
-
 
     /**
      * Add default routes
@@ -136,38 +160,28 @@ sleep(1);
      *
      * @return void
      */
-    private function finish()
+    private function composerDump()
     {
+        $this->info('composer dump-autoload');
+        $this->doCommand('composer dump-autoload');
+        $this->info('Installation done.');
+    }
+
+    private function publishPackagesSource(){
         $this->line('---------------------');
         $this->line('| Publish vendor files');
         $this->line('---------------------');
         $this->doCommand("php artisan vendor:publish --force --no-interaction");
-        sleep(1);
+    }
 
-        $this->line('---------------------');
-        $this->line('| Migrations & Seeds');
-        $this->line('---------------------');
-        $this->doCommand("php artisan migrate:refresh --seed");
-        sleep(1);
-
+    private function installTheme() {
         if ($this->hasOption('theme')) {
             $this->line('---------------------');
             $this->line('| Theme: ' . $this->option('theme'));
             $this->line('---------------------');
             $this->doCommand("php artisan medkit-theme:install --force");
         }
-        sleep(1);
-
-        $this->line('---------------------');
-        $this->info('composer dump-autoload');
-        $this->doCommand('composer dump-autoload');
-        $this->info('Installation done.');
     }
-
-
-
-
-
 
     /**
      * Execute a command
@@ -191,9 +205,8 @@ sleep(1);
      *
      * @return void
      */
-    public function copyPublishables()
+    public function copySource()
     {
-
         $src = $this->pathToPackageRoot . 'publishable';
         $this->info('Copying publishable files...');
         if (!file_exists($src)) {
@@ -213,9 +226,6 @@ sleep(1);
      */
     public function addAdminGuard()
     {
-
-
-
         $this->info("Adding guard to config/auth.php");
 
         $fileToEdit = base_path('config') . '/auth.php';

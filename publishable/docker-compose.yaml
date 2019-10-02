@@ -29,7 +29,7 @@ services:
         ports:
             - 8081:80
         environment:
-            - "PMA_HOST=db_mysql"
+            - "PMA_HOST=db_mysql_${DB_DATABASE}"
             - "MYSQL_DATABASE=${DB_DATABASE}"
             - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
         networks:

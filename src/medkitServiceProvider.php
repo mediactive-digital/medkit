@@ -5,6 +5,8 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use MediactiveDigital\MedKit\Commands\InstallCommand;
 use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
+use MediactiveDigital\MedKit\Commands\PrepareEnvCommand;
+use MediactiveDigital\MedKit\Commands\RunMigrationCommand;
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
 class MedKitServiceProvider extends ServiceProvider
@@ -16,15 +18,9 @@ class MedKitServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'mediactivedigital');
-        // $this->loadViewsFrom(__DIR__.'/../resources/views', 'mediactivedigital');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        // $this->loadRoutesFrom(__DIR__.'/routes.php');
-
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
             $this->bootForConsole();
-
         }
     }
 
@@ -101,6 +97,7 @@ class MedKitServiceProvider extends ServiceProvider
     private function registerCommands(){
         $this->commands([
             InstallCommand::class,
+            RunMigrationCommand::class,
             CreateSuperAdminCommand::class,
         ]);
     }
