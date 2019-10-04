@@ -11,7 +11,7 @@ MedKit is a toolbox used by Mediactive Digital.
 
 Create a new project, then require medKit
 ``` bash
-$ laravel new projectZero #version 6.0.4 
+$ laravel new projectZero
 $ cd projectZero/ 
 $ composer require mediactive-digital/medkit
 $ php artisan medkit:install
@@ -46,6 +46,13 @@ $ docker-compose exec core_services php /var/www/artisan medkit:migrate
 
 ``` bash
 $ php artisan medkit:migrate
+```
+
+## Integrations
+### Sentry
+Ajout dans le .env
+```dotenv
+SENTRY_LARAVEL_DSN=https://CODE@SENTRY_SERVER
 ```
 
 ## Change log
