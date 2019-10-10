@@ -3,13 +3,18 @@
 namespace MediactiveDigital\MedKit\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use App\Observers\AdminObserver;
 use App\Notifications\ResetPassword;
+use Soved\Laravel\Gdpr\Contracts\Portable as PortableContract;
+use Soved\Laravel\Gdpr\Portable;
+use Soved\Laravel\Gdpr\Retentionable;
 
 
-class Admin extends Authenticatable {
+class Admin extends Authenticatable implements PortableContract {
 
+    use Retentionable, Portable, Notifiable;
 
     public static function boot() {
         parent::boot();
