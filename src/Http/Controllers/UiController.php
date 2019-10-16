@@ -2,8 +2,9 @@
 
 namespace MediactiveDigital\MedKit\Http\Controllers\Back;
 
-use MedKit\Http\Controllers\Controller;
+
 use MediactiveDigital\MedKit\Facades\MedKit;
+use MediactiveDigital\MedKit\Http\Controllers\Controller;
 
 class UiController extends Controller {
 

@@ -48,6 +48,6 @@ Route::group([
     })->name('back.index');
 
     // UI kit
-    Route::get('/ui-kit', 'Back\UiController@index')->name('back.ui_kit');
+    Route::get('/ui-kit', '\MediactiveDigital\MedKit\Http\Controllers\Back\UiController@index')->name('back.ui_kit');
 
 });
