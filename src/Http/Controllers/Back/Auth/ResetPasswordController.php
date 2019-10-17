@@ -32,11 +32,6 @@ class ResetPasswordController extends BaseController {
 	 */
 	protected $redirectTo = '/gestion';
 
-	protected function guard() {
-
-		return Auth::guard('admin');
-	}
-
 	public function broker() {
 
 		return Password::broker('admins');
@@ -52,7 +47,7 @@ class ResetPasswordController extends BaseController {
 	public function showResetForm(FormBuilder $formBuilder, string $token) {
 
 		$email = request()->email;
- 
+
 		$form = $formBuilder->create('App\Forms\Back\ResetPasswordForm', [
             'method' => 'POST',
             'url' => route('back.password.request'),

@@ -2,8 +2,8 @@
 
 namespace MediactiveDigital\MedKit\Commands;
 
+use App\Models\User;
 use Illuminate\Console\Command;
-use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Role;
 
@@ -49,7 +49,7 @@ class CreateSuperAdminCommand extends Command
 
                 $password = Hash::make($this->argument('password'));
 
-                $superadmin = new Admin();
+                $superadmin = new User();
                 $superadmin->login = $login;
                 $superadmin->password = $password;
                 $superadmin->name = 'Digital';

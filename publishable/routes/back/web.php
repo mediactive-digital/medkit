@@ -5,7 +5,7 @@
  */
 Route::group([
     'middleware' => [
-        'auth:admin'
+        'auth'
     ]
 ], function() {
 
@@ -20,7 +20,7 @@ Route::group([
  */
 Route::group([
     'prefix' => 'gestion',
-    'middleware' => 'guest:admin'
+    'middleware' => 'guest'
 ], function() {
 
     // Login routes
@@ -32,13 +32,13 @@ Route::group([
     Route::post('/password/email', 'Back\Auth\ForgotPasswordController@sendResetLinkEmail' )->name('back.password.email');
     Route::get('/password/reset/{token}', 'Back\Auth\ResetPasswordController@showResetForm' )->name('back.password.reset');
     Route::post('/password/reset', 'Back\Auth\ResetPasswordController@reset');
-
 });
 
 Route::group([
     'prefix' => 'gestion',
     'middleware' => [
-        'auth:admin',
+        'auth',
+        'admin',
         'menu:backoffice'
     ]
 ], function() {

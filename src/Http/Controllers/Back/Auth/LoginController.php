@@ -6,10 +6,10 @@ use MediactiveDigital\MedKit\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Routing\Controller as BaseController;
 use Kris\LaravelFormBuilder\FormBuilder;
+use App\Models\User;
 
 class LoginController extends BaseController {
 	/*
@@ -31,11 +31,6 @@ class LoginController extends BaseController {
 	 * @var string
 	 */
 	protected $redirectTo = '/gestion';
-
-	protected function guard() {
-
-		return Auth::guard('admin');
-	}
 
 	public function username() {
 
@@ -77,7 +72,7 @@ class LoginController extends BaseController {
 			return $this->sendLockoutResponse($request);
 		}
 
-		$user = Admin::role(['Super admin', 'Admin'])->where($this->username(), $request[$this->username()])->first();
+		$user = User::role(['Super admin', 'Admin'])->where($this->username(), $request[$this->username()])->first();
 
 		if ($user && Hash::check($request['password'], $user->password)) {
 

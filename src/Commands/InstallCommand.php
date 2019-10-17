@@ -231,6 +231,22 @@ class InstallCommand extends Command
         $fileToEdit = base_path('config') . '/auth.php';
         $authConfig = include($fileToEdit);
 
+        /**
+         * Add Provider
+         */
+        $authConfig = include($fileToEdit); //reload conf
+        $authConfigProvider = ['providers' => array_merge($authConfig['providers'], [
+            'users' => [
+                'driver' => 'eloquent',
+                'model' => \App\Models\User::class,
+            ],
+        ])];
+        $sectionTitle = "User Providers";
+        $nextSectionTitle = "Resetting Passwords";
+
+        ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, $nextSectionTitle, $authConfigProvider);
+
+        return true;
 
         /**
          * Add guard
