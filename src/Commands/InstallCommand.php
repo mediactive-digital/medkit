@@ -120,8 +120,8 @@ class InstallCommand extends Command
             "barryvdh/laravel-debugbar:*",
             "barryvdh/laravel-ide-helper:*",
             "laravel/dusk:*",
-            "reliese/laravel:*",
-            "xethron/migrations-generator:*"
+            "mediactive-digital/laravel:*",
+            "mediactive-digital/migrations-generator:*"
         ];
         $this->doCommand("composer require " . implode(' ', $devPackages) . " --dev");
 

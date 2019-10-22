@@ -24,7 +24,8 @@
         "ext-json": "*",
         "genealabs/laravel-model-caching": "*",
         "ext-pdo": "*",
-        "sentry/sentry-laravel": "^1.3"
+        "sentry/sentry-laravel": "^1.3",
+        "soved/laravel-gdpr": "^1.5"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
