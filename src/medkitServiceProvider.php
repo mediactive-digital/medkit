@@ -1,6 +1,7 @@
 <?php
 
 namespace MediactiveDigital\MedKit;
+use MediactiveDigital\MedKit\Providers\EventServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use MediactiveDigital\MedKit\Commands\InstallCommand;
@@ -46,6 +47,8 @@ class MedKitServiceProvider extends ServiceProvider
             $loader = AliasLoader::getInstance();
             $loader->alias('MDAsset', AssetHelper::class);
         });
+
+        $this->app->register(EventServiceProvider::class);
 
         $this->registerCommands();
 
