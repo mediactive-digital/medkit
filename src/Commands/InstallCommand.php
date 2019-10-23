@@ -171,7 +171,7 @@ class InstallCommand extends Command
         $this->line('---------------------');
         $this->line('| Publish vendor files');
         $this->line('---------------------');
-        $this->doCommand("php artisan vendor:publish --force --no-interaction");
+        $this->doCommand("php artisan vendor:publish --no-interaction");
     }
 
     private function installTheme() {
