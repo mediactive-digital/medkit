@@ -10,5 +10,8 @@ return [
     		'email',
     		'login'
     	]
-    ]
+    ],
+    'clearDirectory'=> [
+        "storage/logs"=>30
+    ],
 ];

@@ -23,8 +23,9 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule) {
-        
+
         $schedule->command('medkit:cleanup')->daily();
+        $schedule->command('medkit:clear')->daily();
     }
 
     /**
