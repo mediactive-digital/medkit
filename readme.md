@@ -1,5 +1,9 @@
 # MedKit
 
+![phpversion](https://img.shields.io/packagist/php-v/mediactive-digital/medkit?style=flat-square)
+![lastversion](https://img.shields.io/github/v/release/mediactive-digital/medkit?style=flat-square)
+![dependencies](https://img.shields.io/librariesio/github/mediactive-digital/medkit?style=flat-square)
+
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
 [![Build Status][ico-travis]][link-travis]
