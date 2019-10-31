@@ -17,7 +17,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'medkit:install {--theme=mediactive-digital/medkit-theme-light}';
+    protected $signature = 'medkit:install {--theme=mediactive-digital/medkit-theme-malabar}';
     protected $description = 'Installation du starterkit';
 
     private $pathToPackageRoot = __DIR__ . '/../../';
