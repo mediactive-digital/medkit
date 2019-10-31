@@ -20,7 +20,7 @@
         "lavary/laravel-menu": "^1.7",
         "spatie/laravel-permission": "^3.0",
         "wildside/userstamps": "^0.5",
-        "zerospam/laravel-gettext": "dev-master",
+        "zerospam/laravel-gettext": "7.*",
         "ext-json": "*",
         "genealabs/laravel-model-caching": "*",
         "ext-pdo": "*",
