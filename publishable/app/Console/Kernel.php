@@ -22,9 +22,9 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule)
-    {
-        $schedule->command('gdpr:cleanup')->daily();
+    protected function schedule(Schedule $schedule) {
+        
+        $schedule->command('medkit:cleanup')->daily();
     }
 
     /**

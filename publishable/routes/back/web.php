@@ -12,8 +12,8 @@ Route::group([
     // Logout route
     Route::get('/logout', 'Back\Auth\LoginController@logout')->name('logout');
 
+    Route::post('/gdpr/download', '\MediactiveDigital\MedKit\Http\Controllers\Back\GdprController@download')->name('back.gdpr_download');
 });
-
 
 /**
  * Back
@@ -49,5 +49,4 @@ Route::group([
 
     // UI kit
     Route::get('/ui-kit', '\MediactiveDigital\MedKit\Http\Controllers\Back\UiController@index')->name('back.ui_kit');
-
 });

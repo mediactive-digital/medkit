@@ -39,7 +39,7 @@ return [
     |
     */
 
-    're-authenticate' => false,
+    're-authenticate' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -53,7 +53,7 @@ return [
 
     'cleanup' => [
 
-        'strategy' => 'Soved\Laravel\Gdpr\Jobs\Cleanup\Strategies\DefaultStrategy',
+        'strategy' => 'App\Jobs\Cleanup\Strategies\DefaultStrategy',
 
         'defaultStrategy' => [
 

@@ -54,7 +54,7 @@ class CreateSuperAdminCommand extends Command
                 $superadmin->password = $password;
                 $superadmin->name = 'Digital';
                 $superadmin->firstname = 'Mediactive';
-                $superadmin->email = "dev@mediactive.fr";
+                $superadmin->email = config('medkit.dev_email');
 
                 $superadmin->save();
 
