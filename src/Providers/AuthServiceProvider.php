@@ -3,11 +3,13 @@
 namespace MediactiveDigital\MedKit\Providers;
 
 
+use App\Models\Role;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Services\Auth\SessionGuard;
 use App\Services\Auth\TokenGuard;
 use Illuminate\Support\Facades\Auth;
+use MediactiveDigital\MedKit\Models\User;
 
 
 class AuthServiceProvider extends ServiceProvider
@@ -27,8 +29,12 @@ class AuthServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot() {
-        
+
         $this->registerPolicies();
+
+        Gate::define('admin', function (\App\Models\User $user) {
+            return $user->hasRole(Role::SUPER_ADMIN);
+        });
 
         Auth::extend('session', function($app, $name, array $config) {
 

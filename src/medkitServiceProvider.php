@@ -1,12 +1,18 @@
 <?php
 
 namespace MediactiveDigital\MedKit;
+
+use MediactiveDigital\MedKit\Providers\EventServiceProvider;
+
 use Illuminate\Foundation\AliasLoader;
+
 use Illuminate\Support\ServiceProvider;
+
 use MediactiveDigital\MedKit\Commands\InstallCommand;
-use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
-use MediactiveDigital\MedKit\Commands\PrepareEnvCommand;
 use MediactiveDigital\MedKit\Commands\RunMigrationCommand;
+use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
+use MediactiveDigital\MedKit\Commands\CleanupCommand;
+
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
 class MedKitServiceProvider extends ServiceProvider
@@ -46,6 +52,8 @@ class MedKitServiceProvider extends ServiceProvider
             $loader = AliasLoader::getInstance();
             $loader->alias('MDAsset', AssetHelper::class);
         });
+
+        $this->app->register(EventServiceProvider::class);
 
         $this->registerCommands();
 
@@ -99,6 +107,7 @@ class MedKitServiceProvider extends ServiceProvider
             InstallCommand::class,
             RunMigrationCommand::class,
             CreateSuperAdminCommand::class,
+            CleanupCommand::class
         ]);
     }
 }

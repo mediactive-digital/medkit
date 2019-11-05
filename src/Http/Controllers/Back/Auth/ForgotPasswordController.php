@@ -26,7 +26,7 @@ class ForgotPasswordController extends BaseController {
 
 	public function broker() {
 
-		return Password::broker('admins');
+		return Password::broker();
 	}
 
 	public function showLinkRequestForm(FormBuilder $formBuilder) {

@@ -17,7 +17,7 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'medkit:install {--theme=mediactive-digital/medkit-theme-light}';
+    protected $signature = 'medkit:install {--theme=mediactive-digital/medkit-theme-malabar}';
     protected $description = 'Installation du starterkit';
 
     private $pathToPackageRoot = __DIR__ . '/../../';
@@ -171,7 +171,7 @@ class InstallCommand extends Command
         $this->line('---------------------');
         $this->line('| Publish vendor files');
         $this->line('---------------------');
-        $this->doCommand("php artisan vendor:publish --force --no-interaction");
+        $this->doCommand("php artisan vendor:publish --no-interaction");
     }
 
     private function installTheme() {
@@ -231,6 +231,22 @@ class InstallCommand extends Command
         $fileToEdit = base_path('config') . '/auth.php';
         $authConfig = include($fileToEdit);
 
+        /**
+         * Add Provider
+         */
+        $authConfig = include($fileToEdit); //reload conf
+        $authConfigProvider = ['providers' => array_merge($authConfig['providers'], [
+            'users' => [
+                'driver' => 'eloquent',
+                'model' => \App\Models\User::class,
+            ],
+        ])];
+        $sectionTitle = "User Providers";
+        $nextSectionTitle = "Resetting Passwords";
+
+        ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, $nextSectionTitle, $authConfigProvider);
+
+        return true;
 
         /**
          * Add guard

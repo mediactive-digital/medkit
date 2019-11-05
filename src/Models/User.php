@@ -2,10 +2,39 @@
 
 namespace MediactiveDigital\MedKit\Models;
 
+use Soved\Laravel\Gdpr\Portable;
+use Soved\Laravel\Gdpr\Contracts\Portable as PortableContract;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Soved\Laravel\Gdpr\Retentionable;
 
 
-abstract class User extends Authenticatable {
+
+abstract class User extends Authenticatable implements PortableContract {
+
+    use Retentionable, Portable, Notifiable;
+
+
+    /**
+     * The attributes that should be hidden for the downloadable data.
+     *
+     * @var array
+     */
+    protected $gdprHidden = ['password'];
+
+    /**
+     * The relations to include in the downloadable data.
+     *
+     * @var array
+     */
+    // protected $gdprWith = ['posts'];
+
+    /**
+     * The attributes that should be visible in the downloadable data.
+     *
+     * @var array
+     */
+    // protected $gdprVisible = ['name', 'email'];
 
     /**
      * Hash password if needed.
@@ -17,4 +46,18 @@ abstract class User extends Authenticatable {
         $this->attributes['password'] = Hash::needsRehash($password) ? Hash::make($password) : $password;
     }
 
+
+    /**
+     * Get the GDPR compliant data portability array for the model.
+     *
+     * @return array
+     */
+    public function toPortableArray()
+    {
+        $array = $this->toArray();
+
+        // Customize array...
+
+        return $array;
+    }
 }
