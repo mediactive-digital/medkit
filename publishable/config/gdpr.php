@@ -53,7 +53,7 @@ return [
 
     'cleanup' => [
 
-        'strategy' => 'App\Jobs\Cleanup\Strategies\DefaultStrategy',
+        'strategy' => '\MediactiveDigital\MedKit\Jobs\Cleanup\Strategies\DefaultStrategy',
 
         'defaultStrategy' => [
 
