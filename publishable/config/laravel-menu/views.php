@@ -2,7 +2,7 @@
 
 return [
     'back' => [
-        'sidebar' => '_layouts.back.menu.sidebar'
+        'sidebar' => 'medKitTheme::_layouts.back.menu.sidebar'
     ]
 ];
     
