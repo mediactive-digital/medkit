@@ -2,6 +2,7 @@
 
 namespace MediactiveDigital\MedKit;
 
+use MediactiveDigital\MedKit\Commands\clearDirectory;
 use MediactiveDigital\MedKit\Providers\EventServiceProvider;
 
 use Illuminate\Foundation\AliasLoader;
@@ -107,6 +108,7 @@ class MedKitServiceProvider extends ServiceProvider
             InstallCommand::class,
             RunMigrationCommand::class,
             CreateSuperAdminCommand::class,
+            clearDirectory::class,
             CleanupCommand::class
         ]);
     }
