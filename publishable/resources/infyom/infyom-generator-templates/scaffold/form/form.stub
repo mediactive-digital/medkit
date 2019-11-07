@@ -1,0 +1,21 @@
+<?php
+
+namespace $NAMESPACE_FORMS$;
+
+use Kris\LaravelFormBuilder\Form;
+use Kris\LaravelFormBuilder\Field;
+
+class $MODEL_NAME$Form extends Form {
+
+    public function buildForm() {
+
+        $FORM_FIELDS$
+
+        $this->add('submit', Field::BUTTON_SUBMIT, [
+                'label' => _i('Enregistrer'),
+                'attr' => [
+                    'class' => 'btn btn-primary btn-block'
+                ]
+            ]);
+    }
+}

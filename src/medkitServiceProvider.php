@@ -13,6 +13,8 @@ use MediactiveDigital\MedKit\Commands\InstallCommand;
 use MediactiveDigital\MedKit\Commands\RunMigrationCommand;
 use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
 use MediactiveDigital\MedKit\Commands\CleanupCommand;
+use MediactiveDigital\MedKit\Commands\Scaffold\ScaffoldGeneratorCommand;
+use MediactiveDigital\MedKit\Commands\Scaffold\ControllerGeneratorCommand;
 
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
@@ -101,15 +103,16 @@ class MedKitServiceProvider extends ServiceProvider
         // $this->commands([]);
     }
 
-
-
-    private function registerCommands(){
+    private function registerCommands() {
+        
         $this->commands([
             InstallCommand::class,
             RunMigrationCommand::class,
             CreateSuperAdminCommand::class,
             clearDirectory::class,
-            CleanupCommand::class
+            CleanupCommand::class,
+            ScaffoldGeneratorCommand::class,
+            ControllerGeneratorCommand::class
         ]);
     }
 }

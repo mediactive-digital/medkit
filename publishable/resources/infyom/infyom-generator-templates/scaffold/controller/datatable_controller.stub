@@ -1,0 +1,176 @@
+<?php
+
+namespace $NAMESPACE_CONTROLLER$;
+
+use $NAMESPACE_APP$\Http\Controllers\AppBaseController;
+
+use $NAMESPACE_DATATABLES$\$MODEL_NAME$DataTable;
+
+use $NAMESPACE_REQUEST$;
+use $NAMESPACE_REQUEST$\Create$MODEL_NAME$Request;
+use $NAMESPACE_REQUEST$\Update$MODEL_NAME$Request;
+
+use $NAMESPACE_REPOSITORY$\$MODEL_NAME$Repository;
+
+use Kris\LaravelFormBuilder\FormBuilder;
+
+use Flash;
+
+class $MODEL_NAME$Controller extends AppBaseController {
+
+    /** 
+     * @var $MODEL_NAME$Repository 
+     */
+    private $$MODEL_NAME_CAMEL$Repository;
+
+    public function __construct($MODEL_NAME$Repository $$MODEL_NAME_CAMEL$Repo) {
+
+        $this->$MODEL_NAME_CAMEL$Repository = $$MODEL_NAME_CAMEL$Repo;
+    }
+
+    /**
+     * Display a listing of the $MODEL_NAME$.
+     *
+     * @param $MODEL_NAME$DataTable $$MODEL_NAME_CAMEL$DataTable
+     * @return \Illuminate\Http\Response
+     */
+    public function index($MODEL_NAME$DataTable $$MODEL_NAME_CAMEL$DataTable) {
+
+        return $$MODEL_NAME_CAMEL$DataTable->render('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index');
+    }
+
+    /**
+     * Show the form for creating a new $MODEL_NAME$.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(FormBuilder $formBuilder) {
+
+        $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
+            'method' => 'POST',
+            'url' => route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index')
+        ]);
+
+        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.create')
+            ->with('form', $form);
+    }
+
+    /**
+     * Store a newly created $MODEL_NAME$ in storage.
+     *
+     * @param Create$MODEL_NAME$Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Create$MODEL_NAME$Request $request) {
+
+        $input = $request->all();
+
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($input);
+
+        Flash::success('$MODEL_NAME_HUMAN$ saved successfully.');
+
+        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+    }
+
+    /**
+     * Display the specified $MODEL_NAME$.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id) {
+
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
+
+        if (empty($$MODEL_NAME_CAMEL$)) {
+
+            Flash::error('$MODEL_NAME_HUMAN$ not found');
+
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        }
+
+        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.show')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
+    }
+
+    /**
+     * Show the form for editing the specified $MODEL_NAME$.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id, FormBuilder $formBuilder) {
+
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
+
+        if (empty($$MODEL_NAME_CAMEL$)) {
+
+            Flash::error('$MODEL_NAME_HUMAN$ not found');
+
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        }
+
+        $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
+            'method' => 'patch$FILES$',
+            'url' => route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.update', $$MODEL_NAME_CAMEL$->$PRIMARY_KEY_NAME$),
+            'model' => $$MODEL_NAME_CAMEL$
+        ]);
+
+        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')
+            ->with('form', $form)
+            ->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
+    }
+
+    /**
+     * Update the specified $MODEL_NAME$ in storage.
+     *
+     * @param int $id
+     * @param Update$MODEL_NAME$Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update($id, Update$MODEL_NAME$Request $request) {
+
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
+
+        if (empty($$MODEL_NAME_CAMEL$)) {
+
+            Flash::error('$MODEL_NAME_HUMAN$ not found');
+
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        }
+
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($request->all(), $id);
+
+        Flash::success('$MODEL_NAME_HUMAN$ updated successfully.');
+
+        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+    }
+
+    /**
+     * Remove the specified $MODEL_NAME$ from storage.
+     *
+     * @param int $id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id) {
+
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
+
+        if (empty($$MODEL_NAME_CAMEL$)) {
+
+            Flash::error('$MODEL_NAME_HUMAN$ not found');
+
+            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+        }
+
+        $this->$MODEL_NAME_CAMEL$Repository->delete($id);
+
+        Flash::success('$MODEL_NAME_HUMAN$ deleted successfully.');
+
+        return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
+    }
+}
