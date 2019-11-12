@@ -10,6 +10,11 @@ use MediactiveDigital\MedKit\Traits\Reflection;
 
 class CommandData extends InfyOmCommandData {
 
+    /** 
+     * @var TableFieldsGenerator 
+     */
+    public $tableFieldsGenerator;
+
     use Reflection;
 
     public function getFields() {
@@ -159,12 +164,12 @@ class CommandData extends InfyOmCommandData {
             $ignoredFields = [];
         }
 
-        $tableFieldsGenerator = new TableFieldsGenerator($tableName, $ignoredFields, $this->config->connection);
-        $tableFieldsGenerator->prepareFieldsFromTable();
-        $tableFieldsGenerator->prepareRelations();
+        $this->tableFieldsGenerator = new TableFieldsGenerator($tableName, $ignoredFields, $this->config->connection);
+        $this->tableFieldsGenerator->prepareFieldsFromTable();
+        $this->tableFieldsGenerator->prepareRelations();
 
-        $this->fields = $tableFieldsGenerator->fields;
-        $this->relations = $tableFieldsGenerator->relations;
+        $this->fields = $this->tableFieldsGenerator->fields;
+        $this->relations = $this->tableFieldsGenerator->relations;
     }
 
     /**

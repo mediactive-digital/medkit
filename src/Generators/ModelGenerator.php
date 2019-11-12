@@ -2,10 +2,10 @@
 
 namespace App\Generators;
 
-use InfyOm\Generator\Common\CommandData;
 use InfyOm\Generator\Utils\FileUtil;
 use InfyOm\Generator\Generators\ModelGenerator as InfyOmModelGenerator;
 
+use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
@@ -51,8 +51,9 @@ class ModelGenerator extends InfyOmModelGenerator {
         $commandData->config->options['userStamps'] = config('infyom.laravel_generator.options.userStamps', false);
 
         $this->commandData = $commandData;
-        $this->path = $commandData->config->pathModel;
-        $this->fileName = $this->commandData->modelName . '.php';
+        $this->path = $this->getReflectionProperty('path');
+        $this->fileName = $this->getReflectionProperty('fileName');
+        $this->table = $this->getReflectionProperty('table');
     }
 
     public function generate() {
@@ -85,23 +86,23 @@ class ModelGenerator extends InfyOmModelGenerator {
             }
         }
 
-        $templateData = $this->call('fillDocs', $templateData);
+        $templateData = $this->callReflectionMethod('fillDocs', $templateData);
         $templateData = $this->fillTimestamps($templateData);
 
-        if ($this->commandData->getOption('primary')) {
+        $primaryKey = $this->commandData->getOption('primary') ?: "";
 
-            $primary = infy_tab() . "protected \$primaryKey = '" . $this->commandData->getOption('primary') . "';\n";
-        } 
-        else {
+        if (!$primaryKey && $this->commandData->getOption('fromTable')) {
 
-            $primary = '';
+            $primaryKey = $this->commandData->tableFieldsGenerator->getPrimaryKeyOfTable($this->table);
         }
+
+        $primary = $primaryKey ? infy_tab() . "protected \$primaryKey = '" . $primaryKey . "';\n" : "";
 
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);
         $templateData = str_replace('$FIELDS$', implode(',' . infy_nl_tab(1, 2), $fillables), $templateData);
-        $templateData = str_replace('$RULES$', implode(',' . infy_nl_tab(1, 2), $this->call('generateRules')), $templateData);
+        $templateData = str_replace('$RULES$', implode(',' . infy_nl_tab(1, 2), $this->callReflectionMethod('generateRules')), $templateData);
         $templateData = str_replace('$CAST$', implode(',' . infy_nl_tab(1, 2), $this->generateCasts()), $templateData);
-        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL.infy_nl_tab(1, 1), $this->call('generateRelations'))), $templateData);
+        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL.infy_nl_tab(1, 1), $this->callReflectionMethod('generateRelations'))), $templateData);
         $templateData = str_replace('$GENERATE_DATE$', date('F j, Y, g:i a T'), $templateData);
 
         return $templateData;
@@ -113,10 +114,9 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         if (empty($this->timestamps)) {
 
-            $replace = infy_nl_tab() . "public \$timestamps = false;\n";
+            $replace = infy_nl_tab() . "public \$timestamps = false;";
         }
-
-        if ($this->commandData->getOption('fromTable') && !empty($this->timestamps)) {
+        else if ($this->commandData->getOption('fromTable')) {
 
             list($created_at, $updated_at, $deleted_at) = collect($this->timestamps)->map(function ($field) {
 
@@ -126,28 +126,15 @@ class ModelGenerator extends InfyOmModelGenerator {
             $replace .= infy_nl_tab() . "const CREATED_AT = $created_at;";
             $replace .= infy_nl_tab() . "const UPDATED_AT = $updated_at;";
 
-            $softDelete = false;
+            $hasSoftDelete = $this->hasSoftDelete();
 
-            $deletedAtTimestamp = config('infyom.laravel_generator.timestamps.deleted_at', 'deleted_at');
-
-            if ($this->commandData->getOption('softDelete')) {
-
-                foreach ($this->commandData->fields as $field) {
-
-                    if ($field->name == $deletedAtTimestamp) {
-
-                        $softDelete = true;
-
-                        break;
-                    }
-                }
-            }
-
-            if ($softDelete) {
+            if ($hasSoftDelete) {
 
                 $replace .= infy_nl_tab() . "const DELETED_AT = $deleted_at;";
             }
         }
+
+        $replace .= $replace ? "\n" : "";
 
         return str_replace('$TIMESTAMPS$', $replace, $templateData);
     }
@@ -164,11 +151,11 @@ class ModelGenerator extends InfyOmModelGenerator {
 
                 $softDeleteImport = "use Illuminate\\Database\\Eloquent\\SoftDeletes;\n";
                 $softDelete = infy_tab() . "use SoftDeletes;";
-                $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($this->timestamps, 1) . ";\n";
+                $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($this->timestamps, 1) . ";";
             }
             else {
 
-                $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp([$this->timestamps[0], $this->timestamps[1]], 1) . ";\n";
+                $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp([$this->timestamps[0], $this->timestamps[1]], 1) . ";";
             }
         }
 
@@ -190,15 +177,15 @@ class ModelGenerator extends InfyOmModelGenerator {
             $userStamps = infy_tab() . "use Userstamps;";
 
             $userStampsConstants = [
-                "const CREATED_BY = $this->userStamps[0];",
-                "const UPDATED_BY = $this->userStamps[1];"
+                "const CREATED_BY = '" . $this->userStamps[0] . "';",
+                "const UPDATED_BY = '" . $this->userStamps[1] . "';"
             ];
 
             $hasSoftDelete = $this->hasSoftDelete();
 
             if ($hasSoftDelete) {
 
-                $userStampsConstants[] = "const UPDATED_BY = $this->userStamps[2];"
+                $userStampsConstants[] = "const DELETED_BY = '" . $this->userStamps[2] . "';";
             }
 
             $userStampsConstants = implode(infy_nl_tab(1, 1), $userStampsConstants);
@@ -206,7 +193,7 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $templateData = str_replace('$USER_STAMPS_IMPORT$', $userStampsImport, $templateData);
         $templateData = str_replace('$USER_STAMPS$', $userStamps, $templateData);
-        $templateData = str_replace('$USER_STAMPS_CONSTANTS$', $userStampsDates, $templateData);
+        $templateData = str_replace('$USER_STAMPS_CONSTANTS$', $userStampsConstants, $templateData);
 
         return $templateData;
     }

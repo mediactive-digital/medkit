@@ -211,10 +211,6 @@ class FormatHelper {
         return $value && is_string($value) ? preg_replace('/\s+/', '', $value) : $value;
     }
 
-
-
-
-
     /**
      * Transform PHP Array to Config string array
      *
@@ -222,19 +218,24 @@ class FormatHelper {
      * @param integer $level 
      * @return string
      */
-    public static function writeArrayToPhp( array $arr, $level=1 ){
-        $tab = "    ";
-        $tab = str_repeat( $tab, $level );
+    public static function writeArrayToPhp(array $arr, $level = 1) {
+
         $str = "";
-        $linebreak = ( $level == 2 ) ? "\n" : "";
-        foreach( $arr as $key => $value ){
+        $tab = "    ";
+        $tab = str_repeat($tab, $level);
+
+        $i = 0;
+        $count = count($arr);
+
+        foreach ($arr as $key => $value) {
+
+            $i++;
             
-            $str .= $linebreak . $tab . self::writeValueToPhp($key, 0) . " => " . self::writeValueToPhp($value, $level) . ",\n";
+            $str .= $tab . (self::isAssociativeArray($arr) ? self::writeValueToPhp($key, 0) . " => " : "") . self::writeValueToPhp($value, $level) . ($i == $count ? "" : ",") . "\n";
         }
         
         return $str;
     }
-
 
     /**
      * Convert something to PHP declaration
@@ -243,7 +244,7 @@ class FormatHelper {
      * @param integer $level
      * @return string
      */
-    public static function writeValueToPhp( $value, $level ): string {
+    public static function writeValueToPhp($value, $level): string {
 
         $tab = "    ";
         $tab = str_repeat($tab, $level);
@@ -268,5 +269,16 @@ class FormatHelper {
         }
         
         return $replaceValue;
+    }
+
+    /**
+     * Check if array is associative
+     *
+     * @param array $array
+     * @return bool
+     */
+    public static function isAssociativeArray(array $array) {
+
+        return [] === $array ? false : array_keys($array) !== range(0, count($array) - 1);
     }
 }
