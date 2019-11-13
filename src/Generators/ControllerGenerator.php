@@ -8,12 +8,15 @@ use InfyOm\Generator\Common\GeneratorField;
 use InfyOm\Generator\Common\GeneratorFieldRelation;
 
 use MediactiveDigital\MedKit\Common\CommandData;
+use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Str;
 use DB;
 
 class ControllerGenerator extends InfyOmControllerGenerator {
+
+    use Reflection;
 
     /** 
      * @var CommandData 
@@ -45,17 +48,25 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     private $formFileName;
 
+     /** 
+     * @var string 
+     */
+    private $schemaPath;
+
     public function __construct(CommandData $commandData) {
+
+        parent::__construct($commandData);
 
         $this->commandData = $commandData;
 
         $this->setFormConfiguration();
 
-        $this->path = $this->commandData->config->pathController;
+        $this->path = $this->getReflectionProperty('path');
         $this->formPath = $this->commandData->config->pathForms;
         $this->templateType = config('infyom.laravel_generator.templates', 'medkit-theme-malabar');
-        $this->fileName = $this->commandData->modelName . 'Controller.php';
+        $this->fileName = $this->getReflectionProperty('path');
         $this->formFileName = $this->commandData->modelName . 'Form.php';
+        $this->schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
     }
 
     /** 
@@ -86,10 +97,10 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $templateData = get_template('scaffold.form.form', 'laravel-generator');
             $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
-            FileUtil::createFile($this->path, $this->fileName, $templateData);
+            FileUtil::createFile($this->formPath, $this->formFileName, $templateData);
 
             $this->commandData->commandComment("\nForm created: ");
-            $this->commandData->commandInfo($this->fileName);
+            $this->commandData->commandInfo($this->formFileName);
         }
     }
 
@@ -100,8 +111,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function getJsonFields() {
 
-        $path = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
-        $json = file_get_contents($path . $this->commandData->config->mName . '.json');
+        $json = file_get_contents($this->schemaPath . $this->commandData->config->mName . '.json');
         $datas = json_decode($json, true);
         $fields = $relations = [];
 
@@ -146,7 +156,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $choices = [];
 
-        $relationJson = file_get_contents($path . $field->relation->inputs[0] . '.json');
+        $relationJson = file_get_contents($this->schemaPath . $field->relation->inputs[0] . '.json');
         $relationDatas = json_decode($relationJson, true);
 
         $colId = $colName = $nom = $name = $libelle = $label = null;
@@ -344,9 +354,58 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         foreach ($fields as $field) {
 
-            $formFields[] = '$this->add("' . $field->name . '", Field::' . strtoupper(str_replace('-', '_', $field->htmlType)) . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
+            $formFields[] = '$this->add(\'' . $field->name . '\', Field::' . strtoupper(str_replace('-', '_', $field->htmlType)) . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
         }
 
         return implode(infy_nl_tab(2, 2), $formFields);
+    }
+
+    private function generateDataTableColumns() {
+
+        $headerFieldTemplate = get_template('scaffold.views.datatable_column', $this->templateType);
+
+        $dataTableColumns = [];
+
+        foreach ($this->commandData->fields as $field) {
+
+            if (!$field->inIndex) {
+
+                continue;
+            }
+
+            $fieldTemplate = fill_template_with_field_data($this->commandData->dynamicVars, $this->commandData->fieldNamesMapping, $headerFieldTemplate, $field);
+
+            if ($field->isSearchable) {
+
+                $dataTableColumns[] = $fieldTemplate;
+            } 
+            else {
+
+                $dataTableColumns[] = "'" . $field->name . "' => ['searchable' => false]";
+            }
+        }
+
+        return $dataTableColumns;
+    }
+
+    public function rollback() {
+
+        if ($this->rollbackFile($this->formPath, $this->formFileName)) {
+
+            $this->commandData->commandComment('Form file deleted: ' . $this->formFileName);
+        }
+
+        if ($this->rollbackFile($this->path, $this->fileName)) {
+
+            $this->commandData->commandComment('Controller file deleted: ' . $this->fileName);
+        }
+
+        if ($this->commandData->getAddOn('datatables')) {
+
+            if ($this->rollbackFile($this->commandData->config->pathDataTables, $this->commandData->modelName . 'DataTable.php')) {
+
+                $this->commandData->commandComment('DataTable file deleted: ' . $this->fileName);
+            }
+        }
     }
 }

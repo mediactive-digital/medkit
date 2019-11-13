@@ -2,36 +2,36 @@
 
 namespace $NAMESPACE_CONTROLLER$;
 
+use $NAMESPACE_APP$\Http\Controllers\AppBaseController;
+
 use $NAMESPACE_REQUEST$\Create$MODEL_NAME$Request;
 use $NAMESPACE_REQUEST$\Update$MODEL_NAME$Request;
+
 use $NAMESPACE_REPOSITORY$\$MODEL_NAME$Repository;
-use $NAMESPACE_APP$\Http\Controllers\AppBaseController;
-use Illuminate\Http\Request;
-use Flash;
-use Response;
 
 use Kris\LaravelFormBuilder\FormBuilder;
 
-class $MODEL_NAME$Controller extends AppBaseController
-{
-    /** @var  $MODEL_NAME$Repository */
+use Flash;
+
+class $MODEL_NAME$Controller extends AppBaseController {
+
+    /** 
+     * @var \$NAMESPACE_REPOSITORY$\$MODEL_NAME$Repository $$MODEL_NAME_CAMEL$Repository
+     */
     private $$MODEL_NAME_CAMEL$Repository;
 
-    public function __construct($MODEL_NAME$Repository $$MODEL_NAME_CAMEL$Repo)
-    {
-        $this->middleware('auth:admin');
+    public function __construct($MODEL_NAME$Repository $$MODEL_NAME_CAMEL$Repo) {
+
         $this->$MODEL_NAME_CAMEL$Repository = $$MODEL_NAME_CAMEL$Repo;
     }
 
     /**
      * Display a listing of the $MODEL_NAME$.
      *
-     * @param Request $request
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
+    public function index() {
+
         $$MODEL_NAME_PLURAL_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->$RENDER_TYPE$;
 
         return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index')
@@ -41,7 +41,7 @@ class $MODEL_NAME$Controller extends AppBaseController
     /**
      * Show the form for creating a new $MODEL_NAME$.
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function create(FormBuilder $formBuilder) {
 
@@ -57,12 +57,12 @@ class $MODEL_NAME$Controller extends AppBaseController
     /**
      * Store a newly created $MODEL_NAME$ in storage.
      *
-     * @param Create$MODEL_NAME$Request $request
+     * @param \$NAMESPACE_REQUEST$\Create$MODEL_NAME$Request $request
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function store(Create$MODEL_NAME$Request $request)
-    {
+    public function store(Create$MODEL_NAME$Request $request) {
+
         $input = $request->all();
 
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($input);
@@ -77,13 +77,14 @@ class $MODEL_NAME$Controller extends AppBaseController
      *
      * @param int $id
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
+    public function show(int $id) {
+
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
+
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
             return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
@@ -97,34 +98,44 @@ class $MODEL_NAME$Controller extends AppBaseController
      *
      * @param int $id
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
+    public function edit(int $id, FormBuilder $formBuilder) {
+
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
+
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
             return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
         }
 
-        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
+        $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
+            'method' => 'patch$FILES$',
+            'url' => route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.update', $$MODEL_NAME_CAMEL$->$PRIMARY_KEY_NAME$),
+            'model' => $$MODEL_NAME_CAMEL$
+        ]);
+
+        return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.edit')
+            ->with('form', $form)
+            ->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
     }
 
     /**
      * Update the specified $MODEL_NAME$ in storage.
      *
      * @param int $id
-     * @param Update$MODEL_NAME$Request $request
+     * @param \$NAMESPACE_REQUEST$\Update$MODEL_NAME$Request $request
      *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function update($id, Update$MODEL_NAME$Request $request)
-    {
+    public function update(int $id, Update$MODEL_NAME$Request $request) {
+
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
+
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
             return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
@@ -142,15 +153,14 @@ class $MODEL_NAME$Controller extends AppBaseController
      *
      * @param int $id
      *
-     * @throws \Exception
-     *
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
+    public function destroy(int $id) {
+
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
+
             Flash::error('$MODEL_NAME_HUMAN$ not found');
 
             return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index'));
