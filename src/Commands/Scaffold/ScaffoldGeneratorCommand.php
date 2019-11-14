@@ -4,10 +4,13 @@ namespace MediactiveDigital\MedKit\Commands\Scaffold;
 
 use InfyOm\Generator\Commands\Scaffold\ScaffoldGeneratorCommand as InfyOmScaffoldGeneratorCommand;
 use InfyOm\Generator\Commands\BaseCommand;
-use InfyOm\Generator\Utils\FileUtil;
+use InfyOm\Generator\Generators\MigrationGenerator;
+use InfyOm\Generator\Generators\RepositoryGenerator;
+use InfyOm\Generator\Generators\FactoryGenerator;
+use InfyOm\Generator\Generators\SeederGenerator;
 
-use MediactiveDigital\MedKit\Generators\ModelGenerator;
 use MediactiveDigital\MedKit\Common\CommandData;
+use MediactiveDigital\MedKit\Generators\ModelGenerator;
 
 class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
 

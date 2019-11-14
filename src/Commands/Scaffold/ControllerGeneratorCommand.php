@@ -6,8 +6,8 @@ use InfyOm\Generator\Commands\Scaffold\ControllerGeneratorCommand as InfyOmContr
 use InfyOm\Generator\Commands\BaseCommand;
 use InfyOm\Generator\Utils\FileUtil;
 
-use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Common\CommandData;
+use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 
 class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
 

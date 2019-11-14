@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Generators;
+namespace MediactiveDigital\MedKit\Generators;
 
 use InfyOm\Generator\Utils\FileUtil;
 use InfyOm\Generator\Generators\ModelGenerator as InfyOmModelGenerator;
