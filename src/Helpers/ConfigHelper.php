@@ -34,7 +34,7 @@ class ConfigHelper {
 
 			//we need to recreate start of comment (simplicity shorcut)
 			$startSectionComment = "    /*\n    |--------------------------------------------------------------------------\r\n";
-			$eof = "\n\n"
+			$eof = ",\n\n"
 				   .$startSectionComment /* Start commment of next Title */
 				   .substr( $config, $nextSectionPos ); /* End of file */
 				   
