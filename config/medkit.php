@@ -11,7 +11,10 @@ return [
     		'login'
     	]
     ],
-    'clearDirectory'=> [
-        "storage/logs"=>30
+    'clearDirectory' => [
+        'storage/logs' => 30
     ],
+    'path' => [
+        'stubs' => resource_path('mediactive-digital/medkit/stubs/')
+    ]
 ];

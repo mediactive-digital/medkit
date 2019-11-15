@@ -21,6 +21,6 @@ class Admin
             return $next($request);
         }
 
-        return redirect(config('medkit.redirect_if_not_admin'));
+        return redirect(config('mediactive-digital.medkit.redirect_if_not_admin'));
     }
 }

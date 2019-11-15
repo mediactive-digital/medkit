@@ -94,7 +94,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             $this->commandData->addDynamicVariable('$FORM_FIELDS$', $this->getFormFields());
 
-            $templateData = get_template('scaffold.form.form', 'laravel-generator');
+            $templateData = get_template('scaffold.form.form');
             $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
             FileUtil::createFile($this->formPath, $this->formFileName, $templateData);

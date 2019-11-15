@@ -8,9 +8,14 @@ use InfyOm\Generator\Generators\MigrationGenerator;
 use InfyOm\Generator\Generators\RepositoryGenerator;
 use InfyOm\Generator\Generators\FactoryGenerator;
 use InfyOm\Generator\Generators\SeederGenerator;
+use InfyOm\Generator\Generators\Scaffold\RequestGenerator;
+use InfyOm\Generator\Generators\Scaffold\ViewGenerator;
+use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
+use InfyOm\Generator\Generators\Scaffold\MenuGenerator;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
+use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 
 class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
 
@@ -62,6 +67,39 @@ class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
             $seederGenerator = new SeederGenerator($this->commandData);
             $seederGenerator->generate();
             $seederGenerator->updateMainSeeder();
+        }
+    }
+
+    public function generateScaffoldItems() {
+
+        if (!$this->isSkip('requests') and !$this->isSkip('scaffold_requests')) {
+
+            $requestGenerator = new RequestGenerator($this->commandData);
+            $requestGenerator->generate();
+        }
+
+        if (!$this->isSkip('controllers') and !$this->isSkip('scaffold_controller')) {
+
+            $controllerGenerator = new ControllerGenerator($this->commandData);
+            $controllerGenerator->generate();
+        }
+
+        if (!$this->isSkip('views')) {
+
+            $viewGenerator = new ViewGenerator($this->commandData);
+            $viewGenerator->generate();
+        }
+
+        if (!$this->isSkip('routes') and !$this->isSkip('scaffold_routes')) {
+
+            $routeGenerator = new RoutesGenerator($this->commandData);
+            $routeGenerator->generate();
+        }
+
+        if (!$this->isSkip('menu') and $this->commandData->config->getAddOn('menu.enabled')) {
+
+            $menuGenerator = new MenuGenerator($this->commandData);
+            $menuGenerator->generate();
         }
     }
 }

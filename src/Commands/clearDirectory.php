@@ -33,7 +33,7 @@ class clearDirectory extends Command {
     public function __construct()
     {
         parent::__construct();
-        $this->dirToDelete = config('medkit.clearDirectory');
+        $this->dirToDelete = config('mediactive-digital.medkit.clearDirectory');
     }
 
     /**

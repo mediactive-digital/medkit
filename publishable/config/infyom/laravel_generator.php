@@ -95,7 +95,7 @@ return [
     |
     */
 
-    'templates'         => 'coreui-templates',
+    'templates'         => 'medkit-theme-malabar',
 
     /*
     |--------------------------------------------------------------------------

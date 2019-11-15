@@ -38,6 +38,9 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
         BaseCommand::handle();
 
         $controllerGenerator = new ControllerGenerator($this->commandData);
+
+        $this->saveSchemaFile();
+        
         $controllerGenerator->generateForm();
         $controllerGenerator->generate();
 
@@ -45,11 +48,6 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
     }
 
     public function performPostActions($runMigration = false) {
-
-        if ($this->commandData->getOption('save')) {
-
-            $this->saveSchemaFile();
-        }
 
         if ($runMigration) {
 

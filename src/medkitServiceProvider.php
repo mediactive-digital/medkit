@@ -38,9 +38,9 @@ class MedKitServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
-        $this->mergeConfigFrom(__DIR__.'/../config/medkit.php', 'medkit');
+    public function register() {
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/medkit.php', 'mediactive-digital.medkit');
 
         // Register the service the package provides.
         $this->app->singleton('medkit', function ($app) {
@@ -77,11 +77,11 @@ class MedKitServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function bootForConsole()
-    {
+    protected function bootForConsole() {
+
         // Publishing the configuration file.
         $this->publishes([
-            __DIR__.'/../config/medkit.php' => config_path('medkit.php'),
+            __DIR__ . '/../config/medkit.php' => config_path('mediactive-digital/medkit.php')
         ], 'medkit.config');
 
         // Publishing the views.
