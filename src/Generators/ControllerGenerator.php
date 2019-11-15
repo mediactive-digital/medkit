@@ -36,11 +36,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     /** 
      * @var string 
      */
-    private $templateType;
-
-    /** 
-     * @var string 
-     */
     private $fileName;
 
     /** 
@@ -63,7 +58,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $this->path = $this->getReflectionProperty('path');
         $this->formPath = $this->commandData->config->pathForms;
-        $this->templateType = config('infyom.laravel_generator.templates', 'medkit-theme-malabar');
         $this->fileName = $this->getReflectionProperty('path');
         $this->formFileName = $this->commandData->modelName . 'Form.php';
         $this->schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
@@ -362,7 +356,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
     private function generateDataTableColumns() {
 
-        $headerFieldTemplate = get_template('scaffold.views.datatable_column', $this->templateType);
+        $headerFieldTemplate = get_template('scaffold.views.datatable_column', 'templates');
 
         $dataTableColumns = [];
 

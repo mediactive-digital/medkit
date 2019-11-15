@@ -1,7 +1,8 @@
 <?php
 
 namespace MediactiveDigital\MedKit\Helpers;
-use \Carbon\Carbon;
+
+use Carbon\Carbon;
 
 class FormatHelper {
 
@@ -280,5 +281,27 @@ class FormatHelper {
     public static function isAssociativeArray(array $array) {
 
         return [] === $array ? false : array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    /**
+     * Get current theme
+     *
+     * @return string $theme
+     */
+    public static function getTheme() {
+
+        $theme = 'medkit-theme-malabar';
+        $path = base_path('vendor/mediactive-digital');
+        $dir = new \DirectoryIterator($path);
+
+        foreach ($dir as $fileinfo) {
+
+            if ($fileinfo->isDir() && strpos($basename = $fileinfo->getBasename(), 'theme') !== false) {
+
+                $theme = $basename;
+            }
+        }
+
+        return $theme;
     }
 }

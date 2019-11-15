@@ -1,5 +1,7 @@
 <?php
 
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
 if (!function_exists('get_template_file_path')) {
 
     /**
@@ -14,6 +16,16 @@ if (!function_exists('get_template_file_path')) {
     function get_template_file_path(string $stubName, string $stubType = 'medkit', string $stubsDir = '') {
 
         $stubName = str_replace('.', '/', $stubName);
+
+        if (strpos($stubType, 'generator') !== false) {
+
+            $stubType = 'medkit';
+        }
+        else if (strpos($stubType, 'templates') !== false) {
+
+            $stubType = FormatHelper::getTheme();
+        }
+
         $vendorDir = 'vendor/mediactive-digital/' . $stubType;
         $medkitStubsDir = 'mediactive-digital/' . $stubType . '/stubs/';
         $medkitDir = $vendorDir . '/publishable/resources/' . $medkitStubsDir;
@@ -52,7 +64,7 @@ if (!function_exists('get_template')) {
      */
     function get_template(string $stubName, string $stubType = '', string $stubsDir = '') {
 
-        $path = self::getStubFilePath($stubName, $stubType);
+        $path = get_template_file_path($stubName, $stubType);
 
         return file_get_contents($path);
     }
