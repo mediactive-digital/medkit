@@ -3,6 +3,7 @@
 namespace MediactiveDigital\MedKit\Common;
 
 use InfyOm\Generator\Common\CommandData as InfyOmCommandData;
+use InfyOm\Generator\Common\GeneratorField;
 use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 
 use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
@@ -23,7 +24,7 @@ class CommandData extends InfyOmCommandData {
 
         if ($this->getOption('fieldsFile') or $this->getOption('jsonFromGUI')) {
 
-            $this->call('getInputFromFileOrJson');
+            $this->callReflectionMethod('getInputFromFileOrJson');
         } 
         elseif ($this->getOption('fromTable')) {
 
@@ -41,7 +42,7 @@ class CommandData extends InfyOmCommandData {
         $this->commandInfo('Read docs carefully to specify field inputs)');
         $this->commandInfo('Enter "exit" to finish');
 
-        $this->call('addPrimaryKey');
+        $this->callReflectionMethod('addPrimaryKey');
 
         while (true) {
 
@@ -106,7 +107,7 @@ class CommandData extends InfyOmCommandData {
 
         $this->fields[] = $updatedAt;
 
-        if ($this->commandData->getOption('softDelete')) {
+        if ($this->getOption('softDelete')) {
 
             $deletedAt = new GeneratorField();
             $deletedAt->name = 'deleted_at';
@@ -138,7 +139,7 @@ class CommandData extends InfyOmCommandData {
 
         $this->fields[] = $updatedBy;
 
-        if ($this->commandData->getOption('softDelete')) {
+        if ($this->getOption('softDelete')) {
 
             $deletedBy = new GeneratorField();
             $deletedBy->name = 'deleted_by';

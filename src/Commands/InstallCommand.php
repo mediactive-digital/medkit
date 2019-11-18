@@ -3,14 +3,16 @@
 namespace MediactiveDigital\MedKit\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\Process\Process;
 use Illuminate\Filesystem\Filesystem;
-use MediactiveDigital\MedKit\Helpers\ConfigHelper as ConfigHelper;
 
-class InstallCommand extends Command
-{
+use Symfony\Component\Process\Process;
 
+use Composer\Json\JsonFile;
+
+use MediactiveDigital\MedKit\Helpers\ConfigHelper;
+use MediactiveDigital\MedKit\Json\JsonManipulator;
+
+class InstallCommand extends Command {
 
     /**
      * The name and signature of the console command.
@@ -298,10 +300,8 @@ class InstallCommand extends Command
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $authConfigPasswordBroker);
     }
 
+    public function addFacades() {
 
-
-    public function addFacades()
-    {
         $this->info("Add Facades to config/app.php");
         $fileToEdit = base_path('config') . '/app.php';
         $appConfig = include($fileToEdit);
@@ -315,5 +315,40 @@ class InstallCommand extends Command
         ])];
         $sectionTitle = "Class Aliases";
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $appConfigFacades);
+    }
+
+    /**
+     * Add helpers to composer.json
+     *
+     * @return void
+     */
+    private function addHelpers() {
+
+        $path = base_path('composer.json');
+        $contents = file_get_contents($path);
+        $manipulator = new JsonManipulator($contents);
+        $jsonContents = $manipulator->getContents();
+        $decoded = JsonFile::parseJson($jsonContents);
+        $datas = isset($decoded['extra']['include_files']) ? $decoded['extra']['include_files'] : [];
+        $value = 'vendor/mediactive-digital/medkit/src/helpers.php';
+
+        foreach ($datas as $key => $entry) {
+
+            if ($entry == $value) {
+
+                $value = '';
+
+                break;
+            }
+        }
+
+        if ($value) {
+
+            $datas[] = $value;
+            $manipulator->addProperty('extra.include_files', $datas);
+            $contents = $manipulator->getContents();
+
+            file_put_contents($path, $contents);
+        }
     }
 }

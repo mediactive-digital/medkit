@@ -55,9 +55,6 @@
                 "MedKit": "MediactiveDigital\\MedKit\\Facades\\MedKit",
                 "Sentry": "Sentry\\Laravel\\Facade"
             }
-        },
-        "include_files": [
-            "src/helpers.php"
-        ]
+        }
     }
 }
