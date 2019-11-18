@@ -32,8 +32,6 @@ if (!function_exists('get_template')) {
      */
     function get_template(string $stubName, string $stubType = Helper::PACKAGE, string $stubsDir = '') {
 
-        $path = Helper::getTemplateFilePath($stubName, $stubType, $stubsDir);
-
-        return file_get_contents($path);
+        return Helper::getTemplate($stubName, $stubType, $stubsDir);
     }
 }
