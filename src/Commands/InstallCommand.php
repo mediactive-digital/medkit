@@ -27,15 +27,16 @@ class InstallCommand extends Command {
     private $filesystem = null;
 
     private $refActionUser = [
-        0=>"Exit",
-        1=>"Run All",
-        2=>"Add Require Packages",
-        3=>"Copy Source",
-        4=>"Publish packages sources",
-        5=>"Add Route",
-        6=>"Add AdminGuard",
-        7=>"Add Facades",
-        8=>"install Theme",
+        0 => 'Exit',
+        1 => 'Run All',
+        2 => 'Add Require Packages',
+        3 => 'Copy Source',
+        4 => 'Publish packages sources',
+        5 => 'Add Route',
+        6 => 'Add AdminGuard',
+        7 => 'Add Facades',
+        8 => 'Install Theme',
+        9 => 'Add helpers'
     ];
 
     /**
@@ -56,18 +57,17 @@ class InstallCommand extends Command {
                 ]; // On récupere l'indice
             }
 
-            if ($rep) {
-
-                $this->info('Ajout des helpers');
-                $this->addHelpers();
-            }
-
             switch ($rep) {
+
                 case 0 :
+
                     return true;
-                    break;
+
+                break;
 
                 case 1 :
+
+                    $this->addHelpers();
                     $this->addRequirePackages();
                     $this->composerDump();
                     $this->copySource();
@@ -79,37 +79,59 @@ class InstallCommand extends Command {
                     $this->composerDump();
 
                     return true;
-                    break;
+
+                break;
 
                 case 2 :
+
                     $this->addRequirePackages();
                     $this->composerDump();
-                    break;
+
+                break;
 
                 case 3 :
+
                     $this->copySource();
-                    break;
+
+                break;
 
                 case 4 :
+
                     $this->publishPackagesSource();
-                    break;
+
+                break;
 
                 case 5 :
+
                     $this->addRoutes();
-                    break;
+
+                break;
 
                 case 6 :
+
                     $this->addAdminGuard();
-                    break;
+
+                break;
 
                 case 7 :
+
                     $this->addFacades();
-                    break;
+
+                break;
 
                 case 8 :
+
                     $this->installTheme();
                     $this->composerDump();
-                    break;
+
+                break;
+
+                case 9 :
+
+                    $this->addHelpers();
+                    $this->composerDump();
+                    
+                break;
             }
 
         } while($rep !== 0);
@@ -329,6 +351,8 @@ class InstallCommand extends Command {
      * @return void
      */
     private function addHelpers() {
+
+        $this->info('Ajout des helpers');
 
         $path = base_path('composer.json');
         $contents = file_get_contents($path);
