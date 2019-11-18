@@ -56,6 +56,12 @@ class InstallCommand extends Command {
                 ]; // On récupere l'indice
             }
 
+            if ($rep) {
+
+                $this->info('Ajout des helpers');
+                $this->addHelpers();
+            }
+
             switch ($rep) {
                 case 0 :
                     return true;
