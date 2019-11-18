@@ -13,23 +13,26 @@ if (!function_exists('get_template_file_path')) {
      *
      * @return string $stubPath
      */
-    function get_template_file_path(string $stubName, string $stubType = 'medkit', string $stubsDir = '') {
+    function get_template_file_path(string $stubName, string $stubType = '', string $stubsDir = '') {
 
+        $author = 'mediactive-digital';
+        $package = 'medkit';
         $stubName = str_replace('.', '/', $stubName);
 
         if (strpos($stubType, 'generator') !== false) {
 
-            $stubType = 'medkit';
+            $stubType = $package;
         }
         else if (strpos($stubType, 'templates') !== false) {
 
             $stubType = FormatHelper::getTheme();
         }
 
-        $vendorDir = 'vendor/mediactive-digital/' . $stubType;
-        $medkitStubsDir = 'mediactive-digital/' . $stubType . '/stubs/';
+        $stubType = $stubType ?: $package;
+        $vendorDir = 'vendor/' . $author . '/' . $stubType;
+        $medkitStubsDir = $author . '/' . $stubType . '/stubs/';
         $medkitDir = $vendorDir . '/publishable/resources/' . $medkitStubsDir;
-        $stubsDir = $stubsDir ?: config('mediactive-digital.' . $stubType . '.path.stubs', resource_path($medkitStubsDir));
+        $stubsDir = $stubsDir ?: config($author . '.' . $stubType . '.path.stubs', resource_path($medkitStubsDir));
 
         $pathList = [
             $stubsDir . $stubName . '.stub',
@@ -64,7 +67,7 @@ if (!function_exists('get_template')) {
      */
     function get_template(string $stubName, string $stubType = '', string $stubsDir = '') {
 
-        $path = get_template_file_path($stubName, $stubType);
+        $path = get_template_file_path($stubName, $stubType, $stubsDir);
 
         return file_get_contents($path);
     }
