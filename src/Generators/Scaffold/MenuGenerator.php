@@ -62,13 +62,26 @@ class MenuGenerator extends InfyOmMenuGenerator {
 
     public function generate() {
 
-        if (strpos($this->menuContents, $this->commandData->config->prefixes['route'] . '.' . $this->commandData->config->mCamelPlural . '.index') === false) {
+        $add = false;
 
-            $this->menuContents = preg_replace_callback('/(backoffice[\s\S]+Menu::make[\s\S]+?{)([\s\S]*?)(}[\s\S]*?\)->filter)/', function($matches) {
-        
-                return $matches[1] . rtrim($matches[2]) . $this->menuTemplate . $matches[3];
+        $this->menuContents = preg_replace_callback('/(backoffice[\s\S]+Menu::make[\s\S]+?{)([\s\S]*?)(}[\s\S]*?\)->filter)/', function($matches) use (&$add) {
 
-            }, $this->menuContents);
+            if (strpos($matches[2], $this->commandData->config->prefixes['route'] . '.' . $this->commandData->config->mCamelPlural . '.index') !== false) {
+
+                $return = $matches[1] . $matches[2] . $matches[3];
+            }
+            else {
+
+                $return = $matches[1] . rtrim($matches[2]) . $this->menuTemplate . $matches[3];
+
+                $add = true;
+            }
+    
+            return $return;
+
+        }, $this->menuContents);
+
+        if ($add) {
 
             file_put_contents($this->path, $this->menuContents);
         }
