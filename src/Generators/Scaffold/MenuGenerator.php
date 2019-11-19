@@ -83,9 +83,13 @@ class MenuGenerator extends InfyOmMenuGenerator {
 
         if ($add) {
 
+            $this->commandData->commandComment("\n" . $this->commandData->config->mCamelPlural . ' menu added.');
+
             file_put_contents($this->path, $this->menuContents);
         }
+        else {
 
-        $this->commandData->commandComment("\n" . $this->commandData->config->mCamelPlural . ' menu added.');
+            $this->commandData->commandError("\n" . $this->commandData->config->mCamelPlural . ' menu already added.');
+        }
     }
 }

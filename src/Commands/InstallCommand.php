@@ -180,7 +180,7 @@ class InstallCommand extends Command {
         if (strpos($fileContent, $checkString) === false) {
             $this->filesystem->append($fileToEdit, $stub);
         } else {
-            $this->error(' #ERR1 [SKIP] ' . $fileToEdit . ' already have this stub');
+            $this->error(' #ERR1 [SKIP] ' . $fileToEdit . ' already has this stub');
         }
     }
 
@@ -352,7 +352,7 @@ class InstallCommand extends Command {
      */
     private function addHelpers() {
 
-        $this->info('Ajout des helpers');
+        $this->info('Adding helpers to composer.json');
 
         $path = base_path('composer.json');
         $contents = file_get_contents($path);
@@ -379,6 +379,10 @@ class InstallCommand extends Command {
             $contents = $manipulator->getContents();
 
             file_put_contents($path, $contents);
+        }
+        else {
+
+            $this->error(' #ERR1 [SKIP] ' . $path . ' already has helpers');
         }
     }
 }
