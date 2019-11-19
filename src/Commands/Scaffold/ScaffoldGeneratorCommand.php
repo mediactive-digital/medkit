@@ -11,11 +11,11 @@ use InfyOm\Generator\Generators\SeederGenerator;
 use InfyOm\Generator\Generators\Scaffold\RequestGenerator;
 use InfyOm\Generator\Generators\Scaffold\ViewGenerator;
 use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
-use InfyOm\Generator\Generators\Scaffold\MenuGenerator;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 
 class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
 

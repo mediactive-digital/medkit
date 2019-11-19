@@ -54,6 +54,8 @@ return [
         'view_provider'     => app_path('Providers/ViewServiceProvider.php'),
 
         'forms'             => app_path('Forms/'),
+
+        'middlewares'       => app_path('Http/Middleware/'),
     ],
 
     /*
@@ -174,7 +176,7 @@ return [
 
             'enabled'       => true,
 
-            'menu_file'     => 'layouts/menu.blade.php',
+            'menu_file'     => 'GenerateMenus.php',
         ],
 
         'forms' => true,
