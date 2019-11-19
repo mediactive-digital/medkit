@@ -3,8 +3,8 @@
 namespace MediactiveDigital\MedKit\Commands\Scaffold;
 
 use InfyOm\Generator\Commands\Scaffold\ControllerGeneratorCommand as InfyOmControllerGeneratorCommand;
-use InfyOm\Generator\Commands\BaseCommand;
 
+use MediactiveDigital\MedKit\Commands\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 

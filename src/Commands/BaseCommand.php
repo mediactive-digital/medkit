@@ -39,7 +39,7 @@ class BaseCommand extends InfyOmBaseCommand {
 
         if (!$this->isSkip('model')) {
 
-            $modelGenerator = new ModelGenerator($this->commandData);
+            $this->modelGenerator = new ModelGenerator($this->commandData);
 
             $this->generateModel();
         }
