@@ -158,7 +158,7 @@ trait BaseCommand {
         $path = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
         $fileName = $this->commandData->modelName . '.json';
 
-        if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Schema ' . $fileName)) {
 
             return;
         }
@@ -179,7 +179,7 @@ trait BaseCommand {
         $path = $this->modelGenerator->getReflectionProperty('path', true);
         $fileName = $this->modelGenerator->getReflectionProperty('fileName', true);
 
-        if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Model ' . $fileName)) {
 
             return;
         }
@@ -197,7 +197,7 @@ trait BaseCommand {
         $path = $this->controllerGenerator->getReflectionProperty('formPath', true);
         $fileName = $this->controllerGenerator->getReflectionProperty('formFileName', true);
 
-        if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Form ' . $fileName)) {
 
             return;
         }
@@ -217,7 +217,7 @@ trait BaseCommand {
             $path = $this->commandData->config->pathDataTables;
             $fileName = $this->commandData->modelName . 'DataTable.php';
 
-            if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
+            if (file_exists($path . $fileName) && !$this->confirmOverwrite('DataTable ' . $fileName)) {
 
                 return;
             }
@@ -236,7 +236,7 @@ trait BaseCommand {
         $path = $this->controllerGenerator->getReflectionProperty('path', true);
         $fileName = $this->controllerGenerator->getReflectionProperty('fileName', true);
 
-        if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Controller ' . $fileName)) {
 
             return;
         }

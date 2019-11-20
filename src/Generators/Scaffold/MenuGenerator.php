@@ -89,7 +89,7 @@ class MenuGenerator extends InfyOmMenuGenerator {
         }
         else {
 
-            $this->commandData->commandError("\n" . $this->commandData->config->mCamelPlural . ' menu already added.');
+            $this->commandData->commandObj->info('Menu ' . $this->commandData->config->mHumanPlural . ' already exists, Skipping Adjustment.');
         }
     }
 }
