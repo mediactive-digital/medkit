@@ -206,6 +206,27 @@ trait BaseCommand {
     }
 
     /**
+     * Generate datatable
+     *
+     * @return void
+     */
+    public function generateDataTable() {
+
+        if ($this->commandData->getAddOn('datatables')) {
+
+            $path = $this->commandData->config->pathDataTables;
+            $fileName = $this->commandData->modelName . 'DataTable.php';
+
+            if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
+
+                return;
+            }
+
+            $this->controllerGenerator->callReflectionMethod('generateDataTable');
+        }
+    }
+
+    /**
      * Generate controller
      *
      * @return void
