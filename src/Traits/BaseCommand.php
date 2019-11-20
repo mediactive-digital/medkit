@@ -176,8 +176,8 @@ trait BaseCommand {
      */
     public function generateModel() {
 
-        $path = $this->modelGenerator->getReflectionProperty('path');
-        $fileName = $this->modelGenerator->getReflectionProperty('fileName');
+        $path = $this->modelGenerator->getReflectionProperty('path', true);
+        $fileName = $this->modelGenerator->getReflectionProperty('fileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
 
@@ -194,8 +194,8 @@ trait BaseCommand {
      */
     public function generateForm() {
 
-        $path = $this->controllerGenerator->getReflectionProperty('formPath');
-        $fileName = $this->controllerGenerator->getReflectionProperty('formFileName');
+        $path = $this->controllerGenerator->getReflectionProperty('formPath', true);
+        $fileName = $this->controllerGenerator->getReflectionProperty('formFileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
 
@@ -212,8 +212,8 @@ trait BaseCommand {
      */
     public function generateController() {
 
-        $path = $this->controllerGenerator->getReflectionProperty('path');
-        $fileName = $this->controllerGenerator->getReflectionProperty('fileName');
+        $path = $this->controllerGenerator->getReflectionProperty('path', true);
+        $fileName = $this->controllerGenerator->getReflectionProperty('fileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite($fileName)) {
 

@@ -39,11 +39,20 @@ trait Reflection {
      * Get accessible ReflectionObject property
      *
      * @param string $propertyName
+     * @param bool $self
      * @return \ReflectionProperty $property
      */
-    private function getAccessibleReflectionProperty(string $propertyName) {
+    private function getAccessibleReflectionProperty(string $propertyName, bool $self = false) {
 
-        $property = $this->getReflectionObject()->getParentClass()->getProperty($propertyName);
+        $reflectionObject = $this->getReflectionObject();
+        $parentReflectionObject = $self ? false : $reflectionObject->getParentClass();
+
+        while ($parentReflectionObject && !$parentReflectionObject->hasProperty($propertyName)) {
+
+            $parentReflectionObject = $parentReflectionObject->getParentClass();
+        }
+
+        $property = $parentReflectionObject ? $parentReflectionObject->getProperty($propertyName) : $reflectionObject->getProperty($propertyName);
         $property->setAccessible(true);
 
         return $property;
@@ -67,11 +76,12 @@ trait Reflection {
      * Get ReflectionObject property
      *
      * @param string $propertyName
+     * @param bool $self
      * @return mixed
      */
-    public function getReflectionProperty(string $propertyName) {
+    public function getReflectionProperty(string $propertyName, bool $self = false) {
 
-        $property = $this->getAccessibleReflectionProperty($propertyName);
+        $property = $this->getAccessibleReflectionProperty($propertyName, $self);
 
         return $property->getValue($this);
     }
@@ -81,11 +91,12 @@ trait Reflection {
      *
      * @param string $propertyName
      * @param mixed $value
+     * @param bool $self
      * @return void
      */
-    public function setReflectionProperty(string $propertyName, $value) {
+    public function setReflectionProperty(string $propertyName, $value, bool $self = false) {
 
-        $property = $this->getAccessibleReflectionProperty($propertyName);
+        $property = $this->getAccessibleReflectionProperty($propertyName, $self);
         $property->setValue($this, $value);
     }
 }

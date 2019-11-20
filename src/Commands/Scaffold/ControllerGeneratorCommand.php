@@ -43,7 +43,7 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
 
         $this->saveSchemaFile();
         $this->generateForm();
-        $this->generate();
+        $this->generateController();
         $this->performPostActions();
     }
 }

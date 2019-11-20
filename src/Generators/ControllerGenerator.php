@@ -58,7 +58,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $this->path = $this->getReflectionProperty('path');
         $this->formPath = $this->commandData->config->pathForms;
-        $this->fileName = $this->getReflectionProperty('path');
+        $this->fileName = $this->getReflectionProperty('fileName');
         $this->formFileName = $this->commandData->modelName . 'Form.php';
         $this->schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
     }
