@@ -1,8 +1,6 @@
 <?php
 
-namespace MediactiveDigital\MedKit\Commands;
-
-use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
+namespace MediactiveDigital\MedKit\Traits;
 
 use InfyOm\Generator\Utils\FileUtil;
 use InfyOm\Generator\Generators\MigrationGenerator;
@@ -17,7 +15,7 @@ use MediactiveDigital\MedKit\Generators\ModelGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 
-class BaseCommand extends InfyOmBaseCommand {
+trait BaseCommand {
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator

@@ -3,11 +3,14 @@
 namespace MediactiveDigital\MedKit\Commands\Scaffold;
 
 use InfyOm\Generator\Commands\Scaffold\ScaffoldGeneratorCommand as InfyOmScaffoldGeneratorCommand;
+use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
 
-use MediactiveDigital\MedKit\Commands\BaseCommand;
+use MediactiveDigital\MedKit\Traits\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
 
 class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
+
+    use BaseCommand;
 
     /**
      * The name and signature of the console command.
@@ -21,7 +24,7 @@ class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
      */
     public function __construct() {
 
-        BaseCommand::__construct();
+        InfyOmBaseCommand::__construct();
 
         $this->commandData = new CommandData($this, CommandData::$COMMAND_TYPE_SCAFFOLD);
     }
@@ -33,7 +36,7 @@ class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
      */
     public function handle() {
 
-        BaseCommand::handle();
+        InfyOmBaseCommand::handle();
 
         if ($this->checkIsThereAnyDataToGenerate()) {
 

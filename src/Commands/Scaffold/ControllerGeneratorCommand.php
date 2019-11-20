@@ -3,12 +3,15 @@
 namespace MediactiveDigital\MedKit\Commands\Scaffold;
 
 use InfyOm\Generator\Commands\Scaffold\ControllerGeneratorCommand as InfyOmControllerGeneratorCommand;
+use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
 
-use MediactiveDigital\MedKit\Commands\BaseCommand;
+use MediactiveDigital\MedKit\Traits\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 
 class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
+
+    use BaseCommand;
 
     /**
      * The name and signature of the console command.
@@ -22,7 +25,7 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
      */
     public function __construct() {
 
-        BaseCommand::__construct();
+        InfyOmBaseCommand::__construct();
 
         $this->commandData = new CommandData($this, CommandData::$COMMAND_TYPE_SCAFFOLD);
     }
@@ -34,7 +37,7 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
      */
     public function handle() {
 
-        BaseCommand::handle();
+        InfyOmBaseCommand::handle();
 
         $this->controllerGenerator = new ControllerGenerator($this->commandData);
 
