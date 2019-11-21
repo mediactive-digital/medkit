@@ -75,6 +75,7 @@ trait BaseCommand {
             $this->controllerGenerator = new ControllerGenerator($this->commandData);
 
             $this->generateForm();
+            $this->generateDataTable();
             $this->generateController();
         }
 
