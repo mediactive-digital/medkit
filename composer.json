@@ -28,7 +28,9 @@
         "soved/laravel-gdpr": "^1.5",
         "infyomlabs/laravel-generator": "6.0.x-dev",
         "funkjedi/composer-include-files": "^1.0",
-        "composer/composer": "^1.9"
+        "composer/composer": "^1.9",
+        "yajra/laravel-datatables-oracle": "~9.0",
+        "yajra/laravel-datatables-buttons": "4.*"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
