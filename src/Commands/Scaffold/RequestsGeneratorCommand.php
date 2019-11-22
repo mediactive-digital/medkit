@@ -2,14 +2,14 @@
 
 namespace MediactiveDigital\MedKit\Commands\Scaffold;
 
-use InfyOm\Generator\Commands\Scaffold\ControllerGeneratorCommand as InfyOmControllerGeneratorCommand;
+use InfyOm\Generator\Commands\Scaffold\RequestsGeneratorCommand as InfyOmRequestsGeneratorCommand;
 use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
 
 use MediactiveDigital\MedKit\Traits\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
-use MediactiveDigital\MedKit\Generators\ControllerGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 
-class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
+class RequestsGeneratorCommand extends InfyOmRequestsGeneratorCommand {
 
     use BaseCommand;
 
@@ -18,7 +18,7 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
      *
      * @var string
      */
-    protected $name = 'medkit.scaffold:controller';
+    protected $name = 'medkit.scaffold:requests';
 
     /**
      * Create a new command instance.
@@ -39,12 +39,9 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
 
         InfyOmBaseCommand::handle();
 
-        $this->controllerGenerator = new ControllerGenerator($this->commandData);
+        $this->requestGenerator = new RequestGenerator($this->commandData);
 
-        $this->saveSchemaFile();
-        $this->generateForm();
-        $this->generateDataTable();
-        $this->generateController();
-        $this->performPostActions();
+        $this->generateCreateRequest();
+        $this->generateUpdateRequest();
     }
 }

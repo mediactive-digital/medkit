@@ -7,10 +7,10 @@ use InfyOm\Generator\Generators\MigrationGenerator;
 use InfyOm\Generator\Generators\RepositoryGenerator;
 use InfyOm\Generator\Generators\FactoryGenerator;
 use InfyOm\Generator\Generators\SeederGenerator;
-use InfyOm\Generator\Generators\Scaffold\RequestGenerator;
 use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
 
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
@@ -21,6 +21,11 @@ trait BaseCommand {
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
      */
     public $modelGenerator;
+
+    /**
+     * @var \MediactiveDigital\MedKit\Generators\Scaffold\requestGenerator
+     */
+    public $requestGenerator;
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\ControllerGenerator
@@ -71,8 +76,10 @@ trait BaseCommand {
 
         if (!$this->isSkip('requests') and !$this->isSkip('scaffold_requests')) {
 
-            $requestGenerator = new RequestGenerator($this->commandData);
-            $requestGenerator->generate();
+            $this->requestGenerator = new RequestGenerator($this->commandData);
+            
+            $this->generateCreateRequest();
+            $this->generateUpdateRequest();
         }
 
         if (!$this->isSkip('controllers') and !$this->isSkip('scaffold_controller')) {
@@ -142,7 +149,7 @@ trait BaseCommand {
             $fileFields[] = [
                 'name' => $field->name,
                 'dbType' => $field->dbInput,
-                'htmlType' => $field->htmlInput ?: $field->htmlType,
+                'htmlType' => $field->htmlType,
                 'validations' => $field->validations,
                 'searchable' => $field->isSearchable,
                 'fillable' => $field->isFillable,
@@ -191,6 +198,42 @@ trait BaseCommand {
         }
 
         $this->modelGenerator->generate();
+    }
+
+    /**
+     * Generate create request
+     *
+     * @return void
+     */
+    public function generateCreateRequest() {
+
+        $path = $this->requestGenerator->getReflectionProperty('path', true);
+        $fileName = $this->requestGenerator->getReflectionProperty('createFileName', true);
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
+
+            return;
+        }
+
+        $this->requestGenerator->callReflectionMethod('generateCreateRequest');
+    }
+
+    /**
+     * Generate update request
+     *
+     * @return void
+     */
+    public function generateUpdateRequest() {
+
+        $path = $this->requestGenerator->getReflectionProperty('path', true);
+        $fileName = $this->requestGenerator->getReflectionProperty('updateFileName', true);
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
+
+            return;
+        }
+
+        $this->requestGenerator->callReflectionMethod('generateUpdateRequest');
     }
 
     /**
@@ -249,7 +292,6 @@ trait BaseCommand {
 
         $this->controllerGenerator->generate();
     }	
-	
 	
 	/**
      * Generate view

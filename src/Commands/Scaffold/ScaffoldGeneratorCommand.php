@@ -13,7 +13,7 @@ class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
     use BaseCommand;
 
     /**
-     * The name and signature of the console command.
+     * The console command name.
      *
      * @var string
      */

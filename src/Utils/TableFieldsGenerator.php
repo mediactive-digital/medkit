@@ -41,6 +41,8 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
      */
     public function prepareFieldsFromTable() {
 
+        $dontRequireFields = config('infyom.laravel_generator.options.hidden_fields', []) + config('infyom.laravel_generator.options.excluded_fields', []);
+
         foreach ($this->columns as $column) {
 
             $type = $column->getType()->getName();
@@ -74,13 +76,13 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
                 case 'datetime' :
 
-                    $field = $this->callReflectionMethod('generateField', $column, 'datetime', 'date');
+                    $field = $this->callReflectionMethod('generateField', $column, 'datetime', 'datetime-local');
 
                 break;
 
                 case 'datetimetz' :
 
-                    $field = $this->callReflectionMethod('generateField', $column, 'dateTimeTz', 'date');
+                    $field = $this->callReflectionMethod('generateField', $column, 'dateTimeTz', 'datetime-local');
 
                 break;
 
@@ -92,7 +94,7 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
                 case 'time' :
 
-                    $field = $this->callReflectionMethod('generateField', $column, 'time', 'text');
+                    $field = $this->callReflectionMethod('generateField', $column, 'time', 'time');
 
                 break;
 
@@ -127,17 +129,81 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                 break;
             }
 
+            $field->isNotNull = (bool)$column->getNotNull();
+
+            if (!$field->isPrimary && $field->isNotNull && !in_array($field->name, $dontRequireFields)) {
+
+                $field->validations .= 'required';
+            }
+
+            if ($field->htmlType == 'text' && ($max = $column->getLength())) {
+
+                $field->validations .= ($field->validations ? '|' : '') . 'max:' . $max;
+            }
+            else if ($field->htmlType == 'number' && $column->getUnsigned()) {
+
+                $min = $field->isPrimary || in_array($field->name, $this->userStamps) ? 1 : 0;
+
+                if (!$min) {
+
+                    foreach ($this->relations as $relation) {
+
+                        if ($relation->type == 'mt1' && $relation->inputs[1] == $field->name) {
+
+                            $min = 1;
+                        }
+                    }
+                }
+
+                $field->validations .= ($field->validations ? '|' : '') . 'min:' . ($min);
+            }
+
+            if (!$field->isPrimary) {
+
+                $indexes = $this->schemaManager->listTableDetails($this->tableName)->getIndexes();
+
+                foreach ($indexes as $index) {
+
+                    if ($index->isUnique()) {
+
+                        $columns = $index->getColumns();
+
+                        if (in_array($field->name, $columns)) {
+
+                            $field->validations .= ($field->validations ? '|' : '') . 'unique:' . $this->tableName;
+                            $count = count($columns);
+
+                            if ($count > 1) {
+
+                                $field->validations .= ',' . $columns[0] . ',$this->' . $columns[0] . ',id,' . $columns[1] . ',$this->' . $columns[1];
+                            }
+
+                            for ($i = 2; $i < $count; $i++) {
+
+                                $field->validations .= ',' . $columns[$i] . ',$this->' . $columns[$i];
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
             $lower = strtolower($field->name);
 
-            if ($lower == 'password') {
+            if (strpos($lower, 'password') !== false) {
 
                 $field->htmlType = 'password';
             } 
-            elseif ($lower == 'email') {
+            else if (strpos($lower, 'email') !== false) {
 
                 $field->htmlType = 'email';
             } 
-            elseif (in_array($field->name, $this->timestamps) || in_array($field->name, $this->userStamps)) {
+            else if (strpos($lower, 'phone') !== false) {
+
+                $field->htmlType = 'tel';
+            } 
+            else if (in_array($field->name, $this->timestamps) || in_array($field->name, $this->userStamps)) {
 
                 $field->isSearchable = false;
                 $field->isFillable = false;
@@ -145,8 +211,6 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                 $field->inIndex = false;
                 $field->inView = false;
             }
-
-            $field->isNotNull = (bool)$column->getNotNull();
 
             // Get comments from table
             $field->description = $column->getComment();

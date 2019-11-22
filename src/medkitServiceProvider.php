@@ -14,6 +14,7 @@ use MediactiveDigital\MedKit\Commands\RunMigrationCommand;
 use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
 use MediactiveDigital\MedKit\Commands\CleanupCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ScaffoldGeneratorCommand;
+use MediactiveDigital\MedKit\Commands\Scaffold\RequestsGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ControllerGeneratorCommand;
 
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
@@ -112,6 +113,7 @@ class MedKitServiceProvider extends ServiceProvider
             clearDirectory::class,
             CleanupCommand::class,
             ScaffoldGeneratorCommand::class,
+            RequestsGeneratorCommand::class,
             ControllerGeneratorCommand::class
         ]);
     }

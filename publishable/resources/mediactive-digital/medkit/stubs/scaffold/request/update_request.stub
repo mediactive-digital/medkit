@@ -3,18 +3,18 @@
 namespace $NAMESPACE_REQUEST$;
 
 use Illuminate\Foundation\Http\FormRequest;
+
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
-class Update$MODEL_NAME$Request extends FormRequest
-{
+class Update$MODEL_NAME$Request extends FormRequest {
 
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
-    {
+    public function authorize() {
+
         return true;
     }
 
@@ -23,10 +23,29 @@ class Update$MODEL_NAME$Request extends FormRequest
      *
      * @return array
      */
-    public function rules()
-    {
+    public function rules() {
+
+        return $this->generateRules();
+    }
+
+    /**
+     * Generate the validation rules that apply to the request.
+     *
+     * @return array $rules
+     */
+    private function generateRules() {
+
         $rules = $MODEL_NAME$::$rules;
-        $UNIQUE_RULES$
+
+        foreach ($rules as $key => &$rule) {
+
+            $rule = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) {
+
+                return $matches[1] == '$PRIMARY_KEY_NAME$' ? $this->route('$TABLE_NAME_SINGULAR$') : ($this->{$matches[1]} !== null ? addcslashes($this->{$matches[1]}, '\'') : null);
+
+            }, $rule);
+        }
+        
         return $rules;
     }
 }

@@ -166,8 +166,8 @@ class CommandData extends InfyOmCommandData {
         }
 
         $this->tableFieldsGenerator = new TableFieldsGenerator($tableName, $ignoredFields, $this->config->connection);
-        $this->tableFieldsGenerator->prepareFieldsFromTable();
         $this->tableFieldsGenerator->prepareRelations();
+        $this->tableFieldsGenerator->prepareFieldsFromTable();
 
         $this->fields = $this->tableFieldsGenerator->fields;
         $this->relations = $this->tableFieldsGenerator->relations;
