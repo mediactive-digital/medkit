@@ -8,14 +8,14 @@ use InfyOm\Generator\Generators\RepositoryGenerator;
 use InfyOm\Generator\Generators\FactoryGenerator;
 use InfyOm\Generator\Generators\SeederGenerator;
 use InfyOm\Generator\Generators\Scaffold\RequestGenerator;
-use InfyOm\Generator\Generators\Scaffold\ViewGenerator;
 use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
 
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
 
-trait BaseCommand {
+trait BaseCommand { 
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
@@ -26,7 +26,12 @@ trait BaseCommand {
      * @var \MediactiveDigital\MedKit\Generators\ControllerGenerator
      */
     public $controllerGenerator;
-
+	
+    /**
+     * @var \MediactiveDigital\MedKit\Generators\ViewGenerator
+     */
+    public $viewGenerator;
+	
     public function generateCommonItems() {
 
         if (!$this->commandData->getOption('fromTable') and !$this->isSkip('migration')) {
@@ -81,8 +86,8 @@ trait BaseCommand {
 
         if (!$this->isSkip('views')) {
 
-            $viewGenerator = new ViewGenerator($this->commandData);
-            $viewGenerator->generate();
+            $this->viewGenerator = new ViewGenerator($this->commandData); 
+            $this->generateView();
         }
 
         if (!$this->isSkip('routes') and !$this->isSkip('scaffold_routes')) {
@@ -243,5 +248,43 @@ trait BaseCommand {
         }
 
         $this->controllerGenerator->generate();
-    }
+    }	
+	
+	
+	/**
+     * Generate view
+     *
+     * @return void
+	 */
+    public function generateView() {
+		$path = $this->viewGenerator->getReflectionProperty('path', true);
+		 
+		// pour l'instant on part du principe que si il y a un des fichier blade 
+		// on demande si on veux refaire tout
+		 $files = [
+			 ViewGenerator::TABLE_GENERATE_BLADE_FILE, 
+			 ViewGenerator::INDEX_GENERATE_BLADE_FILE,	 
+			 ViewGenerator::FIELDS_GENERATE_BLADE_FILE, 
+			 ViewGenerator::CREATE_GENERATE_BLADE_FILE, 
+			 ViewGenerator::EDIT_GENERATE_BLADE_FILE, 
+			 ViewGenerator::SHOW_GENERATE_BLADE_FILE, 
+			 ViewGenerator::SHOW_FIELDS_GENERATE_BLADE_FILE, 
+			 ViewGenerator::SHOW_FIELDS_GENERATE_BLADE_FILE,  
+        ];
+ 
+		$isOneFileExist = false;
+        foreach ($files as $fileName) {
+           if (file_exists($path . $fileName) ){
+			 $isOneFileExist = true;
+		   }
+        }
+		  
+        if ( $isOneFileExist && !$this->confirmOverwrite('Views')) {
+
+            return;
+        }
+
+        $this->viewGenerator->generate();
+	}
 }
+
