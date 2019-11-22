@@ -88,7 +88,7 @@ class ViewGenerator extends InfyOmViewGenerator
         } else {
             $this->generateTable();
             $this->generateIndex();
-            $this->generateFields();
+            // $this->generateFields();
             $this->generateCreate();
             $this->generateUpdate();
             $this->generateShowFields();
