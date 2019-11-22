@@ -15,7 +15,7 @@ use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
 
-trait BaseCommand {
+trait BaseCommand { 
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator

@@ -47,7 +47,7 @@ class ViewGenerator extends InfyOmViewGenerator
         $this->path = $commandData->config->pathViews; 
         $this->templateType = config('infyom.laravel_generator.templates', 'adminlte-templates');
     }
-
+ 
     public function generate()
     {
         if (!file_exists($this->path)) {
