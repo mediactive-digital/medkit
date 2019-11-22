@@ -4,6 +4,8 @@ namespace $NAMESPACE_REQUEST$;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
 class Update$MODEL_NAME$Request extends FormRequest {
@@ -36,16 +38,17 @@ class Update$MODEL_NAME$Request extends FormRequest {
     private function generateRules() {
 
         $rules = $MODEL_NAME$::$rules;
+        $formatedRules = [];
 
-        foreach ($rules as $key => &$rule) {
+        foreach ($rules as $key => $rule) {
 
-            $rule = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) {
+            $formatedRules[$key] = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) {
 
-                return $matches[1] == '$PRIMARY_KEY_NAME$' ? $this->route('$TABLE_NAME_SINGULAR$') : ($this->{$matches[1]} !== null ? addcslashes($this->{$matches[1]}, '\'') : null);
+                return $matches[1] == '$PRIMARY_KEY_NAME$' ? ($this->route('$TABLE_NAME_SINGULAR$') ?: 'null') : FormatHelper::writeValueToPhp($this->{$matches[1]}, 0);
 
             }, $rule);
         }
         
-        return $rules;
+        return $formatedRules;
     }
 }

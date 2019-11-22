@@ -221,7 +221,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return array $choices 
      */
-    public function getRelationChoices($field) {
+    public function getRelationChoices(GeneratorField $field) {
 
         $choices = [];
 
@@ -296,7 +296,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return array $attributes 
      */
-    public function getAttributes($field) {
+    public function getAttributes(GeneratorField $field) {
 
         $attributes = [];
         $validations = explode('|', $field->validations);
@@ -333,6 +333,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $attributes['autofocus'] = 'autofocus';
         }
 
+        if ($field->htmlType == 'datetime-local') {
+
+            $attributes['step'] = 1;
+        }
+
         return $attributes;
     }
 
@@ -342,7 +347,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return array $options 
      */
-    public function getHtmlOptions($field) {
+    public function getHtmlOptions(GeneratorField $field) {
 
         $options = [
             'label' => $field->name
@@ -378,12 +383,28 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 $options['value'] = 1;
             }
         }
+        else if ($field->htmlType == 'datetime-local') {
+
+            $options['value'] = $this->getDatetimeFormatFunction();
+        }
 
         $attributes = $this->getAttributes($field);
 
         if ($attributes) {
 
             $options['attr'] = $attributes;
+        }
+
+        if ($field->htmlType == 'password') {
+
+            $optionsArray = $options;
+
+            $options = [];
+            $options['type'] = 'Field::PASSWORD';
+            $options['second_name'] = $field->name . '_confirmation';
+            $options['first_options'] = $options['second_options'] = $optionsArray;
+            $options['first_options']['value'] = $this->getNullFormatFunction(1);
+            $options['second_options']['label'] = $options['second_name'];
         }
 
         return $options;
@@ -423,10 +444,34 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         foreach ($fields as $field) {
 
-            $formFields[] = '$this->add(\'' . $field->name . '\', Field::' . strtoupper(str_replace('-', '_', $field->htmlType)) . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
+            $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
+
+            $formFields[] = '$this->add(\'' . $field->name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
         }
 
         return implode(infy_nl_tab(2, 2), $formFields);
+    }
+
+    /** 
+     * Get datetime format function
+     *
+     * @param int $level
+     * @return string
+     */
+    public function getDatetimeFormatFunction(int $level = 0) {
+
+        return 'function($date) {' . infy_nl_tab(2, $level + 5) . 'return $date ? Carbon::parse($date)->format(\'Y-m-d\TH:i:s\') : $date;' . infy_nl_tab(1, $level + 4) . '}';
+    }
+
+    /** 
+     * Get null format function
+     *
+     * @param int $level
+     * @return string
+     */
+    public function getNullFormatFunction(int $level = 0) {
+
+        return 'function($value) {' . infy_nl_tab(2, $level + 5) . 'return null;' . infy_nl_tab(1, $level + 4) . '}';
     }
 
     public function rollback() {

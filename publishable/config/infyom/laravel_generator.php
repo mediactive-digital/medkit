@@ -130,6 +130,8 @@ return [
 
         'softDelete' => true,
 
+        'userStamps' => true,
+
         'save_schema_file' => true,
 
         'tables_searchable_default' => false,

@@ -5,6 +5,8 @@ namespace $NAMESPACE_FORMS$;
 use Kris\LaravelFormBuilder\Form;
 use Kris\LaravelFormBuilder\Field;
 
+use Carbon\Carbon;
+
 class $MODEL_NAME$Form extends Form {
 
     public function buildForm() {

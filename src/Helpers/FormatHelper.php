@@ -252,7 +252,7 @@ class FormatHelper {
 
         $replaceValue = $value;
 
-        if (is_string($value)) {
+        if (is_string($value) && substr($value, 0, 9) !== 'function(' && !preg_match('/^\$[a-zA-Z0-9]+->[a-zA-Z0-9]+/', $value) && !preg_match('/^(\\\?[a-zA-Z0-9]+)+::/', $value)) {
 
             $replaceValue = '\'' . str_replace('\'', '\\\'', str_replace('\\\'', '\'', $value)) . '\'';
         }

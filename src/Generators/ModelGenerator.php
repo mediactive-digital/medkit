@@ -143,6 +143,14 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $softDeleteImport = $softDelete = $softDeleteDates = '';
 
+        foreach ($this->commandData->fields as $field) {
+
+            if (!in_array($field->name, $this->timestamps) && strpos($field->htmlType, 'date') !== false) {
+
+                $this->timestamps[] = $field->name;
+            }
+        }
+
         if ($this->timestamps) {
 
             $hasSoftDelete = $this->hasSoftDelete();
@@ -151,12 +159,13 @@ class ModelGenerator extends InfyOmModelGenerator {
 
                 $softDeleteImport = "use Illuminate\\Database\\Eloquent\\SoftDeletes;\n";
                 $softDelete = infy_tab() . "use SoftDeletes;";
-                $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($this->timestamps, 1) . ";";
             }
             else {
 
-                $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp([$this->timestamps[0], $this->timestamps[1]], 1) . ";";
+                unset($this->timestamps[2]);
             }
+
+            $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($this->timestamps, 1) . ";";
         }
 
         $templateData = str_replace('$SOFT_DELETE_IMPORT$', $softDeleteImport, $templateData);

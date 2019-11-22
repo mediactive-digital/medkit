@@ -161,6 +161,7 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
             if (!$field->isPrimary) {
 
                 $indexes = $this->schemaManager->listTableDetails($this->tableName)->getIndexes();
+                $primaryKey = $indexes['primary']->getColumns()[0];
 
                 foreach ($indexes as $index) {
 
@@ -170,15 +171,9 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
                         if (in_array($field->name, $columns)) {
 
-                            $field->validations .= ($field->validations ? '|' : '') . 'unique:' . $this->tableName;
-                            $count = count($columns);
+                            $field->validations .= ($field->validations ? '|' : '') . 'unique:' . $this->tableName . ',' . $columns[0] . ',$this->' . $primaryKey . ',' . $primaryKey;
 
-                            if ($count > 1) {
-
-                                $field->validations .= ',' . $columns[0] . ',$this->' . $columns[0] . ',id,' . $columns[1] . ',$this->' . $columns[1];
-                            }
-
-                            for ($i = 2; $i < $count; $i++) {
+                            for ($i = 1; $i < count($columns); $i++) {
 
                                 $field->validations .= ',' . $columns[$i] . ',$this->' . $columns[$i];
                             }
@@ -194,6 +189,7 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
             if (strpos($lower, 'password') !== false) {
 
                 $field->htmlType = 'password';
+                $field->validations .= ($field->validations ? '|' : '') . 'confirmed';
             } 
             else if (strpos($lower, 'email') !== false) {
 
