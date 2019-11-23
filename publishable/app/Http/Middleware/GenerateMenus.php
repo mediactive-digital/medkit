@@ -93,8 +93,8 @@ class GenerateMenus
         
         Menu::make('menu', function ($menu) {
 
-            $menu->add('Home');
-            //$menu->add('Users', 'users');
+             $menu->add('Home')
+				->data('icon', 'home'); 
             
         })->filter(function($item) {
             return AccessHelper::validate($item->data('middleware'));
