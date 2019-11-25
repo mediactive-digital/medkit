@@ -4,10 +4,11 @@ namespace MediactiveDigital\MedKit\Providers;
 
 use App\Models\Admin;
 use App\Models\User;
+
 use App\Observers\ModelTrackObserver;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+class AppServiceProvider extends MedKitAuthServiceProvider
 {
     /**
      * Register any application services.
@@ -30,5 +31,7 @@ class AppServiceProvider extends ServiceProvider
         // TRACKERS 
         // User::observe(ModelTrackObserver::class);
         Admin::observe(ModelTrackObserver::class);
+		FeedMode::observe(ModelTrackObserver::class);
+        
     }
 }

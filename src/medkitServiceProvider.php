@@ -4,6 +4,7 @@ namespace MediactiveDigital\MedKit;
 
 use MediactiveDigital\MedKit\Commands\clearDirectory;
 use MediactiveDigital\MedKit\Providers\EventServiceProvider;
+use MediactiveDigital\MedKit\Providers\AppServiceProvider;
 
 use Illuminate\Foundation\AliasLoader;
 
@@ -58,6 +59,7 @@ class MedKitServiceProvider extends ServiceProvider
         });
 
         $this->app->register(EventServiceProvider::class);
+        $this->app->register(AppServiceProvider::class);
 
         $this->registerCommands();
 
