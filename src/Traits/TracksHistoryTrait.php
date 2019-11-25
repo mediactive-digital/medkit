@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace MediactiveDigital\MedKit\Traits;
 
 use App\Models\History;
 use Illuminate\Support\Facades\Auth;

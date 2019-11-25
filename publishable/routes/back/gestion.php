@@ -10,5 +10,5 @@ Route::get('/', function() {
 Route::get('/ui-kit', '\MediactiveDigital\MedKit\Http\Controllers\Back\UiController@index')->name('back.ui_kit');
 
 // BO Historique 
-Route::get('/history', 'Back\HistoryController@index')->name('back.history.index');
-Route::get('/history/list', 'Back\HistoryController@list')->name('back.history.list');
+Route::get('/back/history', 'Back\HistoryController@index')->name('back.history.index');
+Route::get('/back/history/list', 'Back\HistoryController@list')->name('back.history.list');

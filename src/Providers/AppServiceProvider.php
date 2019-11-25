@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Providers;
+namespace MediactiveDigital\MedKit\Providers;
 
+use App\Models\Admin;
+use App\Models\User;
+use App\Observers\ModelTrackObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

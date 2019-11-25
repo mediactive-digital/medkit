@@ -22,6 +22,7 @@ class HistoryController extends Controller {
      * @throws \Exception
      */
 	public function list() {
+		// See Disable ONLY_FULL_GROUP_BY 
         $query = History::select([
             'reference_table as table',
             'reference_id as identifiant',
@@ -45,8 +46,8 @@ class HistoryController extends Controller {
             SEPARATOR "::"
             ) as modification'),
             'created_at',
-            'updated_at',
-        ])->groupBy(['reference_table','reference_id','action','utilisateur']);
+            // 'updated_at',
+        ])->groupBy(['reference_table','reference_id','action','utilisateur', 'created_at']);
 
 		return Datatables::of($query)
             ->editColumn('utilisateur', function (History $history) {

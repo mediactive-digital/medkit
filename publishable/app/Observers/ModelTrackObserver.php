@@ -2,7 +2,7 @@
 
 namespace App\Observers;
   
-use App\Traits\TracksHistoryTrait;
+use MediactiveDigital\MedKit\Traits\TracksHistoryTrait;
 use Illuminate\Support\Facades\Auth;
 
 class ModelTrackObserver
