@@ -14,7 +14,7 @@ use App\Http\Controllers\Controller;
 class HistoryController extends Controller {
 
 	public function index() {
-		return view('back.history.list');
+		return view('medKitTheme::history.list');
 	}
 
     /**
