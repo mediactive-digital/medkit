@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Observers\ModelTrackObserver;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends MedKitAuthServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -30,8 +30,7 @@ class AppServiceProvider extends MedKitAuthServiceProvider
 		// 
         // TRACKERS 
         // User::observe(ModelTrackObserver::class);
-        Admin::observe(ModelTrackObserver::class);
-		FeedMode::observe(ModelTrackObserver::class);
+        Admin::observe(ModelTrackObserver::class); 
         
     }
 }
