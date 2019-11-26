@@ -43,7 +43,9 @@ trait Request {
 
             $formatedRules[$key] = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) use (&$primaryKeyName, &$tableNameSingular) {
 
-                return $matches[1] == $primaryKeyName ? ($this->route($tableNameSingular) ?: 'null') : FormatHelper::writeValueToPhp($this->{$matches[1]}, 0, true);
+                $id = $this->route($tableNameSingular);
+
+                return $matches[1] == $primaryKeyName ? ($id ? '"' . $id . '"' : 'NULL') : '"' . str_replace('"', '""', $this->{$matches[1]}) . '"';
 
             }, $rule);
 

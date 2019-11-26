@@ -207,10 +207,11 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $mutators = [];
         $template = get_template('model.mutator');
+        $ignore = $this->timestamps + [$this->lastActivity];
 
         foreach ($this->commandData->fields as $field) {
 
-            if ($field->htmlType == 'datetime-local') {
+            if ($field->htmlType == 'datetime-local' && !in_array($field->name, $ignore)) {
 
                 $mutator = str_replace('$ATTRIBUTE_NAME$', $field->name, $template);
                 $mutator = str_replace('$ATTRIBUTE_TYPE$', 'string', $mutator);
