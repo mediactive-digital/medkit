@@ -27,6 +27,11 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
      */
     public $userStamps;
 
+    /** 
+     * @var string 
+     */
+    public $lastActivity;
+
     public function __construct($tableName, $ignoredFields, $connection = '') {
 
         parent::__construct($tableName, $ignoredFields, $connection);
@@ -34,6 +39,7 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
         $this->schemaManager = $this->getReflectionProperty('schemaManager');
         $this->columns = $this->getReflectionProperty('columns');
         $this->userStamps = static::getUserStampsFieldNames();
+        $this->lastActivity = static::getLastActivityFieldName();
     }
 
     /**
@@ -131,85 +137,105 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
             $field->isNotNull = (bool)$column->getNotNull();
 
-            if (!$field->isPrimary && $field->isNotNull && !in_array($field->name, $dontRequireFields)) {
-
-                $field->validations .= 'required';
-            }
-
-            if ($field->htmlType == 'text' && ($max = $column->getLength())) {
-
-                $field->validations .= ($field->validations ? '|' : '') . 'max:' . $max;
-            }
-            else if ($field->htmlType == 'number' && $column->getUnsigned()) {
-
-                $min = $field->isPrimary || in_array($field->name, $this->userStamps) ? 1 : 0;
-
-                if (!$min) {
-
-                    foreach ($this->relations as $relation) {
-
-                        if ($relation->type == 'mt1' && $relation->inputs[1] == $field->name) {
-
-                            $min = 1;
-                        }
-                    }
-                }
-
-                $field->validations .= ($field->validations ? '|' : '') . 'min:' . ($min);
-            }
+            // Get comments from table
+            $field->description = $column->getComment();
 
             if (!$field->isPrimary) {
 
-                $indexes = $this->schemaManager->listTableDetails($this->tableName)->getIndexes();
-                $primaryKey = $indexes['primary']->getColumns()[0];
+                $lower = strtolower($field->name);
 
-                foreach ($indexes as $index) {
+                if (in_array($field->name, $this->timestamps) || in_array($field->name, $this->userStamps) || $field->name == $this->lastActivity || strpos($lower, 'token') !== false) {
 
-                    if ($index->isUnique()) {
+                    $field->isSearchable = false;
+                    $field->isFillable = false;
+                    $field->inForm = false;
+                    $field->inIndex = false;
+                    $field->inView = false;
+                }
+                else {
 
-                        $columns = $index->getColumns();
+                    // Validations
 
-                        if (in_array($field->name, $columns)) {
+                    if ($field->isNotNull && !in_array($field->name, $dontRequireFields)) {
 
-                            $field->validations .= ($field->validations ? '|' : '') . 'unique:' . $this->tableName . ',' . $columns[0] . ',$this->' . $primaryKey . ',' . $primaryKey;
+                        $field->validations .= 'required';
+                    }
 
-                            for ($i = 1; $i < count($columns); $i++) {
+                    if ($field->htmlType == 'number' && $column->getUnsigned()) {
 
-                                $field->validations .= ',' . $columns[$i] . ',$this->' . $columns[$i];
+                        $min = 0;
+
+                        foreach ($this->relations as $relation) {
+
+                            if ($relation->type == 'mt1' && $relation->inputs[1] == $field->name) {
+
+                                $min = 1;
+
+                                break;
                             }
+                        }
 
-                            break;
+                        $field->validations .= ($field->validations ? '|' : '') . 'min:' . ($min);
+                    }
+                    else if ($field->htmlType == 'text' && ($max = $column->getLength())) {
+
+                        $field->validations .= ($field->validations ? '|' : '') . 'max:' . $max;
+                    }
+                    else if ($field->htmlType == 'checkbox') {
+
+                        $field->validations .= ($field->validations ? '|' : '') . 'boolean';
+                    }
+
+                    if (strpos($lower, 'password') !== false) {
+
+                        $field->htmlType = 'password';
+                        $field->validations .= ($field->validations ? '|' : '') . 'confirmed';
+                        $field->isSearchable = false;
+                        $field->inIndex = false;
+                        $field->inView = false;
+                    } 
+                    else if (strpos($lower, 'email') !== false) {
+
+                        $field->htmlType = 'email';
+                        $field->validations .= ($field->validations ? '|' : '') . 'email';
+                    } 
+                    else if (strpos($lower, 'phone') !== false) {
+
+                        $field->htmlType = 'tel';
+                    }
+
+                    $indexes = $this->schemaManager->listTableDetails($this->tableName)->getIndexes();
+                    $primaryKey = $indexes['primary']->getColumns()[0];
+
+                    foreach ($indexes as $index) {
+
+                        if ($index->isUnique()) {
+
+                            $columns = $index->getColumns();
+
+                            if (in_array($field->name, $columns)) {
+
+                                if ($field->name != $columns[0]) {
+
+                                    usort($columns, function ($columnA, $columnB) use (&$field) {
+
+                                        return $columnA == $field->name ? -1 : ($columnB == $field->name ? 1 : 0);
+                                    });
+                                }
+
+                                $field->validations .= ($field->validations ? '|' : '') . 'unique:' . $this->tableName . ',' . $columns[0] . ',$this->' . $primaryKey . ',' . $primaryKey;
+
+                                for ($i = 1; $i < count($columns); $i++) {
+
+                                    $field->validations .= ',' . $columns[$i] . ',$this->' . $columns[$i];
+                                }
+
+                                break;
+                            }
                         }
                     }
                 }
             }
-
-            $lower = strtolower($field->name);
-
-            if (strpos($lower, 'password') !== false) {
-
-                $field->htmlType = 'password';
-                $field->validations .= ($field->validations ? '|' : '') . 'confirmed';
-            } 
-            else if (strpos($lower, 'email') !== false) {
-
-                $field->htmlType = 'email';
-            } 
-            else if (strpos($lower, 'phone') !== false) {
-
-                $field->htmlType = 'tel';
-            } 
-            else if (in_array($field->name, $this->timestamps) || in_array($field->name, $this->userStamps)) {
-
-                $field->isSearchable = false;
-                $field->isFillable = false;
-                $field->inForm = false;
-                $field->inIndex = false;
-                $field->inView = false;
-            }
-
-            // Get comments from table
-            $field->description = $column->getComment();
 
             $this->fields[] = $field;
         }
@@ -232,5 +258,22 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
         $deletedByName = config('infyom.laravel_generator.timestamps.deleted_by', 'deleted_by');
 
         return [$createdByName, $updatedByName, $deletedByName];
+    }
+
+    /**
+     * Get last activity column from config.
+     *
+     * @return string last_activity column name
+     */
+    public static function getLastActivityFieldName() {
+
+        if (!config('infyom.laravel_generator.gdpr.enabled', true)) {
+
+            return '';
+        }
+
+        $lastActivityName = config('infyom.laravel_generator.gdpr.last_activity', 'last_activity');
+
+        return $lastActivityName;
     }
 }

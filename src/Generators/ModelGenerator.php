@@ -10,6 +10,8 @@ use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
+use Str;
+
 class ModelGenerator extends InfyOmModelGenerator {
 
     use Reflection;
@@ -39,6 +41,11 @@ class ModelGenerator extends InfyOmModelGenerator {
      */
     private $userStamps;
 
+    /** 
+     * @var string 
+     */
+    private $lastActivity;
+
     /**
      * ModelGenerator constructor.
      *
@@ -60,6 +67,7 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
         $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
+        $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
 
         $templateData = get_template('model.model', 'laravel-generator');
         $templateData = $this->fillTemplate($templateData);
@@ -68,6 +76,153 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $this->commandData->commandComment("\nModel created: ");
         $this->commandData->commandInfo($this->fileName);
+    }
+
+    public function generateCasts() {
+
+        $casts = [];
+        $ignore = $this->timestamps + [$this->lastActivity];
+
+        foreach ($this->commandData->fields as $field) {
+
+            if (in_array($field->name, $ignore)) {
+
+                continue;
+            }
+
+            $rule = "'" . $field->name . "' => ";
+
+            switch (strtolower($field->fieldType)) {
+
+                case 'integer' :
+                case 'increments' :
+                case 'smallinteger' :
+                case 'long' :
+                case 'biginteger' :
+
+                    $rule .= "'integer'";
+
+                break;
+
+                case 'double' :
+
+                    $rule .= "'double'";
+
+                break;
+
+                case 'float' :
+                case 'decimal' :
+
+                    $rule .= "'float'";
+                break;
+
+                case 'boolean' :
+
+                $rule .= "'boolean'";
+
+                break;
+
+                case 'datetime' :
+                case 'datetimetz' :
+
+                    $rule .= "'datetime'";
+
+                break;
+
+                case 'date' :
+
+                    $rule .= "'date'";
+
+                break;
+
+                case 'enum' :
+                case 'string' :
+                case 'char' :
+                case 'text' :
+
+                    $rule .= "'string'";
+
+                break;
+
+                default:
+                    
+                    $rule = '';
+                break;
+            }
+
+            if (!empty($rule)) {
+
+                $casts[] = $rule;
+            }
+        }
+
+        return $casts;
+    }
+
+    private function generateRules() {
+
+        $dont_require_fields = config('infyom.laravel_generator.options.hidden_fields', []) + 
+            config('infyom.laravel_generator.options.excluded_fields', []) +
+            $this->timestamps + $this->userStamps + [$this->lastActivity];
+
+        $rules = [];
+
+        foreach ($this->commandData->fields as $field) {
+
+            if (!$field->isPrimary && $field->isNotNull && empty($field->validations) &&
+                !in_array($field->name, $dont_require_fields)) {
+
+                $field->validations = 'required';
+            }
+
+            if (!empty($field->validations)) {
+
+                if (Str::contains($field->validations, 'unique:')) {
+
+                    $rule = explode('|', $field->validations);
+
+                    // move unique rule to last
+                    usort($rule, function($record) {
+
+                        return (Str::contains($record, 'unique:')) ? 1 : 0;
+                    });
+
+                    $field->validations = implode('|', $rule);
+                }
+
+                $rule = "'" . $field->name . "' => '" . $field->validations . "'";
+                $rules[] = $rule;
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Generate mutators.
+     *
+     * @return array $mutators
+     */
+    private function generateMutators() {
+
+        $mutators = [];
+        $template = get_template('model.mutator');
+
+        foreach ($this->commandData->fields as $field) {
+
+            if ($field->htmlType == 'datetime-local') {
+
+                $mutator = str_replace('$ATTRIBUTE_NAME$', $field->name, $template);
+                $mutator = str_replace('$ATTRIBUTE_TYPE$', 'string', $mutator);
+                $mutator = str_replace('$ATTRIBUTE_TYPE_HINT$', 'string', $mutator);
+                $mutator = str_replace('$ATTRIBUTE_NAME_PASCAL$', Str::ucfirst(Str::camel($field->name)), $mutator);
+                $mutator = str_replace('$MUTATION_FUNCTION$', 'Carbon::parse($value)->format(\'Y-m-d H:i:s\')', $mutator);
+
+                $mutators[] = $mutator;
+            }
+        }
+
+        return $mutators;
     }
 
     private function fillTemplate($templateData) {
@@ -100,9 +255,10 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);
         $templateData = str_replace('$FIELDS$', implode(',' . infy_nl_tab(1, 2), $fillables), $templateData);
-        $templateData = str_replace('$RULES$', implode(',' . infy_nl_tab(1, 2), $this->callReflectionMethod('generateRules')), $templateData);
+        $templateData = str_replace('$RULES$', implode(',' . infy_nl_tab(1, 2), $this->generateRules()), $templateData);
         $templateData = str_replace('$CAST$', implode(',' . infy_nl_tab(1, 2), $this->generateCasts()), $templateData);
-        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL.infy_nl_tab(1, 1), $this->callReflectionMethod('generateRelations'))), $templateData);
+        $templateData = str_replace('$MUTATORS$', implode(PHP_EOL . infy_nl_tab(1, 1), $this->generateMutators()), $templateData);
+        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL . infy_nl_tab(1, 1), $this->callReflectionMethod('generateRelations'))), $templateData);
         $templateData = str_replace('$GENERATE_DATE$', date('F j, Y, g:i a T'), $templateData);
 
         return $templateData;

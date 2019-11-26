@@ -213,6 +213,13 @@ return [
         'deleted_by'    => 'deleted_by',
     ],
 
+    'gdpr' => [
+
+        'enabled'       => true,
+
+        'last_activity' => 'last_activity',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Save model files to `App/Models` when use `--prefix`. see #208

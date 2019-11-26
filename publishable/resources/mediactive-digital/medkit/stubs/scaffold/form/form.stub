@@ -2,12 +2,14 @@
 
 namespace $NAMESPACE_FORMS$;
 
-use Kris\LaravelFormBuilder\Form;
+use Kris\LaravelFormBuilder\Form as KrisForm;
 use Kris\LaravelFormBuilder\Field;
 
-use Carbon\Carbon;
+use MediactiveDigital\MedKit\Traits\Form;
 
-class $MODEL_NAME$Form extends Form {
+class $MODEL_NAME$Form extends KrisForm {
+
+	use Form;
 
     public function buildForm() {
 

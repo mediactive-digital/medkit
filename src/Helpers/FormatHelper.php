@@ -8,6 +8,9 @@ class FormatHelper {
 
     const START_YEAR = 2017;
 
+    const UNESCAPE = '##UNESCAPE_PATTERN##';
+    const TAB = '    ';
+
     /**
      * Retourne la liste des années depuis l'année de départ jusqu'à l'année en cours
      *
@@ -215,61 +218,66 @@ class FormatHelper {
     /**
      * Transform PHP Array to Config string array
      *
-     * @param array $arr
-     * @param integer $level 
-     * @return string
+     * @param array $array
+     * @param int $level 
+     * @param bool $doubleQuotes
+     * @return string $string
      */
-    public static function writeArrayToPhp(array $arr, $level = 1) {
+    public static function writeArrayToPhp(array $array, int $level = 1, bool $doubleQuotes = false): string {
 
-        $str = "";
-        $tab = "    ";
-        $tab = str_repeat($tab, $level);
+        $string = '';
+        $tab = str_repeat(self::TAB, $level);
 
         $i = 0;
-        $count = count($arr);
+        $count = count($array);
 
-        foreach ($arr as $key => $value) {
+        foreach ($array as $key => $value) {
 
             $i++;
             
-            $str .= $tab . (self::isAssociativeArray($arr) ? self::writeValueToPhp($key, 0) . " => " : "") . self::writeValueToPhp($value, $level) . ($i == $count ? "" : ",") . "\n";
+            $string .= $tab . (self::isAssociativeArray($array) ? self::writeValueToPhp($key, 0, $doubleQuotes) . ' => ' : '') . self::writeValueToPhp($value, $level, $doubleQuotes) . ($i == $count ? '' : ',') . "\n";
         }
         
-        return $str;
+        return $string;
     }
 
     /**
      * Convert something to PHP declaration
      *
-     * @param various $value
-     * @param integer $level
+     * @param mixed $value
+     * @param int $level
+     * @param bool $doubleQuotes
      * @return string
      */
-    public static function writeValueToPhp($value, $level): string {
+    public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false): string {
 
-        $tab = "    ";
-        $tab = str_repeat($tab, $level);
+        if (is_string($value)) {
 
-        $replaceValue = $value;
+            if (substr($value, 0, strlen(self::UNESCAPE)) === self::UNESCAPE) {
 
-        if (is_string($value) && substr($value, 0, 9) !== 'function(' && !preg_match('/^\$[a-zA-Z0-9]+->[a-zA-Z0-9]+/', $value) && !preg_match('/^(\\\?[a-zA-Z0-9]+)+::/', $value)) {
+                $value = str_replace(self::UNESCAPE, '', $value);
+            }
+            else {
 
-            $replaceValue = '\'' . str_replace('\'', '\\\'', str_replace('\\\'', '\'', $value)) . '\'';
+                $quote = $doubleQuotes ? '"' : '\'';
+
+                $value = $quote . addcslashes($value, $quote) . $quote;
+            }
         }
         elseif (is_bool($value)) {
 
-            $replaceValue = $value ? 'true' : 'false';
+            $value = $value ? 'true' : 'false';
         }
         elseif (is_null($value)) {
 
-            $replaceValue = 'null';
+            $value = 'null';
         }
-        elseif (is_array($value) ) {
+        elseif (is_array($value)) {
 
-            $replaceValue = "[\n" . self::writeArrayToPhp((array)$value, ++$level) . "$tab]";
+            $value = "[\n" . self::writeArrayToPhp((array)$value, ++$level) . str_repeat(self::TAB, $level) . ']';
         }
         
-        return $replaceValue;
+        return is_string($value) ? $value : '';
     }
 
     /**

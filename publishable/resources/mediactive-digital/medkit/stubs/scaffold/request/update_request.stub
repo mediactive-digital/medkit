@@ -4,51 +4,17 @@ namespace $NAMESPACE_REQUEST$;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-use MediactiveDigital\MedKit\Helpers\FormatHelper;
+use MediactiveDigital\MedKit\Traits\Request;
 
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
 class Update$MODEL_NAME$Request extends FormRequest {
 
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize() {
+    use Request;
 
-        return true;
-    }
+    public function __construct() {
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules() {
-
-        return $this->generateRules();
-    }
-
-    /**
-     * Generate the validation rules that apply to the request.
-     *
-     * @return array $rules
-     */
-    private function generateRules() {
-
-        $rules = $MODEL_NAME$::$rules;
-        $formatedRules = [];
-
-        foreach ($rules as $key => $rule) {
-
-            $formatedRules[$key] = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) {
-
-                return $matches[1] == '$PRIMARY_KEY_NAME$' ? ($this->route('$TABLE_NAME_SINGULAR$') ?: 'null') : FormatHelper::writeValueToPhp($this->{$matches[1]}, 0);
-
-            }, $rule);
-        }
-        
-        return $formatedRules;
+        $this->modelInstance = new $MODEL_NAME$;
+        $this->isUpdate = true;
     }
 }

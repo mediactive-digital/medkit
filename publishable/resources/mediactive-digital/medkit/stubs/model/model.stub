@@ -4,6 +4,8 @@ namespace $NAMESPACE_MODEL$;
 
 use $NAMESPACE_MODEL_EXTEND$ as Model;
 
+use Carbon\Carbon;
+
 $SOFT_DELETE_IMPORT$
 $USER_STAMPS_IMPORT$
 $DOCS$
@@ -39,6 +41,8 @@ $PRIMARY$
     public static $rules = [
         $RULES$
     ];
+
+    $MUTATORS$
 
     $RELATIONS$
 }
