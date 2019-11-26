@@ -5,7 +5,7 @@ namespace $NAMESPACE_FORMS$;
 use Kris\LaravelFormBuilder\Form as KrisForm;
 use Kris\LaravelFormBuilder\Field;
 
-use MediactiveDigital\MedKit\Traits\Form;
+use App\Traits\Form;
 
 class $MODEL_NAME$Form extends KrisForm {
 
