@@ -278,7 +278,7 @@ class FormatHelper {
         }
         else if (is_object($value)) {
 
-            $value = $quote . $quote;
+            $value = $quote . (method_exists($value, '__toString') ? (string)$value : '') . $quote;
         }
         
         return (string)$value;
