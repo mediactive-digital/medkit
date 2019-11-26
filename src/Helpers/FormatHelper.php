@@ -251,6 +251,8 @@ class FormatHelper {
      */
     public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false): string {
 
+        $quote = $doubleQuotes ? '"' : '\'';
+
         if (is_string($value)) {
 
             if (substr($value, 0, strlen(self::UNESCAPE)) === self::UNESCAPE) {
@@ -259,25 +261,27 @@ class FormatHelper {
             }
             else {
 
-                $quote = $doubleQuotes ? '"' : '\'';
-
                 $value = $quote . addcslashes($value, $quote) . $quote;
             }
         }
-        elseif (is_bool($value)) {
+        else if (is_bool($value)) {
 
             $value = $value ? 'true' : 'false';
         }
-        elseif (is_null($value)) {
+        else if (is_null($value)) {
 
             $value = 'null';
         }
-        elseif (is_array($value)) {
+        else if (is_array($value)) {
 
-            $value = "[\n" . self::writeArrayToPhp((array)$value, ++$level) . str_repeat(self::TAB, $level) . ']';
+            $value = "[\n" . self::writeArrayToPhp((array)$value, $level + 1) . str_repeat(self::TAB, $level) . ']';
+        }
+        else if (is_object($value)) {
+
+            $value = $quote . $quote;
         }
         
-        return is_string($value) ? $value : '';
+        return (string)$value;
     }
 
     /**
