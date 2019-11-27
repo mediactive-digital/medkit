@@ -70,6 +70,7 @@ trait BaseCommand {
             $seederGenerator->generate();
             $seederGenerator->updateMainSeeder();
         }
+		
     }
 
     public function generateScaffoldItems() {
@@ -108,6 +109,15 @@ trait BaseCommand {
             $menuGenerator = new MenuGenerator($this->commandData);
             $menuGenerator->generate();
         }
+		
+		
+		
+        
+		
+		
+		// generateTracker()
+		
+		 
     }
     
     public function performPostActions($runMigration = false) {
@@ -328,5 +338,28 @@ trait BaseCommand {
 
         $this->viewGenerator->generate();
 	}
+	
+	
+	
+    /**
+     * Generate Tracker
+     *
+     * @return void
+     */
+    public function generateTracker() {
+/**
+ * 
+        $path = $this->controllerGenerator->getReflectionProperty('path', true);
+        $fileName = $this->controllerGenerator->getReflectionProperty('fileName', true);
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Controller ' . $fileName)) {
+
+            return;
+        }
+
+        $this->controllerGenerator->generate();
+ */
+    }	
+	
 }
 
