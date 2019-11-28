@@ -10,8 +10,6 @@ use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
-use Illuminate\Validation\ValidationRuleParser;
-
 use Str;
 
 class ModelGenerator extends InfyOmModelGenerator {
@@ -161,80 +159,6 @@ class ModelGenerator extends InfyOmModelGenerator {
         return $casts;
     }
 
-    private function generateRules() {
-
-        $dont_require_fields = config('infyom.laravel_generator.options.hidden_fields', []) + 
-            config('infyom.laravel_generator.options.excluded_fields', []) +
-            $this->timestamps + $this->userStamps + [$this->lastActivity];
-
-        $rules = [];
-
-        foreach ($this->commandData->fields as $field) {
-
-            if (!$field->isPrimary && $field->isNotNull && empty($field->validations) && !in_array($field->name, $dont_require_fields)) {
-
-                $field->validations = ['required'];
-            }
-
-            if (!empty($field->validations)) {
-
-                // Move unique rule to last
-
-                usort($field->validations, function($rule) {
-
-                    return Str::startsWith($rule, 'unique:') ? 1 : 0;
-                });
-
-                $rule = '\'' . $field->name . '\' => ' . FormatHelper::writeValueToPhp($field->validations, 2);
-                $rules[] = $rule;
-            }
-        }
-
-        return $rules;
-    }
-
-    /**
-     * Generate validation messages.
-     *
-     * @return array $messages
-     */
-    private function generateMessages() {
-
-        $messages = [];
-
-        foreach ($this->commandData->fields as $field) {
-
-            if ($field->validations) {
-
-                foreach ($field->validations as $rule) {
-
-                    $message = '';
-                    [$formatedRule, $parameters] = ValidationRuleParser::parse($rule);
-
-                    if ($formatedRule == 'Regex') {
-
-                        if ($field->htmlType == 'password') {
-
-                            if (isset($parameters[0]) && $parameters[0] == FormatHelper::PASSWORD_REGEX) {
-
-                                $message = 'Le mot de passe doit contenir au minimum : une majuscule, une minuscule, un chiffre et un caractère spécial.';
-                            }
-                        }
-                    }
-
-                    if ($message) {
-
-                        $messages[] = '\'' . $field->name . '.' . Str::lower($formatedRule) . '\' => _i(' . FormatHelper::writeValueToPhp($message) . ')';
-                    }
-                }
-            }
-        }
-
-        sort($messages);
-
-        return $messages;
-    }
-
     /**
      * Generate mutators.
      *
@@ -293,8 +217,6 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);
         $templateData = str_replace('$FIELDS$', implode(',' . infy_nl_tab(1, 2), $fillables), $templateData);
-        $templateData = str_replace('$RULES$', implode(',' . infy_nl_tab(1, 2), $this->generateRules()), $templateData);
-        $templateData = str_replace('$MESSAGES$', implode(',' . infy_nl_tab(1, 2), $this->generateMessages()), $templateData);
         $templateData = str_replace('$CAST$', implode(',' . infy_nl_tab(1, 2), $this->generateCasts()), $templateData);
         $templateData = str_replace('$MUTATORS$', implode(PHP_EOL . infy_nl_tab(1, 1), $this->generateMutators()), $templateData);
         $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL . infy_nl_tab(1, 1), $this->callReflectionMethod('generateRelations'))), $templateData);

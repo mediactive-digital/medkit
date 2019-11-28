@@ -32,24 +32,6 @@ $PRIMARY$
     protected $casts = [
         $CAST$
     ];
-
-    /**
-     * Validation rules
-     *
-     * @var array
-     */
-    public static $rules = [
-        $RULES$
-    ];
-
-    /**
-     * Validation messages
-     *
-     * @var array
-     */
-    public static $messages = [
-        $MESSAGES$
-    ];
     $MUTATORS$
     $RELATIONS$
 }

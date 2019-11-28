@@ -22,14 +22,9 @@ trait Request {
     private $rules;
 
     /** 
-     * @var string $primaryKeyName
+     * @var array $messages
      */
-    private $primaryKeyName;
-
-    /** 
-     * @var string $tableNameSingular
-     */
-    private $tableNameSingular;
+    private $messages;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -48,11 +43,46 @@ trait Request {
      */
     public function rules() {
 
-        $this->rules = $this->modelInstance::$rules;
-
+        $this->getRules();
         $this->formatRules();
 
         return $this->rules;
+    }
+
+    /**
+     * Get validation rules
+     *
+     * @return array
+     */
+    private function getRules() {
+
+        $this->rules = [];
+
+        return $this->rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
+    public function messages() {
+
+        $this->getMessages();
+
+        return $this->messages;
+    }
+
+    /**
+     * Get validation messages
+     *
+     * @return array
+     */
+    private function getMessages() {
+
+        $this->messages = [];
+
+        return $this->messages;
     }
 
     /**
@@ -76,31 +106,8 @@ trait Request {
 
             foreach ($rules as $index => $rule) {
 
-                $this->formatUniqueRule($key, $index);
                 $this->formatRequiredRule($key, $index);
             }
-        }
-    }
-
-    /**
-     * Format unique rule.
-     *
-     * @param string $key
-     * @param int $index
-     * @return void
-     */
-    private function formatUniqueRule(string $key, int $index) {
-
-        if (Str::startsWith($this->rules[$key][$index], 'unique:')) {
-
-            $this->primaryKeyName = $this->primaryKeyName ?: $this->modelInstance->getKeyName();
-            $this->tableNameSingular = $this->tableNameSingular ?: Str::singular($this->modelInstance->getTable());
-
-            $this->rules[$key][$index] = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) {
-
-                return $matches[1] == $this->primaryKeyName ? (($id = $this->route($this->tableNameSingular)) ? '"' . $id . '"' : 'NULL') : '"' . str_replace('"', '""', $this->{$matches[1]}) . '"';
-
-            }, $this->rules[$key][$index]);
         }
     }
 

@@ -41,6 +41,7 @@ class RequestsGeneratorCommand extends InfyOmRequestsGeneratorCommand {
 
         $this->requestGenerator = new RequestGenerator($this->commandData);
 
+        $this->generateBaseRequest();
         $this->generateCreateRequest();
         $this->generateUpdateRequest();
     }

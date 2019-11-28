@@ -80,6 +80,7 @@ trait BaseCommand {
 
             $this->requestGenerator = new RequestGenerator($this->commandData);
             
+            $this->generateBaseRequest();
             $this->generateCreateRequest();
             $this->generateUpdateRequest();
         }
@@ -211,6 +212,24 @@ trait BaseCommand {
     }
 
     /**
+     * Generate base request
+     *
+     * @return void
+     */
+    public function generateBaseRequest() {
+
+        $path = $this->requestGenerator->getReflectionProperty('path', true);
+        $fileName = $this->requestGenerator->getReflectionProperty('baseFileName', true);
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
+
+            return;
+        }
+
+        $this->requestGenerator->callReflectionMethod('generateBaseRequest');
+    }
+
+    /**
      * Generate create request
      *
      * @return void
@@ -218,7 +237,7 @@ trait BaseCommand {
     public function generateCreateRequest() {
 
         $path = $this->requestGenerator->getReflectionProperty('path', true);
-        $fileName = $this->requestGenerator->getReflectionProperty('createFileName');
+        $fileName = $this->requestGenerator->getReflectionProperty('createFileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
 

@@ -1,20 +1,12 @@
 <?php
 
-namespace $NAMESPACE_REQUEST$;
+namespace $NAMESPACE_REQUEST$\$MODEL_NAME$;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-use App\Traits\Request;
-
-use $NAMESPACE_MODEL$\$MODEL_NAME$;
-
-class Create$MODEL_NAME$Request extends FormRequest {
-
-    use Request;
+class CreateRequest extends BaseRequest {
 
     public function __construct() {
 
-        $this->modelInstance = new $MODEL_NAME$;
+        parent::__contruct();
         $this->isUpdate = false;
     }
 }

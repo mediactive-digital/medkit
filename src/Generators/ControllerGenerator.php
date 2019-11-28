@@ -349,7 +349,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     public function getHtmlOptions(GeneratorField $field) {
 
         $options = [
-            'label' => FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($field->name) . ')'
+            'label' => FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->name)) . ')'
         ];
 
         if ($field->htmlType == 'number' && isset($field->relation)) {
@@ -408,10 +408,25 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $options['second_name'] = $field->name . '_confirmation';
             $options['second_options'] = $options['first_options'] = $optionsArray;
             $options['first_options']['value'] = FormatHelper::UNESCAPE . '$this->formatNull()';
-            $options['second_options']['label'] = FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($options['second_name']) . ')';
+            $options['second_options']['label'] = FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($options['second_name'])) . ')';
         }
 
         return $options;
+    }
+
+    /** 
+     * Get label
+     *
+     * @param string $fieldName
+     * @return string $label
+     */
+    public function getLabel(string $fieldName): string {
+
+        $labelKey = 'validation.attributes.' . $fieldName;
+        $label = !($label = _i($labelKey)) || $label == $labelKey ? $fieldName : $label;
+        $label = Str::ucfirst(str_replace('_', ' ', Str::lower($label)));
+
+        return $label;
     }
 
     /** 
