@@ -93,9 +93,18 @@ class GenerateMenus
         
         Menu::make('menu', function ($menu) {
 
-             $menu->add('Home')
-				->data('icon', 'home'); 
-            
+             $menu->add( _i('Tableau de bord') )
+				->data('icon', 'home')
+                ->data('order', '1'); 
+			 
+            $menu->add(_i('Historique'), [
+                'route' => 'back.history.index'
+            ])
+                ->data('icon', 'history')
+                ->data('order', '1000');
+			
+             $menu->sortBy('order', 'asc');
+			 
         })->filter(function($item) {
             return AccessHelper::validate($item->data('middleware'));
         });

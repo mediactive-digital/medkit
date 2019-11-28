@@ -14,6 +14,7 @@ use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
+use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator; 
 
 trait BaseCommand { 
 
@@ -70,6 +71,7 @@ trait BaseCommand {
             $seederGenerator->generate();
             $seederGenerator->updateMainSeeder();
         }
+		
     }
 
     public function generateScaffoldItems() {
@@ -108,6 +110,14 @@ trait BaseCommand {
             $menuGenerator = new MenuGenerator($this->commandData);
             $menuGenerator->generate();
         }
+		
+		
+		if (!$this->isSkip('tracks_history') and  config('infyom.laravel_generator.add_on.tracks_history.enabled', true) ) {
+		
+            $menuTracker = new TracksHistoryGenerator($this->commandData);
+            $menuTracker->generate(); 
+		}
+        
     }
     
     public function performPostActions($runMigration = false) {
@@ -328,5 +338,6 @@ trait BaseCommand {
 
         $this->viewGenerator->generate();
 	}
-}
+	
+        }
 

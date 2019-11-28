@@ -1,0 +1,3 @@
+
+        \$NAMESPACE_MODEL$\$MODEL_NAME$::observe(ModelTrackObserver::class);
+        
