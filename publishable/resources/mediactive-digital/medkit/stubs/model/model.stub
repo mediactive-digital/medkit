@@ -42,7 +42,14 @@ $PRIMARY$
         $RULES$
     ];
 
+    /**
+     * Validation messages
+     *
+     * @var array
+     */
+    public static $messages = [
+        $MESSAGES$
+    ];
     $MUTATORS$
-
     $RELATIONS$
 }

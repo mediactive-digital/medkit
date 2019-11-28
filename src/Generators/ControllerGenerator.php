@@ -299,9 +299,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     public function getAttributes(GeneratorField $field) {
 
         $attributes = [];
-        $validations = explode('|', $field->validations);
 
-        foreach ($validations as $validation) {
+        foreach ($field->validations as $validation) {
 
             if ($validation == 'required') {
 
@@ -356,7 +355,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         if ($field->htmlType == 'number' && isset($field->relation)) {
 
             $field->htmlType = 'select';
-            $options['empty_value'] = '_i(\'Sélectionnez\')';
+            $options['empty_value'] = FormatHelper::UNESCAPE . '_i(\'Sélectionnez\')';
             $choices = $this->getRelationChoices($field);
 
             if ($choices) {

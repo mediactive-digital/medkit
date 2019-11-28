@@ -5,6 +5,7 @@ namespace MediactiveDigital\MedKit\Utils;
 use InfyOm\Generator\Utils\TableFieldsGenerator as InfyOmTableFieldsGenerator;
 
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Str;
 
@@ -154,11 +155,12 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                 }
                 else {
 
-                    // Validations
+                    $validations = [];
+                    $isPassword = strpos($lower, 'password') !== false;
 
                     if ($field->isNotNull && !in_array($field->name, $dontRequireFields)) {
 
-                        $field->validations .= 'required';
+                        $validations[] = 'required';
                     }
 
                     if ($field->htmlType == 'number' && $column->getUnsigned()) {
@@ -175,29 +177,32 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                             }
                         }
 
-                        $field->validations .= ($field->validations ? '|' : '') . 'min:' . ($min);
+                        $validations[] = 'min:' . ($min);
                     }
-                    else if ($field->htmlType == 'text' && ($max = $column->getLength())) {
+                    else if (!$isPassword && $field->htmlType == 'text' && ($max = $column->getLength())) {
 
-                        $field->validations .= ($field->validations ? '|' : '') . 'max:' . $max;
+                        $validations[] = 'max:' . $max;
                     }
                     else if ($field->htmlType == 'checkbox') {
 
-                        $field->validations .= ($field->validations ? '|' : '') . 'boolean';
+                        $validations[] = 'boolean';
                     }
 
-                    if (strpos($lower, 'password') !== false) {
+                    if ($isPassword) {
 
                         $field->htmlType = 'password';
-                        $field->validations .= ($field->validations ? '|' : '') . 'confirmed';
                         $field->isSearchable = false;
                         $field->inIndex = false;
                         $field->inView = false;
+
+                        $validations[] = 'min:8';
+                        $validations[] = 'max:120';
+                        $validations[] = 'confirmed';
+                        $validations[] = 'regex:' . FormatHelper::PASSWORD_REGEX;
                     } 
                     else if (strpos($lower, 'email') !== false) {
 
-                        $field->htmlType = 'email';
-                        $field->validations .= ($field->validations ? '|' : '') . 'email';
+                        $field->htmlType = $validations[] = 'email';
                     } 
                     else if (strpos($lower, 'phone') !== false) {
 
@@ -223,17 +228,21 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                                     });
                                 }
 
-                                $field->validations .= ($field->validations ? '|' : '') . 'unique:' . $this->tableName . ',' . $columns[0] . ',$this->' . $primaryKey . ',' . $primaryKey;
+                                $uniqueValidation = 'unique:' . $this->tableName . ',' . $columns[0] . ',$this->' . $primaryKey . ',' . $primaryKey;
 
                                 for ($i = 1; $i < count($columns); $i++) {
 
-                                    $field->validations .= ',' . $columns[$i] . ',$this->' . $columns[$i];
+                                    $uniqueValidation .= ',' . $columns[$i] . ',$this->' . $columns[$i];
                                 }
+
+                                $validations[] = $uniqueValidation;
 
                                 break;
                             }
                         }
                     }
+
+                    $field->validations = $validations ?: $field->validations;
                 }
             }
 

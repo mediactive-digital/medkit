@@ -11,6 +11,8 @@ class FormatHelper {
     const UNESCAPE = '##UNESCAPE_PATTERN##';
     const TAB = '    ';
 
+    const PASSWORD_REGEX = '/^.*(?=.{8,120})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[^a-zA-Z\d\s]).*$/';
+
     /**
      * Retourne la liste des années depuis l'année de départ jusqu'à l'année en cours
      *

@@ -217,7 +217,7 @@ trait BaseCommand {
      */
     public function generateCreateRequest() {
 
-        $path = $this->requestGenerator->getReflectionProperty('path');
+        $path = $this->requestGenerator->getReflectionProperty('path', true);
         $fileName = $this->requestGenerator->getReflectionProperty('createFileName');
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
@@ -235,8 +235,8 @@ trait BaseCommand {
      */
     public function generateUpdateRequest() {
 
-        $path = $this->requestGenerator->getReflectionProperty('path');
-        $fileName = $this->requestGenerator->getReflectionProperty('updateFileName');
+        $path = $this->requestGenerator->getReflectionProperty('path', true);
+        $fileName = $this->requestGenerator->getReflectionProperty('updateFileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
 

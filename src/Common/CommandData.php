@@ -61,7 +61,7 @@ class CommandData extends InfyOmCommandData {
             }
 
             $validations = $this->commandObj->ask('Enter validations: ', false);
-            $validations = $validations == false ? '' : $validations;
+            $validations = $validations == false ? [] : explode('|', $validations);
 
             if ($this->getOption('relations')) {
 
