@@ -56,6 +56,11 @@ return [
         'forms'             => app_path('Forms/'),
 
         'middlewares'       => app_path('Http/Middleware/'),
+		
+        'app_provider'     => app_path('Providers/AppServiceProvider.php'),
+
+        'providers'       => app_path('Providers/'),
+		
     ],
 
     /*
@@ -179,6 +184,13 @@ return [
             'enabled'       => true,
 
             'menu_file'     => 'GenerateMenus.php',
+        ],
+
+        'tracks_history'          => [
+
+            'enabled'       => true,
+
+            'provider_file'     => 'AppServiceProvider.php',
         ],
 
         'forms' => true,

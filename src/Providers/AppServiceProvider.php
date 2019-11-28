@@ -1,10 +1,7 @@
 <?php
 
 namespace MediactiveDigital\MedKit\Providers;
-
-use App\Models\Admin;
-use App\Models\User;
-
+ 
 use App\Observers\ModelTrackObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,15 +19,17 @@ class AppServiceProvider extends ServiceProvider
 
     /**
      * Bootstrap any application services.
-     *
+	 * 
+	 * /!\ Ne pas supprimer les commentaires #
+	 * 
      * @return void
      */
     public function boot()
     {
-		// 
-        // TRACKERS 
-        // User::observe(ModelTrackObserver::class);
-        Admin::observe(ModelTrackObserver::class); 
+		
+		# TracksHistory   
+        \App\Models\Admin::observe(ModelTrackObserver::class); 
+        # fin TracksHistory  
         
     }
 }
