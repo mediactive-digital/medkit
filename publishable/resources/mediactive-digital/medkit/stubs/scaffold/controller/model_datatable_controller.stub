@@ -4,8 +4,7 @@ namespace $NAMESPACE_CONTROLLER$;
 
 use $NAMESPACE_APP$\Http\Controllers\AppBaseController;
 
-use $NAMESPACE_REQUEST$\Create$MODEL_NAME$Request;
-use $NAMESPACE_REQUEST$\Update$MODEL_NAME$Request;
+use $NAMESPACE_REQUEST$\$MODEL_NAME$Request;
 
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
@@ -48,11 +47,11 @@ class $MODEL_NAME$Controller extends AppBaseController {
     /**
      * Store a newly created $MODEL_NAME$ in storage.
      *
-     * @param \$NAMESPACE_REQUEST$\Create$MODEL_NAME$Request $request
+     * @param \$NAMESPACE_REQUEST$\$MODEL_NAME$Request $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Create$MODEL_NAME$Request $request) {
+    public function store($MODEL_NAME$Request $request) {
 
         $input = $request->all();
 
@@ -117,11 +116,11 @@ class $MODEL_NAME$Controller extends AppBaseController {
      * Update the specified $MODEL_NAME$ in storage.
      *
      * @param int $id
-     * @param \$NAMESPACE_REQUEST$\Update$MODEL_NAME$Request $request
+     * @param \$NAMESPACE_REQUEST$\$MODEL_NAME$Request $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(int $id, Update$MODEL_NAME$Request $request) {
+    public function update(int $id, $MODEL_NAME$Request $request) {
 
         $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::find($id);
 

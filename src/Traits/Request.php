@@ -7,34 +7,24 @@ use Str;
 trait Request {
 
     /** 
-     * @var mixed $modelInstance
+     * @var int $modelId
      */
-    private $modelInstance;
+    private $modelId;
 
     /** 
-     * @var bool $isUpdate
+     * @var array $requestRules
      */
-    private $isUpdate;
+    private $requestRules;
 
     /** 
-     * @var array $rules
+     * @var array $requestMessages
      */
-    private $rules;
+    private $requestMessages;
 
     /** 
-     * @var array $messages
+     * @var string $tableNameSingular
      */
-    private $messages;
-
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize() {
-
-        return true;
-    }
+    private $tableNameSingular;
 
     /**
      * Get the validation rules that apply to the request.
@@ -43,22 +33,11 @@ trait Request {
      */
     public function rules() {
 
-        $this->getRules();
-        $this->formatRules();
+        $this->modelId = $this->route($this->tableNameSingular);
 
-        return $this->rules;
-    }
+        $this->setRules();
 
-    /**
-     * Get validation rules
-     *
-     * @return array
-     */
-    private function getRules() {
-
-        $this->rules = [];
-
-        return $this->rules;
+        return $this->requestRules;
     }
 
     /**
@@ -68,21 +47,9 @@ trait Request {
      */
     public function messages() {
 
-        $this->getMessages();
+        $this->setMessages();
 
-        return $this->messages;
-    }
-
-    /**
-     * Get validation messages
-     *
-     * @return array
-     */
-    private function getMessages() {
-
-        $this->messages = [];
-
-        return $this->messages;
+        return $this->requestMessages;
     }
 
     /**
@@ -96,43 +63,6 @@ trait Request {
     }
 
     /**
-     * Format rules.
-     *
-     * @return void
-     */
-    private function formatRules() {
-
-        foreach ($this->rules as $key => $rules) {
-
-            foreach ($rules as $index => $rule) {
-
-                $this->formatRequiredRule($key, $index);
-            }
-        }
-    }
-
-    /**
-     * Format required rule.
-     *
-     * @param string $key
-     * @param int $index
-     * @return void
-     */
-    private function formatRequiredRule(string $key, int $index) {
-
-        if ($this->rules[$key][$index] == 'required') {
-
-            if ($this->isUpdate) {
-
-                if (Str::contains(Str::lower($key), 'password')) {
-
-                    $this->rules[$key][$index] = 'nullable';
-                }
-            }
-        }
-    }
-
-    /**
      * Format request datas.
      *
      * @return void
@@ -141,28 +71,42 @@ trait Request {
 
         foreach ($this->all() as $key => $value) {
 
-            $this->formatPasswordData($key);
+            $this->formatNullableData($key, $value);
         }
     }
 
     /**
-     * Format password request data.
+     * Format nullable request data.
      *
      * @param string $key
+     * @param mixed $value
      * @return void
      */
-    private function formatPasswordData(string $key) {
+    private function formatNullableData(string $key, $value) {
 
-        if (Str::contains(Str::lower($key), 'password')) {
+        if ($this->modelId > 0) {
 
-            if ($this->isUpdate) {
+            if (isset($this->requestRules[$key]) && in_array('nullable', $this->requestRules[$key]) && is_null($value)) {
 
-                if (is_null($this->request->get($key))) {
+                $this->request->remove($key);
 
-                    $this->request->remove($key);
+                if (in_array('confirmed', $this->requestRules[$key])) {
+
                     $this->request->remove($key . '_confirmation');
                 }
             }
         }
+    }
+
+    /** 
+     * Set rule.
+     *
+     * @param string $createRule
+     * @param string $updateRule
+     * @return string
+     */
+    private function setRule(string $createRule, string $updateRule = ''): string {
+
+        return $this->modelId > 0 ? ($updateRule !== '' ? $updateRule : $createRule) : $createRule;
     }
 }

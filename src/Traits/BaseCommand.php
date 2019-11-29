@@ -80,9 +80,7 @@ trait BaseCommand {
 
             $this->requestGenerator = new RequestGenerator($this->commandData);
             
-            $this->generateBaseRequest();
-            $this->generateCreateRequest();
-            $this->generateUpdateRequest();
+            $this->generateRequest();
         }
 
         if (!$this->isSkip('controllers') and !$this->isSkip('scaffold_controller')) {
@@ -212,57 +210,21 @@ trait BaseCommand {
     }
 
     /**
-     * Generate base request
+     * Generate request
      *
      * @return void
      */
-    public function generateBaseRequest() {
+    public function generateRequest() {
 
         $path = $this->requestGenerator->getReflectionProperty('path', true);
-        $fileName = $this->requestGenerator->getReflectionProperty('baseFileName', true);
+        $fileName = $this->requestGenerator->getReflectionProperty('fileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
 
             return;
         }
 
-        $this->requestGenerator->callReflectionMethod('generateBaseRequest');
-    }
-
-    /**
-     * Generate create request
-     *
-     * @return void
-     */
-    public function generateCreateRequest() {
-
-        $path = $this->requestGenerator->getReflectionProperty('path', true);
-        $fileName = $this->requestGenerator->getReflectionProperty('createFileName', true);
-
-        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
-
-            return;
-        }
-
-        $this->requestGenerator->callReflectionMethod('generateCreateRequest');
-    }
-
-    /**
-     * Generate update request
-     *
-     * @return void
-     */
-    public function generateUpdateRequest() {
-
-        $path = $this->requestGenerator->getReflectionProperty('path', true);
-        $fileName = $this->requestGenerator->getReflectionProperty('updateFileName', true);
-
-        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Request ' . $fileName)) {
-
-            return;
-        }
-
-        $this->requestGenerator->callReflectionMethod('generateUpdateRequest');
+        $this->requestGenerator->callReflectionMethod('generateRequest');
     }
 
     /**

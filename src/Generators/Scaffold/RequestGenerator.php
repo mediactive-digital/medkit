@@ -31,17 +31,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
     /** 
      * @var string 
      */
-    private $baseFileName;
-
-    /** 
-     * @var string 
-     */
-    private $createFileName;
-
-    /** 
-     * @var string 
-     */
-    private $updateFileName;
+    private $fileName;
 
     /** 
      * @var array
@@ -58,58 +48,62 @@ class RequestGenerator extends InfyOmRequestGenerator {
      */
     private $lastActivity;
 
+    /** 
+     * @var string 
+     */
+    private $primaryKeyName;
+
+    /** 
+     * @var string 
+     */
+    private $tableNameSingular;
+
     public function __construct(CommandData $commandData) {
 
         parent::__construct($commandData);
 
         $this->commandData = $commandData;
-        $this->path = $this->getReflectionProperty('path') . $this->commandData->modelName . '/';
-        $this->baseFileName = 'Base' . $this->commandData->modelName . 'Request.php';
-        $this->createFileName = $this->getReflectionProperty('createFileName');
-        $this->updateFileName = $this->getReflectionProperty('updateFileName');
+        $this->path = $this->getReflectionProperty('path');
+        $this->fileName = $this->commandData->modelName . 'Request.php';
         $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
         $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
         $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
+
+        $class = '\\' . $this->commandData->config->nsModel . '\\' . $this->commandData->modelName;
+        $model = new $class;
+
+        $this->primaryKeyName = $model->getKeyName();
+        $this->tableNameSingular = Str::singular($model->getTable());
+
+        $this->setRequestConfiguration();
     }
 
     /** 
-     * Generate base request
+     * Set configuration for request generation
+     *
+     * @return void 
+     */
+    private function setRequestConfiguration() {
+
+        $this->commandData->addDynamicVariable('$TABLE_NAME_SINGULAR$', $this->tableNameSingular);
+    }
+
+    /** 
+     * Generate request
      *
      * @return void
      */
-    private function generateBaseRequest() {
+    private function generateRequest() {
 
-        $templateData = get_template('scaffold.request.base_request');
+        $templateData = get_template('scaffold.request.request');
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$RULES$', FormatHelper::writeValueToPhp($this->generateRules(), 2), $templateData);
         $templateData = str_replace('$MESSAGES$', FormatHelper::writeValueToPhp($this->generateMessages(), 2), $templateData);
 
-        FileUtil::createFile($this->path, $this->baseFileName, $templateData);
+        FileUtil::createFile($this->path, $this->fileName, $templateData);
 
         $this->commandData->commandComment("\nBase Request created: ");
-        $this->commandData->commandInfo($this->baseFileName);
-    }
-
-    private function generateCreateRequest() {
-
-        $templateData = get_template('scaffold.request.create_request');
-        $templateData = fill_template($this->commandData->dynamicVars, $templateData);
-
-        FileUtil::createFile($this->path, $this->createFileName, $templateData);
-
-        $this->commandData->commandComment("\nCreate Request created: ");
-        $this->commandData->commandInfo($this->createFileName);
-    }
-
-    private function generateUpdateRequest() {
-
-        $templateData = get_template('scaffold.request.update_request');
-        $templateData = fill_template($this->commandData->dynamicVars, $templateData);
-
-        FileUtil::createFile($this->path, $this->updateFileName, $templateData);
-
-        $this->commandData->commandComment("\nUpdate Request created: ");
-        $this->commandData->commandInfo($this->updateFileName);
+        $this->commandData->commandInfo($this->fileName);
     }
 
     /**
@@ -119,25 +113,20 @@ class RequestGenerator extends InfyOmRequestGenerator {
      */
     private function generateRules() {
 
-        $dontRequireFields = config('infyom.laravel_generator.options.hidden_fields', []) + 
-            config('infyom.laravel_generator.options.excluded_fields', []) +
-            $this->timestamps + $this->userStamps + [$this->lastActivity];
+        $dontRequireFields = array_merge(config('infyom.laravel_generator.options.hidden_fields', []), 
+            config('infyom.laravel_generator.options.excluded_fields', []),
+            $this->timestamps, $this->userStamps, [$this->lastActivity]);
 
         $rules = [];
 
-        $class = '\\' . $this->commandData->config->nsModel . '\\' . $this->commandData->modelName;
-        $model = new $class;
-        $primaryKeyName = $model->getKeyName();
-        $tableNameSingular = Str::singular($model->getTable());
-
         foreach ($this->commandData->fields as $field) {
 
-            if (!$field->isPrimary && $field->isNotNull && empty($field->validations) && !in_array($field->name, $dontRequireFields)) {
+            if (!$field->isPrimary && $field->isNotNull && !$field->validations && !in_array($field->name, $dontRequireFields)) {
 
                 $field->validations = ['required'];
             }
 
-            if (!empty($field->validations)) {
+            if ($field->validations) {
 
                 // Move unique rule to last
 
@@ -152,9 +141,9 @@ class RequestGenerator extends InfyOmRequestGenerator {
 
                     $field->validations[$lastKey] = FormatHelper::writeValueToPhp($field->validations[$lastKey]);
 
-                    $field->validations[$lastKey] = preg_replace_callback('/\$this->([a-zA-Z0-9]+)/', function($matches) use (&$primaryKeyName, &$tableNameSingular) {
+                    $field->validations[$lastKey] = preg_replace_callback('/\$this->([a-zA-Z0-9_]+)/', function($matches) {
 
-                        return $matches[1] == $primaryKeyName ? '\' . $this->route(' . FormatHelper::writeValueToPhp($tableNameSingular) . ') . \'' : '\' . $this->' . $matches[1] . ' . \'';
+                        return $matches[1] == $this->primaryKeyName ? '\' . $this->modelId . \'' : '\' . $this->' . $matches[1] . ' . \'';
 
                     }, $field->validations[$lastKey]);
 
@@ -162,6 +151,18 @@ class RequestGenerator extends InfyOmRequestGenerator {
                 }
 
                 $rules[$field->name] = $field->validations;
+
+                if (($key = array_search('required',  $field->validations)) !== false) {
+
+                    if (Str::contains(Str::lower($field->name), 'password')) {
+
+                        if (!in_array('nullable',  $field->validations)) {
+
+                            $field->validations[] = 'nullable';
+                            $rules[$field->name][$key] = FormatHelper::UNESCAPE . '$this->setRule(\'required\', \'nullable\')';
+                        }
+                    }
+                }
             }
         }
 
@@ -212,19 +213,9 @@ class RequestGenerator extends InfyOmRequestGenerator {
 
     public function rollback() {
 
-        if ($this->rollbackFile($this->path, $this->baseFileName)) {
+        if ($this->rollbackFile($this->path, $this->fileName)) {
 
-            $this->commandData->commandComment('Base Request file deleted: ' . $this->baseFileName);
-        }
-
-        if ($this->rollbackFile($this->path, $this->createFileName)) {
-
-            $this->commandData->commandComment('Create Request file deleted: ' . $this->createFileName);
-        }
-
-        if ($this->rollbackFile($this->path, $this->updateFileName)) {
-
-            $this->commandData->commandComment('Update Request file deleted: ' . $this->updateFileName);
+            $this->commandData->commandComment('Request file deleted: ' . $this->fileName);
         }
     }
 }
