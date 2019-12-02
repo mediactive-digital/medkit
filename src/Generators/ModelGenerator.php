@@ -61,13 +61,12 @@ class ModelGenerator extends InfyOmModelGenerator {
         $this->path = $this->getReflectionProperty('path');
         $this->fileName = $this->getReflectionProperty('fileName');
         $this->table = $this->getReflectionProperty('table');
-    }
-
-    public function generate() {
-
         $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
         $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
         $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
+    }
+
+    public function generate() {
 
         $templateData = get_template('model.model', 'laravel-generator');
         $templateData = $this->fillTemplate($templateData);
@@ -235,10 +234,7 @@ class ModelGenerator extends InfyOmModelGenerator {
         }
         else if ($this->commandData->getOption('fromTable')) {
 
-            $timestamps = $this->timestamps;
-            $timestamps[2] = isset($timestamps[2]) ? $timestamps[2] : null;
-
-            list($created_at, $updated_at, $deleted_at) = collect($timestamps)->map(function($field) {
+            list($created_at, $updated_at, $deleted_at) = collect($this->timestamps)->map(function($field) {
 
                 return !empty($field) ? "'$field'" : 'null';
             });
@@ -262,16 +258,17 @@ class ModelGenerator extends InfyOmModelGenerator {
     private function fillSoftDeletes($templateData) {
 
         $softDeleteImport = $softDelete = $softDeleteDates = '';
+        $timestamps = $this->timestamps;
 
         foreach ($this->commandData->fields as $field) {
 
-            if (!in_array($field->name, $this->timestamps) && strpos($field->htmlType, 'date') !== false) {
+            if (!in_array($field->name, $timestamps) && strpos($field->htmlType, 'date') !== false) {
 
-                $this->timestamps[] = $field->name;
+                $timestamps[] = $field->name;
             }
         }
 
-        if ($this->timestamps) {
+        if ($timestamps) {
 
             $hasSoftDelete = $this->hasSoftDelete();
 
@@ -282,10 +279,10 @@ class ModelGenerator extends InfyOmModelGenerator {
             }
             else {
 
-                unset($this->timestamps[2]);
+                unset($timestamps[2]);
             }
 
-            $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($this->timestamps, 1) . ";";
+            $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($timestamps, 1) . ";";
         }
 
         $templateData = str_replace('$SOFT_DELETE_IMPORT$', $softDeleteImport, $templateData);
