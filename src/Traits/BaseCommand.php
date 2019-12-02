@@ -113,8 +113,8 @@ trait BaseCommand {
 		
 		if (!$this->isSkip('tracks_history') and  config('infyom.laravel_generator.add_on.tracks_history.enabled', true) ) {
 		
-            $menuTracker = new TracksHistoryGenerator($this->commandData);
-            $menuTracker->generate(); 
+            $trackerGenerator = new TracksHistoryGenerator($this->commandData);
+            $trackerGenerator->generate(); 
 		}
         
     }
