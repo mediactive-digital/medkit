@@ -81,7 +81,7 @@ class ModelGenerator extends InfyOmModelGenerator {
     public function generateCasts() {
 
         $casts = [];
-        $ignore = array_merge($this->timestamps + [$this->lastActivity]);
+        $ignore = array_merge($this->timestamps, [$this->lastActivity]);
 
         foreach ($this->commandData->fields as $field) {
 
@@ -168,7 +168,7 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         $mutators = [];
         $template = get_template('model.mutator');
-        $ignore = array_merge($this->timestamps + [$this->lastActivity]);
+        $ignore = array_merge($this->timestamps, [$this->lastActivity]);
 
         foreach ($this->commandData->fields as $field) {
 
@@ -235,7 +235,10 @@ class ModelGenerator extends InfyOmModelGenerator {
         }
         else if ($this->commandData->getOption('fromTable')) {
 
-            list($created_at, $updated_at, $deleted_at) = collect($this->timestamps)->map(function ($field) {
+            $timestamps = $this->timestamps;
+            $timestamps[2] = isset($timestamps[2]) ? $timestamps[2] : null;
+
+            list($created_at, $updated_at, $deleted_at) = collect($timestamps)->map(function($field) {
 
                 return !empty($field) ? "'$field'" : 'null';
             });

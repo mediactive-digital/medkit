@@ -300,31 +300,34 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $attributes = [];
 
-        foreach ($field->validations as $validation) {
+        if ($field->validations) {
 
-            if ($validation == 'required') {
+            foreach ($field->validations as $validation) {
 
-                $attributes[$validation] = $validation;
+                if ($validation == 'required') {
 
-                continue;
+                    $attributes[$validation] = $validation;
+
+                    continue;
+                }
+
+                if (!Str::contains($validation, ['max:', 'min:', 'required'])) {
+
+                    continue;
+                }
+
+                $validationText = substr($validation, 0, 3);
+                $sizeInNumber = substr($validation, 4);
+
+                $sizeText = $validationText == 'min' ? 'minlength' : 'maxlength';
+
+                if ($field->htmlType == 'number') {
+
+                    $sizeText = $validationText;
+                }
+
+                $attributes[$sizeText] = $sizeInNumber;
             }
-
-            if (!Str::contains($validation, ['max:', 'min:', 'required'])) {
-
-                continue;
-            }
-
-            $validationText = substr($validation, 0, 3);
-            $sizeInNumber = substr($validation, 4);
-
-            $sizeText = $validationText == 'min' ? 'minlength' : 'maxlength';
-
-            if ($field->htmlType == 'number') {
-
-                $sizeText = $validationText;
-            }
-
-            $attributes[$sizeText] = $sizeInNumber;
         }
 
         if (isset($field->autofocus)) {
