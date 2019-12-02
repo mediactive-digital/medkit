@@ -77,4 +77,16 @@ class TracksHistoryGenerator  {
             $this->commandData->commandObj->info('Tracker history ' . $this->commandData->config->mHumanPlural . ' already exists, Skipping Adjustment.');
         }
     }
+	
+	
+    public function rollback( )
+    {   
+        if (Str::contains($this->menuContents, $this->menuTemplate)) {
+            file_put_contents($this->path, str_replace($this->menuTemplate, '', $this->menuContents));
+            $this->commandData->commandComment('Tracker history  deleted');
+        } 
+    }
+	
+	
+	
 }
