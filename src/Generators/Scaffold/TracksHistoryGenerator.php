@@ -6,7 +6,8 @@ namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
-
+ 
+use Str;
 class TracksHistoryGenerator  {
 
     use Reflection;
