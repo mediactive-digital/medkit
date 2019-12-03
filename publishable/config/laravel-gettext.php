@@ -92,6 +92,7 @@ return [
         '.',
         '../resources/views',
         '../resources/assets/js',
+        '../resources/lang/po_laravel',
         '../routes'
     ],
 

@@ -2,18 +2,22 @@
 
 namespace MediactiveDigital\MedKit;
 
-use MediactiveDigital\MedKit\Commands\clearDirectory;
-use MediactiveDigital\MedKit\Providers\EventServiceProvider;
-use MediactiveDigital\MedKit\Providers\AppServiceProvider;
-
 use Illuminate\Foundation\AliasLoader;
 
 use Illuminate\Support\ServiceProvider;
 
+use MediactiveDigital\MedKit\Providers\EventServiceProvider;
+use MediactiveDigital\MedKit\Providers\AppServiceProvider;
+use MediactiveDigital\MedKit\Providers\TranslationServiceProvider;
+
+use MediactiveDigital\MedKit\Commands\ClearDirectoryCommand;
 use MediactiveDigital\MedKit\Commands\InstallCommand;
 use MediactiveDigital\MedKit\Commands\RunMigrationCommand;
 use MediactiveDigital\MedKit\Commands\CreateSuperAdminCommand;
 use MediactiveDigital\MedKit\Commands\CleanupCommand;
+use MediactiveDigital\MedKit\Commands\GenerateTranslationsCommand;
+use MediactiveDigital\MedKit\Commands\GenerateJsTranslationsCommand;
+use MediactiveDigital\MedKit\Commands\GenerateJsRoutesCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ScaffoldGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\RequestsGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ControllerGeneratorCommand;
@@ -21,17 +25,18 @@ use MediactiveDigital\MedKit\Commands\Scaffold\RollbackGeneratorCommand;
 
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
-class MedKitServiceProvider extends ServiceProvider
-{
+class MedKitServiceProvider extends ServiceProvider {
+
     /**
      * Perform post-registration booting of services.
      *
      * @return void
      */
-    public function boot()
-    {
+    public function boot() {
+
         // Publishing is only necessary when using the CLI.
         if ($this->app->runningInConsole()) {
+
             $this->bootForConsole();
         }
     }
@@ -46,24 +51,27 @@ class MedKitServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/medkit.php', 'mediactive-digital.medkit');
 
         // Register the service the package provides.
-        $this->app->singleton('medkit', function ($app) {
-            return new MedKit( );
+        $this->app->singleton('medkit', function($app) {
+
+            return new MedKit;
         });
 
-        $this->app->singleton('assetConfJson', function (){
-            return json_decode(file_get_contents(public_path("mdassets-autoload.json")),true);
+        $this->app->singleton('assetConfJson', function() {
+
+            return json_decode(file_get_contents(public_path('mdassets-autoload.json')), true);
         });
 
         $this->app->booting(function() {
+
             $loader = AliasLoader::getInstance();
             $loader->alias('MDAsset', AssetHelper::class);
         });
 
         $this->app->register(EventServiceProvider::class);
         $this->app->register(AppServiceProvider::class);
+        $this->app->register(TranslationServiceProvider::class);
 
         $this->registerCommands();
-
     }
 
     /**
@@ -71,8 +79,8 @@ class MedKitServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
-    {
+    public function provides() {
+
         return ['medkit'];
     }
 
@@ -87,24 +95,6 @@ class MedKitServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/medkit.php' => config_path('mediactive-digital/medkit.php')
         ], 'medkit.config');
-
-        // Publishing the views.
-        /*$this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/mediactivedigital'),
-        ], 'medkit.views');*/
-
-        // Publishing assets.
-        /*$this->publishes([
-            __DIR__.'/../resources/assets' => public_path('vendor/mediactivedigital'),
-        ], 'medkit.views');*/
-
-        // Publishing the translation files.
-        /*$this->publishes([
-            __DIR__.'/../resources/lang' => resource_path('lang/vendor/mediactivedigital'),
-        ], 'medkit.views');*/
-
-        // Registering package commands.
-        // $this->commands([]);
     }
 
     private function registerCommands() {
@@ -113,12 +103,15 @@ class MedKitServiceProvider extends ServiceProvider
             InstallCommand::class,
             RunMigrationCommand::class,
             CreateSuperAdminCommand::class,
-            clearDirectory::class,
+            ClearDirectoryCommand::class,
             CleanupCommand::class,
             ScaffoldGeneratorCommand::class,
             RequestsGeneratorCommand::class,
             ControllerGeneratorCommand::class,
-            RollbackGeneratorCommand::class
+            RollbackGeneratorCommand::class,
+            GenerateTranslationsCommand::class,
+            GenerateJsTranslationsCommand::class,
+            GenerateJsRoutesCommand::class
         ]);
     }
 }

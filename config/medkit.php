@@ -11,7 +11,7 @@ return [
     		'login'
     	]
     ],
-    'clearDirectory' => [
+    'clear_directory' => [
         'storage/logs' => 30
     ],
     'path' => [

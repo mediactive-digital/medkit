@@ -36,7 +36,10 @@ class InstallCommand extends Command {
         6 => 'Add AdminGuard',
         7 => 'Add Facades',
         8 => 'Install Theme',
-        9 => 'Add helpers'
+        9 => 'Add helpers',
+        10 => 'Generate Laravel default translations for Poedit',
+        11 => 'Generate JS translations',
+        12 => 'Generate JS routes'
     ];
 
     /**
@@ -76,6 +79,9 @@ class InstallCommand extends Command {
                     $this->addAdminGuard();
                     $this->addFacades();
                     $this->installTheme();
+                    $this->generateTranslations();
+                    $this->generateJsTranslations();
+                    $this->generateJsRoutes();
                     $this->composerDump();
 
                     return true;
@@ -130,6 +136,24 @@ class InstallCommand extends Command {
 
                     $this->addHelpers();
                     $this->composerDump();
+                    
+                break;
+
+                case 10 :
+
+                    $this->generateTranslations();
+                    
+                break;
+
+                case 11 :
+
+                    $this->generateJsTranslations();
+                    
+                break;
+
+                case 12 :
+
+                    $this->generateJsRoutes();
                     
                 break;
             }
@@ -384,5 +408,35 @@ class InstallCommand extends Command {
 
             $this->error(' #ERR1 [SKIP] ' . $path . ' already has helpers');
         }
+    }
+
+    /**
+     * Generate Laravel default translations for Poedit
+     *
+     * @return void
+     */
+    private function generateTranslations() {
+
+        $this->doCommand('php artisan medkit:generate-translations');
+    }
+
+    /**
+     * Generate JS translations
+     *
+     * @return void
+     */
+    private function generateJsTranslations() {
+
+        $this->doCommand('php artisan medkit:generate-js-translations');
+    }
+
+    /**
+     * Generate JS routes
+     *
+     * @return void
+     */
+    private function generateJsRoutes() {
+
+        $this->doCommand('php artisan medkit:generate-js-routes');
     }
 }
