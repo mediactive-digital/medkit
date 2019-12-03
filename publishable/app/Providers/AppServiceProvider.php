@@ -28,7 +28,6 @@ class AppServiceProvider extends ServiceProvider
     {
 		
 		# TracksHistory   
-        \App\Models\Admin::observe(ModelTrackObserver::class); 
         # fin TracksHistory  
         
     }
