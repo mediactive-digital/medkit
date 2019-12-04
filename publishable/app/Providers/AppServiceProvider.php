@@ -1,6 +1,6 @@
 <?php
 
-namespace MediactiveDigital\MedKit\Providers;
+namespace App\Providers;
  
 use App\Observers\ModelTrackObserver;
 use Illuminate\Support\ServiceProvider;
