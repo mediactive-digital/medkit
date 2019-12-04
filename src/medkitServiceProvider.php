@@ -7,7 +7,7 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 use MediactiveDigital\MedKit\Providers\EventServiceProvider;
-use MediactiveDigital\MedKit\Providers\AppServiceProvider;
+// use MediactiveDigital\MedKit\Providers\AppServiceProvider;
 use MediactiveDigital\MedKit\Providers\TranslationServiceProvider;
 
 use MediactiveDigital\MedKit\Commands\ClearDirectoryCommand;
@@ -68,7 +68,7 @@ class MedKitServiceProvider extends ServiceProvider {
         });
 
         $this->app->register(EventServiceProvider::class);
-        $this->app->register(AppServiceProvider::class);
+       // $this->app->register(AppServiceProvider::class);
         $this->app->register(TranslationServiceProvider::class);
 
         $this->registerCommands();
