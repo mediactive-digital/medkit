@@ -101,14 +101,14 @@ class GenerateTranslationsCommand extends Command {
 
         $this->filesystem = $filesystem;
 
-        $this->resourcePath = resource_path('lang/');
-        $this->vendorPath = base_path('vendor/caouecs/laravel-lang/src/');
+        $this->resourcePath = str_replace('\\', '/', resource_path('lang/'));
+        $this->vendorPath = str_replace('\\', '/', base_path('vendor/caouecs/laravel-lang/src/'));
         $this->resourceFileloader = new FileLoader($this->filesystem, $this->resourcePath);
         $this->vendorFileloader = new FileLoader($this->filesystem, $this->vendorPath);
 
         $this->locales = config('laravel-gettext.supported-locales');
 
-        $this->referencePath = resource_path('lang/po_laravel/');
+        $this->referencePath = str_replace('\\', '/', resource_path('lang/po_laravel/'));
         $this->referenceFile = 'po_laravel.php';
         $this->reference = '../resources/lang/po_laravel/' . $this->referenceFile;
 
@@ -154,23 +154,25 @@ class GenerateTranslationsCommand extends Command {
             $createdLocales[] = $locale;
         }
 
+        $path = str_replace('\\', '/', resource_path('lang/i18n/'));
+
         foreach ($this->locales as $locale) {
 
             $translationsDatas['langs'][$locale] = [
                 'translations' => []
             ];
 
-            $path = resource_path('lang/i18n/' . $locale);
-            $translationsDatas['langs'][$locale]['file'] = $path . '/LC_MESSAGES/messages.po';
+            $localePath = $path . $locale;
+            $translationsDatas['langs'][$locale]['file'] = $localePath . '/LC_MESSAGES/messages.po';
 
             if (in_array($locale, $createdLocales)) {
 
-                $this->comment('Locale directory created : ' . $path);
+                $this->comment('Locale directory created : ' . $localePath);
                 $this->comment('Locale file created : ' . $translationsDatas['langs'][$locale]['file']);
             }
             else {
 
-                $this->comment('Locale directory already exists : ' . $path);
+                $this->comment('Locale directory already exists : ' . $localePath);
                 $this->comment('Locale file already exists : ' . $translationsDatas['langs'][$locale]['file']);
             }
 
