@@ -199,7 +199,7 @@ class GenerateTranslationsCommand extends Command {
 
                     foreach ($laravelTranslations as $laravelTranslation) {
 
-                        $this->comment('Laravel translations file found : ' . $translationsPath . '/' . $laravelTranslation->getRealName());
+                        $this->comment('Laravel translations file found : ' . $translationsPath . '/' . $laravelTranslation->getFilename());
 
                         $group = $laravelTranslation->getBasename('.php');
                         $translations = $fileloader->load($locale, $group);
