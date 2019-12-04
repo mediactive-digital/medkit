@@ -182,7 +182,7 @@ class GenerateTranslationsCommand extends Command {
                 $fileloader = $this->resourceFileloader;
             }
 
-            if (!$laravelTranslations && $this->filesystem->isDirectory($this->vendorPath . $locale)) {
+            if (!$fileloader && $this->filesystem->isDirectory($this->vendorPath . $locale)) {
 
                 $translationsPath = $this->vendorPath . $locale;
                 $fileloader = $this->vendorFileloader;
