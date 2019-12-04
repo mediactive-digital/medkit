@@ -33,10 +33,6 @@ trait Request {
      */
     public function rules() {
 
-        $this->modelId = $this->route($this->tableNameSingular);
-
-        $this->setRules();
-
         return $this->requestRules;
     }
 
@@ -47,8 +43,6 @@ trait Request {
      */
     public function messages() {
 
-        $this->setMessages();
-
         return $this->requestMessages;
     }
 
@@ -58,6 +52,11 @@ trait Request {
      * @return void
      */
     protected function prepareForValidation() {
+
+        $this->modelId = $this->route($this->tableNameSingular);
+
+        $this->setRules();
+        $this->setMessages();
 
         $this->formatDatas();
     }
