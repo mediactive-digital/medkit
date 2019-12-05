@@ -28,7 +28,7 @@ class Admin extends MedKitModelAdmin
      */
     protected $fillable = [
         'name', 
-        'firstname', 
+        'first_name', 
         'email', 
         'login', 
         'password',

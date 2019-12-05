@@ -6,7 +6,7 @@ return [
     'gdpr' => [
     	'users' => [
     		'name',
-    		'firstname',
+    		'first_name',
     		'email',
     		'login'
     	]

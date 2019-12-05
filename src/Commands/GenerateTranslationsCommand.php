@@ -223,14 +223,13 @@ class GenerateTranslationsCommand extends Command {
                                 }
                             }
 
-                            foreach ($translations as $key => $translation) {
+                            $translations = [
+                                $group => $translations
+                            ];
 
-                                $translations[$group . '.' . $key] = $translation;
-                                unset($translations[$key]);
-                            }
-
-                            $translationsDatas['langs'][$locale]['translations'] = array_merge($translationsDatas['langs'][$locale]['translations'], Arr::dot($translations));
-                            $translationsDatas['keys'] = array_merge($translationsDatas['keys'], array_keys($translationsDatas['langs'][$locale]['translations']));
+                            $dotedTranslations = Arr::dot($translations);
+                            $translationsDatas['langs'][$locale]['translations'] = array_merge($translationsDatas['langs'][$locale]['translations'], $dotedTranslations);
+                            $translationsDatas['keys'] = array_merge($translationsDatas['keys'], array_keys($dotedTranslations));
                         }
                     }
                 }
@@ -277,7 +276,8 @@ class GenerateTranslationsCommand extends Command {
 
             foreach ($translationsDatas['keys'] as $index => $key) {
 
-                $translationsDatas['keys'][$index] = FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($key) . ')';
+                unset($translationsDatas['keys'][$index]);
+                Arr::set($translationsDatas['keys'], $key, FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($key) . ')');
             }
 
             $fileContents = '<?php' . infy_nl_tab(2, 0) . $this->comment . infy_nl_tab(2, 0) . 'return ' . FormatHelper::writeValueToPhp($translationsDatas['keys']) . ';' . infy_nl_tab(1, 0);

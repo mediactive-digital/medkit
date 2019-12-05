@@ -56,7 +56,7 @@ class CreateSuperAdminCommand extends Command {
                     $superadmin->login = $login;
                     $superadmin->password = $password;
                     $superadmin->name = 'Digital';
-                    $superadmin->firstname = 'Mediactive';
+                    $superadmin->first_name = 'Mediactive';
                     $superadmin->email = $email;
 
                     $superadmin->save();

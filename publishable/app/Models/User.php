@@ -23,7 +23,7 @@ class User extends MedKitUser {
      */
     protected $fillable = [
         'name', 
-        'firstname', 
+        'first_name', 
         'email', 
         'login', 
         'password',
