@@ -61,10 +61,11 @@ class Translator extends IlluminateTranslator {
                     foreach ($fields as $key => $field) {
 
                         $options = $field->getOptions();
+                        $label = isset($options['first_options']['label']) && $options['first_options']['label'] ? $options['first_options']['label'] : (isset($options['label']) ? $options['label'] : '');
 
-                        if (isset($options['label']) && $options['label']) {
+                        if ($label) {
 
-                            $this->translatedForm->translatedFields[$key] = Str::lower($options['label']);
+                            $this->translatedForm->translatedFields[$key] = Str::lower($label);
                         }
                     }
                 }
