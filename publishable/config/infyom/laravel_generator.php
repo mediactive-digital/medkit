@@ -137,6 +137,8 @@ return [
 
         'userStamps' => true,
 
+        'flashValidationErrors' => false,
+
         'save_schema_file' => true,
 
         'tables_searchable_default' => false,

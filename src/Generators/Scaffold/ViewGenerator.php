@@ -31,6 +31,11 @@ class ViewGenerator extends InfyOmViewGenerator
 
     /** @var array */
     private $htmlFields;
+
+    /** 
+     * @var string 
+     */
+    private $flashValidationErrors;
 	 
 	const TABLE_GENERATE_BLADE_FILE				 = 'table.blade.php';
 	const INDEX_GENERATE_BLADE_FILE				 = 'index.blade.php';
@@ -255,6 +260,7 @@ class ViewGenerator extends InfyOmViewGenerator
         $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
 
         FileUtil::createFile($this->path, self::CREATE_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo( self::CREATE_GENERATE_BLADE_FILE . ' created');
@@ -271,6 +277,7 @@ class ViewGenerator extends InfyOmViewGenerator
         $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
 
         FileUtil::createFile($this->path,  self::EDIT_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo( self::EDIT_GENERATE_BLADE_FILE  . ' created');
@@ -313,9 +320,22 @@ class ViewGenerator extends InfyOmViewGenerator
         $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
 
         FileUtil::createFile($this->path, self::SHOW_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo(  self::SHOW_GENERATE_BLADE_FILE . ' created');
+    }
+
+    /**
+     * Generate flash validation errors.
+     *
+     * @return string
+     */
+    private function generateFlashValidationErrors(): string {
+
+        $this->flashValidationErrors = $this->flashValidationErrors === null ? ($this->commandData->getOption('flashValidationErrors') ? get_template('scaffold.views.flash_validation_errors') : '') : $this->flashValidationErrors;
+
+        return $this->flashValidationErrors;
     }
 
     public function rollback($views = [])
