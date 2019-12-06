@@ -102,7 +102,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $templateData = get_template('scaffold.datatable');
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
-        $templateData = str_replace('$DATATABLE_COLUMNS$', FormatHelper::writeValueToPhp($this->generateDataTableColumns(), 3), $templateData);
+        $templateData = str_replace('$DATATABLE_COLUMNS$', FormatHelper::writeValueToPhp($this->generateDataTableColumns(), 2), $templateData);
 
         $path = $this->commandData->config->pathDataTables;
         $fileName = $this->commandData->modelName . 'DataTable.php';

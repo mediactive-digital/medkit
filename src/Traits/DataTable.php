@@ -44,7 +44,7 @@ trait DataTable {
 
                             $json = file_get_contents($path . '/' . $name . '.' . $extension);
                             $json = substr($json, strpos($json, '{'));
-                            $json = json_decode(substr($json, 0, strpos($json, '}') + 1), true);
+                            $json = json_decode(substr($json, 0, strrpos($json, '}') + 1), true);
 
                             $this->translations = $json ?: $this->translations;
 

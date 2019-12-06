@@ -4,12 +4,12 @@ namespace $NAMESPACE_DATATABLES$;
 
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
-use Yajra\DataTables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable as YajraDataTable;
 use Yajra\DataTables\EloquentDataTable;
 
 use App\Traits\DataTable;
 
-class $MODEL_NAME$DataTable extends DataTable {
+class $MODEL_NAME$DataTable extends YajraDataTable {
 
     use DataTable;
 
