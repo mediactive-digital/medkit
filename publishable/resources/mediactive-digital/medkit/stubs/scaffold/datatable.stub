@@ -3,19 +3,24 @@
 namespace $NAMESPACE_DATATABLES$;
 
 use $NAMESPACE_MODEL$\$MODEL_NAME$;
+
 use Yajra\DataTables\Services\DataTable;
 use Yajra\DataTables\EloquentDataTable;
 
-class $MODEL_NAME$DataTable extends DataTable
-{
+use App\Traits\DataTable;
+
+class $MODEL_NAME$DataTable extends DataTable {
+
+    use DataTable;
+
     /**
      * Build DataTable class.
      *
      * @param mixed $query Results from query() method.
      * @return \Yajra\DataTables\DataTableAbstract
      */
-    public function dataTable($query)
-    {
+    public function dataTable($query) {
+
         $dataTable = new EloquentDataTable($query);
 
         return $dataTable->addColumn('action', '$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.datatables_actions');
@@ -27,8 +32,8 @@ class $MODEL_NAME$DataTable extends DataTable
      * @param \App\Models\$MODEL_NAME$ $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query($MODEL_NAME$ $model)
-    {
+    public function query($MODEL_NAME$ $model) {
+
         return $model->newQuery();
     }
 
@@ -37,23 +42,24 @@ class $MODEL_NAME$DataTable extends DataTable
      *
      * @return \Yajra\DataTables\Html\Builder
      */
-    public function html()
-    {
+    public function html() {
+
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->addAction(['width' => '120px', 'printable' => false])
             ->parameters([
-                'dom'       => 'Bfrtip',
+                'dom' => 'Bfrtip',
                 'stateSave' => true,
-                'order'     => [[0, 'desc']],
-                'buttons'   => [
-                    ['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner',],
-                    ['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner',],
-                    ['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner',],
-                    ['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner',],
-                    ['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner',],
+                'order' => [[0, 'desc']],
+                'buttons' => [
+                    ['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'],
+                    ['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner'],
+                    ['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner'],
+                    ['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
+                    ['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
                 ],
+                'language' => $this->getTranslations()
             ]);
     }
 
@@ -62,11 +68,9 @@ class $MODEL_NAME$DataTable extends DataTable
      *
      * @return array
      */
-    protected function getColumns()
-    {
-        return [
-            $DATATABLE_COLUMNS$
-        ];
+    protected function getColumns() {
+
+        return $DATATABLE_COLUMNS$;
     }
 
     /**
@@ -74,8 +78,8 @@ class $MODEL_NAME$DataTable extends DataTable
      *
      * @return string
      */
-    protected function filename()
-    {
+    protected function filename() {
+
         return '$MODEL_NAME_PLURAL_SNAKE$datatable_' . time();
     }
 }

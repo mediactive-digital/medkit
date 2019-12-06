@@ -98,9 +98,22 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         }
     }
 
-    private function generateDataTableColumns() {
+    private function generateDataTable() {
 
-        $headerFieldTemplate = get_template('scaffold.views.datatable_column', 'templates');
+        $templateData = get_template('scaffold.datatable');
+        $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = str_replace('$DATATABLE_COLUMNS$', FormatHelper::writeValueToPhp($this->generateDataTableColumns(), 3), $templateData);
+
+        $path = $this->commandData->config->pathDataTables;
+        $fileName = $this->commandData->modelName . 'DataTable.php';
+
+        FileUtil::createFile($path, $fileName, $templateData);
+
+        $this->commandData->commandComment("\nDataTable created: ");
+        $this->commandData->commandInfo($fileName);
+    }
+
+    private function generateDataTableColumns() {
 
         $dataTableColumns = [];
 
@@ -111,16 +124,17 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 continue;
             }
 
-            $fieldTemplate = fill_template_with_field_data($this->commandData->dynamicVars, $this->commandData->fieldNamesMapping, $headerFieldTemplate, $field);
+            $datas = [
+                'name' => $field->name,
+                'data' => $field->name
+            ];
 
-            if ($field->isSearchable) {
+            if (!$field->isSearchable) {
 
-                $dataTableColumns[] = $fieldTemplate;
-            } 
-            else {
-
-                $dataTableColumns[] = "'" . $field->name . "' => ['searchable' => false]";
+                $datas['searchable'] = false;
             }
+
+            $dataTableColumns[FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->name)) . ')'] = $datas;
         }
 
         return $dataTableColumns;
