@@ -65,7 +65,7 @@ class PermissionGenerator extends BaseGenerator {
 		$aAbility	 = array();
 		$aAbility	 += $this->permissionsAbilityCrudDefault;
 
-		// on met les owm
+		// on met les own
 		if ($this->isCreateByExist()) {
 			$aAbility += $this->permissionsAbilityCrudOwn;
 		}
