@@ -61,6 +61,8 @@ return [
 
         'providers'       => app_path('Providers/'),
 		
+        'policies'       => app_path('Policies/'),
+		
     ],
 
     /*
@@ -190,16 +192,20 @@ return [
 
         'tracks_history'          => [
 
-            'enabled'       => true,
+            'enabled'       => true, // track crud  in history table
 
             'provider_file'     => 'AppServiceProvider.php',
         ],
 
         'permissions'          => [
-			'policies'    => true,
-            'enabled'       => true, 
+			
+			'policies'    => true,  // Create the crud Policy Class
+			
+            'enabled'       => true, // Create the crud permissions and assign to superAdmin Role
+			
             'superadmin_role_id'       => 1, 
         ],
+		
         'forms' => true,
     ],
 

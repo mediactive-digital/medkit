@@ -1,0 +1,139 @@
+<?php
+namespace $NAMESPACE_POLICIES$;
+
+use App\Models\User;
+use $NAMESPACE_MODEL$\$MODEL_NAME$; 
+use Illuminate\Auth\Access\HandlesAuthorization;
+
+class $MODEL_NAME$Policy
+{
+    use HandlesAuthorization;
+	
+	/**  
+     * Determine whether the user can view any $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\Models\User  $user
+     * @return mixed
+     */
+    public function viewAny(User $user )
+    { 
+		 
+		$RULE_VIEW_ANY_FOR_OWN$
+ 
+        if ( $user->can('$VIEW_ALL$') ) { 
+            return true;
+        } 
+    }
+	
+    /**
+     * Determine whether the user can view the $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\User $user
+     * @param  $NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
+     * @return mixed
+     */
+    public function view(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
+    {   
+		
+		$RULE_VIEW_FOR_OWN$
+		
+        if ($user->can('$VIEW_ALL$')) {
+            return true;
+        }
+		
+		/**
+		 * Exemple Si il y a une methode published ?
+		 * 
+        if ($$MODEL_NAME_CAMEL$->published) {
+            return true;
+        }
+        // visitors cannot view unpublished items
+        if ($user === null) {
+            return false;
+        }
+        // admin overrides published status
+        if ($user->can('view unpublished permissions')) {
+            return true;
+        }
+        // authors can view their own unpublished permissions
+        return $user->id == $$MODEL_NAME_CAMEL$->$BD_FIELD_CREATED_BY_NAME$; 
+		 */
+		
+    }
+    /**
+     * Determine whether the user can create $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\User $user
+     * @return mixed
+     */
+    public function create(User $user )
+    {	
+		
+        if ($user->can('$CREATE$')) {
+            return true;
+        }
+    }
+	
+	
+    /**
+     * Determine whether the user can update the $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\User $user
+     * @param  $NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
+     * @return mixed
+     */
+    public function update(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
+    {  
+		
+		$RULE_UPDATE_FOR_OWN$
+		
+        if ($user->can('$EDIT_ALL$')) {
+            return true;
+        }
+    }
+	
+    /**
+     * Determine whether the user can delete the $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\User $user
+     * @param  $NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
+     * @return mixed
+     */
+    public function delete(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
+    {
+		
+		$RULE_DELETE_FOR_OWN$
+		
+        if ($user->can('$DELETE_ANY$')) {
+            return true;
+        }
+    }
+	
+    /**
+     * Determine whether the user can restore the $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\Models\User  $user
+     * @param  $NAMESPACE_MODEL$\$MODEL_NAME$ $MODEL_NAME_CAMEL$
+     * @return mixed
+    public function restore(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
+    {
+		
+        //
+		dd('restore');
+    }
+     */
+
+    /**
+     * Determine whether the user can permanently delete the $MODEL_NAME_CAMEL$.
+     *
+     * @param  \App\Models\User  $user
+     * @param  $NAMESPACE_MODEL$\$MODEL_NAME$ $MODEL_NAME_CAMEL$
+     * @return mixed
+    public function forceDelete(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
+    {
+		
+        //
+		dd('forceDelete');
+    }
+     */
+}

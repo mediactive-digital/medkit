@@ -20,12 +20,15 @@ class PermissionGenerator extends BaseGenerator {
 	 * @var CommandData
 	 */
 	private $commandData;
+	
 	private $idRoleSuperAdmin;
+	
 	public $permissionsAbilityCrudOwn = [
 		'edit_own',
 		'delete_own',
 		'view_own',
 	];
+	
 	public $permissionsAbilityCrudDefault = [
 		'create',
 		'edit_all',

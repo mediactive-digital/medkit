@@ -231,6 +231,17 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             }
         }
 
+		if(  in_array($templateName, ['controller' , 'datatable_controller'] ) ){
+			
+			if( config('infyom.laravel_generator.add_on.permissions.policies', true) ){
+				
+				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource( $NAMESPACE_MODEL$\$MODEL_NAME$::class );', $templateData);
+			} else {
+				
+				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '', $templateData);
+			}
+		}
+		
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
         FileUtil::createFile($this->path, $this->fileName, $templateData);
