@@ -15,6 +15,7 @@ use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
 use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator; 
+use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator; 
 
 trait BaseCommand { 
 
@@ -109,12 +110,24 @@ trait BaseCommand {
             $menuGenerator = new MenuGenerator($this->commandData);
             $menuGenerator->generate();
         }
-		
-		
+		 
 		if (!$this->isSkip('tracks_history') and  config('infyom.laravel_generator.add_on.tracks_history.enabled', true) ) {
 		
             $trackerGenerator = new TracksHistoryGenerator($this->commandData);
             $trackerGenerator->generate(); 
+		}
+        
+		if (!$this->isSkip('permissions') and  config('infyom.laravel_generator.add_on.permissions.enabled', true) ) {
+		
+            $trackerGenerator = new PermissionGenerator($this->commandData);
+            $trackerGenerator->generate(); 
+			
+			
+			if (!$this->isSkip('policies') and  config('infyom.laravel_generator.add_on.permissions.policies', true) ) {
+
+			 //$policyGenerator = new PolicyGenerator($this->commandData);
+			//	$policyGenerator->generate(); 
+			}
 		}
         
     }

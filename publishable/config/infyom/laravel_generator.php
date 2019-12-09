@@ -195,6 +195,11 @@ return [
             'provider_file'     => 'AppServiceProvider.php',
         ],
 
+        'permissions'          => [
+			'policies'    => true,
+            'enabled'       => true, 
+            'superadmin_role_id'       => 1, 
+        ],
         'forms' => true,
     ],
 

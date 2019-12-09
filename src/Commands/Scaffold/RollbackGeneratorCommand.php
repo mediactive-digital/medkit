@@ -11,6 +11,7 @@ use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator; 
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 
 use InfyOm\Generator\Commands\RollbackGeneratorCommand as InfyOmRollbackGeneratorCommand;
@@ -118,6 +119,11 @@ class RollbackGeneratorCommand extends InfyOmRollbackGeneratorCommand
 
         if ( config('infyom.laravel_generator.add_on.tracks_history.enabled', true) ) {
             $trackerGenerator = new TracksHistoryGenerator($this->commandData);
+            $trackerGenerator->rollback();
+        }
+
+        if ( config('infyom.laravel_generator.add_on.permissions.enabled', true) ) {
+            $trackerGenerator = new PermissionGenerator($this->commandData);
             $trackerGenerator->rollback();
         }
 
