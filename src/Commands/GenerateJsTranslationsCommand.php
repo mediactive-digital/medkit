@@ -8,6 +8,8 @@ use Illuminate\Filesystem\Filesystem;
 
 use Sepia\PoParser\Parser;
 
+use MediactiveDigital\MedKit\Helpers\TranslationHelper;
+
 class GenerateJsTranslationsCommand extends Command {
 
     /**
