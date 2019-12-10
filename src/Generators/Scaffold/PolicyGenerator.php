@@ -7,7 +7,8 @@ use InfyOm\Generator\Utils\FileUtil;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator;
-use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
+use Str;
 
 class PolicyGenerator extends PermissionGenerator {
 
@@ -26,9 +27,14 @@ class PolicyGenerator extends PermissionGenerator {
 	private $templateType;
 	private $fileName;
 
+    private $providerPath;
+	private $providerContents; 
+    private $providerTemplate;
+	
 	/** @var boolean */
 	private $optionUserStamps;
 
+	
 	public function __construct(CommandData $commandData) {
 
 		parent::__construct($commandData);
@@ -44,6 +50,12 @@ class PolicyGenerator extends PermissionGenerator {
 
 		$this->templateType = 'medkit';
 
+		
+        $this->providerPath = config('infyom.laravel_generator.path.auth_provider');
+        $this->providerContents = file_get_contents($this->providerPath); 
+        $this->providerTemplate = get_template('scaffold.policy.provider');
+        $this->providerTemplate = fill_template($this->commandData->dynamicVars, $this->providerTemplate);
+		 
 		$this->setRequestConfiguration();
 	}
 
@@ -76,6 +88,44 @@ class PolicyGenerator extends PermissionGenerator {
 		$this->commandData->addDynamicVariable('$NAMESPACE_POLICIES$', $namespaceName);
 	}
 
+	/**
+	 * 
+	 */
+    public function generateProvider() {
+
+        $add = false;
+
+        $this->providerContents = preg_replace_callback('/(# policiesGenerator)'
+			. '([\s\S]*?)'
+			. '(# fin policiesGenerator)/', function($matches) use (&$add) {
+ 
+            if (strpos($matches[2],  ucfirst($this->commandData->config->mCamel) . '::class' ) !== false) {
+
+                $return = $matches[1] . $matches[2] . $matches[3];
+            }
+            else {
+
+                $return = $matches[1] . rtrim($matches[2]) . $this->providerTemplate . $matches[3];
+
+                $add = true;
+            }
+  
+            return $return;
+
+        }, $this->providerContents);
+
+        if ($add) {
+
+            $this->commandData->commandComment("\n" . $this->commandData->config->mCamelPlural . ' policy provider added.');
+
+            file_put_contents($this->path, $this->providerContents);
+        }
+        else {
+
+            $this->commandData->commandObj->info('Policy provider ' . $this->commandData->config->mHumanPlural . ' already exists, Skipping Adjustment.');
+        }
+    }
+	
 	/**
 	 *
 	 */
@@ -159,12 +209,32 @@ class PolicyGenerator extends PermissionGenerator {
 	/**
 	 *
 	 */
-	public function rollback() {
+	public function rollbackPolicy() {
 
 		if ($this->rollbackFile($this->path, $this->fileName)) {
 
 			$this->commandData->commandComment('Policy file deleted: ' . $this->fileName);
 		}
+	}
+
+	
+    public function rollbackProvider( )
+    {   
+        if (Str::contains($this->providerTemplate, $this->providerTemplate)) {
+            file_put_contents($this->providerPath, str_replace($this->providerTemplate, '', $this->providerTemplate));
+            $this->commandData->commandComment('Tracker history  deleted');
+        } 
+    }
+	
+	
+	
+	/**
+	 *
+	 */
+	public function rollback() {
+
+		$this->rollbackPolicy( );
+		$this->rollbackProvider( );
 	}
 
 }

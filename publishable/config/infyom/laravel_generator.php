@@ -63,6 +63,9 @@ return [
 		
         'policies'       => app_path('Policies/'),
 		
+        'auth_provider'     => app_path('Providers/AuthServiceProvider.php'),
+
+		
     ],
 
     /*
