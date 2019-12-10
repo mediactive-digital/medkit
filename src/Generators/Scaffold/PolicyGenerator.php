@@ -50,13 +50,13 @@ class PolicyGenerator extends PermissionGenerator {
 
 		$this->templateType = 'medkit';
 
+		$this->setRequestConfiguration();
 		
         $this->providerPath = config('infyom.laravel_generator.path.auth_provider', app_path('Providers/AuthServiceProvider.php'));
         $this->providerContents = file_get_contents($this->providerPath); 
         $this->providerTemplate = get_template('scaffold.policy.provider');
         $this->providerTemplate = fill_template($this->commandData->dynamicVars, $this->providerTemplate);
 		 
-		$this->setRequestConfiguration();
 	}
 
 	/**

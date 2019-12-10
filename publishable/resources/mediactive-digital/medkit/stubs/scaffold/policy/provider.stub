@@ -1,4 +1,4 @@
 
-		\$NAMESPACE_MODEL$\$MODEL_NAME$::class => \$NAMESPACE_POLICIES$$MODEL_NAME$Policy::class,
+		\$NAMESPACE_MODEL$\$MODEL_NAME$::class => \$NAMESPACE_POLICIES$\$MODEL_NAME$Policy::class,
     
         
