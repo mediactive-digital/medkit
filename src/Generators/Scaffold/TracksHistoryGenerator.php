@@ -82,8 +82,8 @@ class TracksHistoryGenerator  {
 	
     public function rollback( )
     {   
-        if (Str::contains($this->menuContents, $this->menuTemplate)) {
-            file_put_contents($this->path, str_replace($this->menuTemplate, '', $this->menuContents));
+        if (Str::contains($this->providerTemplate, $this->providerTemplate)) {
+            file_put_contents($this->path, str_replace($this->providerTemplate, '', $this->providerTemplate));
             $this->commandData->commandComment('Tracker history  deleted');
         } 
     }
