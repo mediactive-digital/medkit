@@ -2,13 +2,12 @@
 
 namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use InfyOm\Generator\Generators\BaseGenerator;
 use InfyOm\Generator\Utils\FileUtil;
+
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 class PolicyGenerator extends PermissionGenerator {
 
@@ -17,20 +16,33 @@ class PolicyGenerator extends PermissionGenerator {
 	/** @var CommandData */
 	private $commandData;
 
+	/**
+	 * @var array
+	 */
+	private $userStamps;
+
 	/** @var string */
 	private $path;
-
-	/**
-	 * @var string
-	 */
+	private $templateType;
 	private $fileName;
 
+	/** @var boolean */
+	private $optionUserStamps;
+
 	public function __construct(CommandData $commandData) {
+
+		parent::__construct($commandData);
+
+		$this->optionUserStamps	 = $this->getReflectionProperty('optionUserStamps');
+		$this->userStamps		 = $this->getReflectionProperty('userStamps');
+
 		$this->commandData = $commandData;
 
 		$this->path = config('infyom.laravel_generator.path.policies', app_path('Policies/'));
 
 		$this->fileName = $this->commandData->modelName . 'Policy.php';
+
+		$this->templateType = 'medkit';
 
 		$this->setRequestConfiguration();
 	}
@@ -57,8 +69,11 @@ class PolicyGenerator extends PermissionGenerator {
 			$this->commandData->addDynamicVariable('$' . strtoupper($valuePermission) . '$', $permissionName);
 		}
 
-		$champCreatedByName = config('infyom.laravel_generator.add_on.user_stamps.created_by', 1);
+		$champCreatedByName = config('infyom.laravel_generator.user_stamps.created_by', 'created_by');
 		$this->commandData->addDynamicVariable('$BD_FIELD_CREATED_BY_NAME$', $champCreatedByName);
+
+		$namespaceName = config('infyom.laravel_generator.namespace.policies', 'App\Policies');
+		$this->commandData->addDynamicVariable('$NAMESPACE_POLICIES$', $namespaceName);
 	}
 
 	/**
@@ -66,13 +81,14 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generatePolicy() {
 
-		$templateData	 = get_template('scaffold.policy.policy');
-		$templateData	 = fill_template($this->commandData->dynamicVars, $templateData);
+		$templateData = get_template('scaffold.policy.policy');
 
-		$templateData	 = str_replace('$RULE_VIEW_ANY_FOR_OWN$', FormatHelper::writeValueToPhp($this->generateViewAnyforOwn(), 2), $templateData);
-		$templateData	 = str_replace('$RULE_VIEW_FOR_OWN$', FormatHelper::writeValueToPhp($this->generateViewForOwn(), 2), $templateData);
-		$templateData	 = str_replace('$RULE_UPDATE_FOR_OWN$', FormatHelper::writeValueToPhp($this->generateUpdateForOwn(), 2), $templateData);
-		$templateData	 = str_replace('$RULE_DELETE_FOR_OWN$', FormatHelper::writeValueToPhp($this->generateDeleteForOwn(), 2), $templateData);
+		$templateData	 = str_replace('$RULE_VIEW_ANY_FOR_OWN$', $this->generateViewAnyforOwn(), $templateData);
+		$templateData	 = str_replace('$RULE_VIEW_FOR_OWN$', $this->generateViewForOwn(), $templateData);
+		$templateData	 = str_replace('$RULE_UPDATE_FOR_OWN$', $this->generateUpdateForOwn(), $templateData);
+		$templateData	 = str_replace('$RULE_DELETE_FOR_OWN$', $this->generateDeleteForOwn(), $templateData);
+
+		$templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
 		FileUtil::createFile($this->path, $this->fileName, $templateData);
 
@@ -85,7 +101,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateViewAnyForOwn() {
 
-		if ($this->isCreateByExist()) {
+		if ($this->hasUserStamps()) {
 
 			$templateData = get_template('scaffold.policy.view_any_for_own', $this->templateType);
 
@@ -100,8 +116,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateViewForOwn() {
 
-
-		if ($this->isCreateByExist()) {
+		if ($this->hasUserStamps()) {
 
 			$templateData = get_template('scaffold.policy.view_for_own', $this->templateType);
 
@@ -116,8 +131,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateUpdateForOwn() {
 
-
-		if ($this->isCreateByExist()) {
+		if ($this->hasUserStamps()) {
 
 			$templateData = get_template('scaffold.policy.update_for_own', $this->templateType);
 
@@ -132,8 +146,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateDeleteForOwn() {
 
-
-		if ($this->isCreateByExist()) {
+		if ($this->hasUserStamps()) {
 
 			$templateData = get_template('scaffold.policy.delete_for_own', $this->templateType);
 

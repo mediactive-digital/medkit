@@ -235,7 +235,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 			
 			if( config('infyom.laravel_generator.add_on.permissions.policies', true) ){
 				
-				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource( $NAMESPACE_MODEL$\$MODEL_NAME$::class );', $templateData);
+				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource( \$NAMESPACE_MODEL$\$MODEL_NAME$::class );', $templateData);
 			} else {
 				
 				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '', $templateData);

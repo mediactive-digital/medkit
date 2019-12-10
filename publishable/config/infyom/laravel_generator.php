@@ -95,6 +95,8 @@ return [
         'tests'             => 'Tests',
 
         'forms'             => 'App\Forms',
+
+        'policies'        => 'App\Policies',
     ],
 
     /*

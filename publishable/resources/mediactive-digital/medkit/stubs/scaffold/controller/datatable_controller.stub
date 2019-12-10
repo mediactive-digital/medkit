@@ -47,7 +47,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($MODEL_NAME$ $$MODEL_NAME_CAMEL, FormBuilder $formBuilder) {
+    public function create($MODEL_NAME$ $$MODEL_NAME_CAMEL$, FormBuilder $formBuilder) {
 
         $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
             'method' => 'POST',
@@ -83,7 +83,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL ) {
+    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL$ ) {
 		
 		$id = $$MODEL_NAME_CAMEL->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
@@ -105,7 +105,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit($MODEL_NAME$ $$MODEL_NAME_CAMEL, FormBuilder $formBuilder) {
+    public function edit($MODEL_NAME$ $$MODEL_NAME_CAMEL$, FormBuilder $formBuilder) {
 		
 		$id = $$MODEL_NAME_CAMEL->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
@@ -136,7 +136,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function update($MODEL_NAME$ $$MODEL_NAME_CAMEL, $MODEL_NAME$Request $request) {
+    public function update($MODEL_NAME$ $$MODEL_NAME_CAMEL$, $MODEL_NAME$Request $request) {
 		
 		$id = $$MODEL_NAME_CAMEL->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
@@ -162,7 +162,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL, int $id) {
+    public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$, int $id) {
 		
 		$id = $$MODEL_NAME_CAMEL->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
