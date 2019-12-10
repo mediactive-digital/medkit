@@ -4,6 +4,8 @@ namespace MediactiveDigital\MedKit\Helpers;
 
 use Carbon\Carbon;
 
+use Str;
+
 class FormatHelper {
 
     const START_YEAR = 2017;
@@ -518,5 +520,34 @@ class FormatHelper {
         $language = isset(self::LANGUAGES[$locale]) ? self::LANGUAGES[$locale] : '';
 
         return $language;
+    }
+
+    /**
+     * Formatage numérique selon la locale
+     *
+     * @param mixed $value
+     * @param string $locale
+     * @return string $return
+     */
+    public static function numberFormat($value, string $locale = ''): string {
+
+        $return = '';
+
+        if (is_numeric($value)) {
+
+            $locale = $locale ?: LaravelGettext::getLocale();
+            $decimalSeparator = '.';
+            $thousandSeparator = ',';
+
+            if ($locale == 'fr') {
+
+                $decimalSeparator = ',';
+                $thousandSeparator = ' ';
+            }
+
+            $return = number_format($value, Str::length(Str::after($value, '.')), $decimalSeparator, $thousandSeparator); 
+        }
+
+        return $return;
     }
 }

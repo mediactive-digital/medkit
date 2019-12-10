@@ -4,57 +4,189 @@ namespace MediactiveDigital\MedKit\Traits;
 
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
-use LaravelGettext;
-use Str;
-use File;
-
 trait DataTable {
 
-    /** 
-     * @var array $translations
+	/** 
+     * @var \Illuminate\Database\Query\Builder $query
      */
-    private $translations;
+    private $query;
 
-    /** 
-     * Get translations.
+    /**
+     * Edit boolean column.
      *
-     * @return array
+     * @param int|null $value
+     * @return string
      */
-    private function getTranslations(): array {
+    private function editBooleanColumn($value): string {
 
-        if ($this->translations === null) {
+        return $value === 1 ? _i('Vrai') : ($value === 0 ? _i('Faux') : '');
+    }
 
-            $this->translations = [];
-            $language = ($language = FormatHelper::getLanguage(LaravelGettext::getLocale())) ? str_replace(' ', '-', $language) : '';
+    /**
+     * Edit datetime column.
+     *
+     * @param string|null $value
+     * @return string
+     */
+    private function editDateTimeColumn($value): string {
 
-            if ($language) {
+        return $value ? date(_i('d/m/Y H:i:s'), strtotime($value)) : '';
+    }
 
-                $path = base_path('node_modules/datatables.net-plugins/i18n');
+    /**
+     * Edit date column.
+     *
+     * @param string|null $value
+     * @return string
+     */
+    private function editDateColumn($value): string {
 
-                if (File::isDirectory($path)) {
+        return $value ? date(_i('d/m/Y'), strtotime($value)) : '';
+    }
 
-                    $files = File::files($path);
+    /**
+     * Edit time column.
+     *
+     * @param string|null $value
+     * @return string
+     */
+    private function editTimeColumn($value): string {
 
-                    foreach ($files as $file) {
+        return $value ? date(_i('H:i:s'), strtotime($value)) : '';
+    }
 
-                        $extension = $file->getExtension();
-                        $name = $file->getBasename('.' . $extension);
+    /**
+     * Edit numeric column.
+     *
+     * @param int|float|null $value
+     * @return string
+     */
+    private function editNumericColumn($value): string {
 
-                        if (Str::lower($language) == Str::lower($name)) {
+        return FormatHelper::numberFormat($value);
+    }
 
-                            $json = file_get_contents($path . '/' . $name . '.' . $extension);
-                            $json = substr($json, strpos($json, '{'));
-                            $json = json_decode(substr($json, 0, strrpos($json, '}') + 1), true);
+    /**
+     * Filter boolean column.
+     *
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterBooleanColumn($column, string $keyword, bool $raw = false) {
 
-                            $this->translations = $json ?: $this->translations;
+    	$column = $this->wrapColumn($column, $raw);
 
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+    	$this->query->whereRaw('IF(' . $column . ' = 1, \'Vrai\', IF(' . $column . ' = 0, \'Faux\', NULL)) LIKE ?', ['%' . $keyword . '%']);
+    }
 
-        return $this->translations;
+    /**
+     * Filter datetime column.
+     *
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterDateTimeColumn($column, string $keyword, bool $raw = false) {
+
+    	$this->query->whereRaw('DATE_FORMAT(' . $this->wrapColumn($column, $raw) . ', "' . _i('%d/%m/%Y %H:%i:%s') . '") LIKE ?', ['%' . $keyword . '%']);
+    }
+
+    /**
+     * Filter date column.
+     *
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterDateColumn($column, string $keyword, bool $raw = false) {
+
+    	$this->query->whereRaw('DATE_FORMAT(' . $this->wrapColumn($column, $raw) . ', "' . _i('%d/%m/%Y') . '") LIKE ?', ['%' . $keyword . '%']);
+    }
+
+    /**
+     * Filter time column.
+     *
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterTimeColumn($column, string $keyword, bool $raw = false) {
+
+    	$this->query->whereRaw('DATE_FORMAT(' . $this->wrapColumn($column, $raw) . ', "' . _i('%H:%i:%s') . '") LIKE ?', ['%' . $keyword . '%']);
+    }
+
+    /**
+     * Filter numeric column.
+     *
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterNumericColumn($column, string $keyword, bool $raw = false) {
+
+		$this->query->whereRaw($this->wrapColumn($column, $raw) . ' LIKE ?', ['%' . $this->formatNumericKeyword($keyword) . '%']);
+    }
+
+    /**
+     * Format keyword for numeric column filtering.
+     *
+     * @param string $keyword
+     * @return string $keyword
+     */
+    private function formatNumericKeyword(string $keyword): string {
+
+    	$cleanKeyword = preg_replace('/\s+/', '', $keyword);
+
+		preg_match_all('/[^0-9]/', $cleanKeyword, $matches);
+
+		$matches = array_values(array_unique($matches[0]));
+
+		if ($matches && count($matches) <= 2) {
+		    
+		    $firstCharacter = $matches[0];
+		    $secondCharacter = isset($matches[1]) ? $matches[1] : '';
+		    $thousandSeparator = $decimalPoint = '';
+		    $valid = true;
+		    
+		    if ($secondCharacter) {
+		        
+		        $decimalPoint = strrpos($cleanKeyword, $firstCharacter) > strrpos($cleanKeyword, $secondCharacter) ? $firstCharacter : $secondCharacter;
+		        
+		        if (($valid = mb_substr_count($cleanKeyword, $decimalPoint) == 1)) {
+		            
+		            $thousandSeparator = $decimalPoint == $firstCharacter ? $secondCharacter : $firstCharacter;
+		        }
+		    }
+		    else if (mb_substr_count($cleanKeyword, $firstCharacter) > 1) {
+
+		    	$thousandSeparator = $firstCharacter;
+		    }
+
+		    if ($valid) {
+
+		    	$keyword = $thousandSeparator ? str_replace($thousandSeparator, '', $cleanKeyword) : $cleanKeyword;
+		    	$keyword = $decimalPoint ? str_replace($decimalPoint, '.', $keyword) : $keyword;
+		    }
+		}
+
+		return $keyword;
+    }
+
+    /**
+     * Wrap column.
+     *
+     * @param \Illuminate\Database\Query\Expression|string
+     * @param bool $raw
+     * @return string
+     */
+    private function wrapColumn($column, bool $raw = false): string {
+
+		return $raw ? (string)$column : $this->query->getGrammar()->wrap($column);
     }
 }

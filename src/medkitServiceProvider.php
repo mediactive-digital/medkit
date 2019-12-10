@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use MediactiveDigital\MedKit\Providers\EventServiceProvider;
 // use MediactiveDigital\MedKit\Providers\AppServiceProvider;
 use MediactiveDigital\MedKit\Providers\TranslationServiceProvider;
+use MediactiveDigital\MedKit\Providers\MacroServiceProvider;
 
 use MediactiveDigital\MedKit\Commands\ClearDirectoryCommand;
 use MediactiveDigital\MedKit\Commands\InstallCommand;
@@ -70,6 +71,7 @@ class MedKitServiceProvider extends ServiceProvider {
         $this->app->register(EventServiceProvider::class);
        // $this->app->register(AppServiceProvider::class);
         $this->app->register(TranslationServiceProvider::class);
+        $this->app->register(MacroServiceProvider::class);
 
         $this->registerCommands();
     }

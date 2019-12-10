@@ -100,9 +100,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
     private function generateDataTable() {
 
-        $templateData = get_template('scaffold.datatable');
+        $templateData = get_template('scaffold.datatable.datatable');
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$DATATABLE_COLUMNS$', FormatHelper::writeValueToPhp($this->generateDataTableColumns(), 2), $templateData);
+        $templateData = str_replace('$EDIT_COLUMNS$', $this->generateDataTableEditColumns(), $templateData);
+        $templateData = str_replace('$FILTER_COLUMNS$', $this->generateDataTableFilterColumns(), $templateData);
 
         $path = $this->commandData->config->pathDataTables;
         $fileName = $this->commandData->modelName . 'DataTable.php';
@@ -138,6 +140,54 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         }
 
         return $dataTableColumns;
+    }
+
+    /** 
+     * Generate datatable column edition callbacks
+     *
+     * @return string $editColumns
+     */
+    private function generateDataTableEditColumns() {
+
+        $editColumns = '';
+        $template = get_template('scaffold.datatable.edit_column');
+
+        foreach ($this->commandData->fields as $field) {
+
+            if ($field->inIndex && ($dataTableType = $this->getDataTableType($field->htmlType))) {
+
+                $editCallback = fill_template($this->commandData->dynamicVars, $template);
+                $editCallback = str_replace('$FIELD_TYPE$', $dataTableType, $template);
+
+                $editColumns .= $editCallback;
+            }
+        }
+
+        return $editColumns;
+    }
+
+    /** 
+     * Generate datatable column filter callbacks
+     *
+     * @return string $filterColumns
+     */
+    private function generateDataTableFilterColumns() {
+
+        $filterColumns = '';
+        $template = get_template('scaffold.datatable.filter_column');
+
+        foreach ($this->commandData->fields as $field) {
+
+            if ($field->inIndex && $field->isSearchable && ($dataTableType = $this->getDataTableType($field->htmlType))) {
+
+                $filterCallback = fill_template($this->commandData->dynamicVars, $template);
+                $filterCallback = str_replace('$FIELD_TYPE$', $dataTableType, $template);
+
+                $filterColumns .= $filterCallback;
+            }
+        }
+
+        return $filterColumns;
     }
 
     public function generate() {
@@ -432,7 +482,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
-     * Get label
+     * Get field label
      *
      * @param string $fieldName
      * @return string $label
@@ -444,6 +494,56 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         $label = Str::ucfirst(str_replace('_', ' ', Str::lower($label)));
 
         return $label;
+    }
+
+    /** 
+     * Get field datatable type from HTML type
+     *
+     * @param string $htmlType
+     * @return string $dataTableType
+     */
+    public function getDatatableType(string $htmlType): string {
+
+        switch $htmlType {
+
+            case 'checkbox' :
+
+                $dataTableType = 'Boolean';
+
+            break;
+
+            case 'datetime-local' :
+
+                $dataTableType = 'DateTime';
+
+            break;
+
+            case 'date' :
+
+                $dataTableType = 'Date';
+
+            break;
+
+            case 'time' :
+
+                $dataTableType = 'Time';
+
+            break;
+
+            case 'number' :
+
+                $dataTableType = 'Numeric';
+
+            break;
+
+            default :
+
+                $dataTableType = '';
+
+            break;
+        }
+
+        return $dataTableType;
     }
 
     /** 

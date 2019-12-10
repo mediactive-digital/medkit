@@ -84,6 +84,7 @@ class GenerateJsTranslationsCommand extends Command {
                 }
 
                 $translations = $translations ? json_encode($translations) : '{}';
+                $dataTableTranslations = ($dataTableTranslations = TranslationHelper::getDataTable($locale)) ? json_encode($dataTableTranslations) : '{}';
 
                 $script = <<<EOT
 (function(root, factory) {
@@ -93,10 +94,14 @@ class GenerateJsTranslationsCommand extends Command {
 })(this, function() {
     var Lang = function() {
         this.locale = "$locale";
-        this.messages = $translations
+        this.messages = $translations;
+        this.dt = $dataTableTranslations
     };
     Lang.prototype.getLocale = function() {
         return this.locale
+    };
+    Lang.prototype.getDataTable = function() {
+        return this.dt
     };
     Lang.prototype._i = function(message, parameters) {
         parameters = typeof parameters !== "undefined" ? parameters : [];

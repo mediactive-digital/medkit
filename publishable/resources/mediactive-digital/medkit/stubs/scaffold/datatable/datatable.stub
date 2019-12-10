@@ -23,7 +23,7 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
 
         $dataTable = new EloquentDataTable($query);
 
-        return $dataTable->addColumn('action', '$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.datatables_actions');
+        return $dataTable->addColumn('action', '$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.datatables_actions')$EDIT_COLUMNS$$FILTER_COLUMNS$;
     }
 
     /**
@@ -34,7 +34,9 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
      */
     public function query($MODEL_NAME$ $model) {
 
-        return $model->newQuery();
+        $this->query = $model->newQuery();
+
+        return $this->query;
     }
 
     /**
@@ -51,15 +53,14 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
             ->parameters([
                 'dom' => 'Bfrtip',
                 'stateSave' => true,
-                'order' => [[0, 'desc']],
+                'order' => [[0, 'asc']],
                 'buttons' => [
                     ['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'],
                     ['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner'],
                     ['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner'],
                     ['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
                     ['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
-                ],
-                'language' => $this->getTranslations()
+                ]
             ]);
     }
 
