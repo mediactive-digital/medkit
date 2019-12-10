@@ -51,7 +51,7 @@ class PolicyGenerator extends PermissionGenerator {
 		$this->templateType = 'medkit';
 
 		
-        $this->providerPath = config('infyom.laravel_generator.path.auth_provider');
+        $this->providerPath = config('infyom.laravel_generator.path.auth_provider', app_path('Providers/AuthServiceProvider.php'));
         $this->providerContents = file_get_contents($this->providerPath); 
         $this->providerTemplate = get_template('scaffold.policy.provider');
         $this->providerTemplate = fill_template($this->commandData->dynamicVars, $this->providerTemplate);
@@ -118,7 +118,7 @@ class PolicyGenerator extends PermissionGenerator {
 
             $this->commandData->commandComment("\n" . $this->commandData->config->mCamelPlural . ' policy provider added.');
 
-            file_put_contents($this->path, $this->providerContents);
+            file_put_contents($this->providerPath, $this->providerContents);
         }
         else {
 

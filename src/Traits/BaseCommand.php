@@ -128,6 +128,7 @@ trait BaseCommand {
 
 				$policyGenerator = new PolicyGenerator($this->commandData);
 				$policyGenerator->generatePolicy(); 
+				$policyGenerator->generateProvider(); 
 			}
 		}
         
