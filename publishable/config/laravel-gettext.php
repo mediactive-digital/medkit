@@ -93,7 +93,11 @@ return [
         '../resources/views',
         '../resources/assets/js',
         '../resources/lang/po_laravel',
-        '../routes'
+        '../routes',
+        '../vendor/mediactive-digital/medkit/src/Helpers',
+        '../vendor/mediactive-digital/medkit/src/Traits',
+        '../vendor/mediactive-digital/medkit/src/Forms',
+        '../vendor/mediactive-digital/medkit/src/Notifications'
     ],
 
     /**
