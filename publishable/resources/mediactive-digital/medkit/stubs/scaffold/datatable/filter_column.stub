@@ -1,5 +1,5 @@
 
             ->filterColumn('$FIELD_NAME$', function($query, $keyword) {
 
-                return $this->filter$FIELD_TYPE$Column('$TABLE_NAME$.$FIELD_NAME$', $keyword);
+                $this->filter$FIELD_TYPE$Column('$TABLE_NAME$.$FIELD_NAME$', $keyword);
             })
