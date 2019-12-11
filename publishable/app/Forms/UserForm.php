@@ -8,14 +8,14 @@ use Kris\LaravelFormBuilder\Field;
 
 use App\Traits\Form;
 
-class usersForm extends KrisForm {
+class UserForm extends KrisForm {
 
 	use Form;
 
     public function buildForm() {
 
         $this->add('name', Field::TEXT, [
-                'label' => _i('Name'),
+                'label' => _i('Nom'),
                 'attr' => [
                     'required' => 'required',
                     'maxlength' => '255',
@@ -23,8 +23,8 @@ class usersForm extends KrisForm {
                 ]
             ]);
 
-        $this->add('firstname', Field::TEXT, [
-                'label' => _i('Firstname'),
+        $this->add('first_name', Field::TEXT, [
+                'label' => _i('Prénom'),
                 'attr' => [
                     'required' => 'required',
                     'maxlength' => '255'
@@ -32,7 +32,7 @@ class usersForm extends KrisForm {
             ]);
 
         $this->add('email', Field::EMAIL, [
-                'label' => _i('Email'),
+                'label' => _i('Adresse email'),
                 'attr' => [
                     'required' => 'required',
                     'maxlength' => '255'
@@ -51,7 +51,7 @@ class usersForm extends KrisForm {
                 'type' => Field::PASSWORD,
                 'second_name' => 'password_confirmation',
                 'first_options' => [
-                    'label' => _i('Password'),
+                    'label' => _i('Mot de passe'),
                     'attr' => [
                         'required' => $this->setAttribute('required', false),
                         'minlength' => '8',
@@ -60,13 +60,18 @@ class usersForm extends KrisForm {
                     'value' => $this->formatNull()
                 ],
                 'second_options' => [
-                    'label' => _i('Password confirmation'),
+                    'label' => _i('Confirmation du mot de passe'),
                     'attr' => [
                         'required' => $this->setAttribute('required', false),
                         'minlength' => '8',
                         'maxlength' => '120'
                     ]
                 ]
+            ]);
+
+        $this->add('theme', Field::CHECKBOX, [
+                'label' => _i('Theme'),
+                'value' => 1
             ]);
 
         $selectedValues = [];
@@ -78,7 +83,7 @@ class usersForm extends KrisForm {
             'choices' => Role::all()->pluck('name','id')->toArray(),
             'selected' => $selectedValues
         ]);
-
+		
         $this->add('submit', Field::BUTTON_SUBMIT, [
                 'label' => _i('Enregistrer'),
                 'attr' => [
@@ -87,3 +92,4 @@ class usersForm extends KrisForm {
             ]);
     }
 }
+ 
