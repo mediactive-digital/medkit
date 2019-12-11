@@ -19,7 +19,7 @@ trait DataTable {
      */
     private function editBooleanColumn($value): string {
 
-        return $value === 1 ? _i('Vrai') : ($value === 0 ? _i('Faux') : '');
+        return $value === true ? _i('Vrai') : ($value === false ? _i('Faux') : '');
     }
 
     /**
