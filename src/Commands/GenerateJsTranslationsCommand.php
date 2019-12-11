@@ -114,11 +114,9 @@ class GenerateJsTranslationsCommand extends Command {
         if (n > 1) return this.messages[plural] ? vsprintf(this.messages[plural], parameters) : vsprintf(plural, parameters);
         return this.messages[singular] ? vsprintf(this.messages[singular], parameters) : vsprintf(singular, parameters)
     };
-    return Lang
+    var LangObject = new Lang;
+    return LangObject
 });
-(function() {
-    Lang = new Lang
-})();
 EOT;
 
                 $localePath = rtrim($path, '/') . '/' . $locale . '.js';
