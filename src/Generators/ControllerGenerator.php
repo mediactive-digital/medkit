@@ -157,7 +157,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             if ($field->inIndex && ($dataTableType = $this->getDataTableType($field->htmlType))) {
 
                 $editCallback = fill_template($this->commandData->dynamicVars, $template);
-                $editCallback = str_replace('$FIELD_TYPE$', $dataTableType, $template);
+                $editCallback = str_replace('$FIELD_NAME$', $field->name, $editCallback);
+                $editCallback = str_replace('$FIELD_TYPE$', $dataTableType, $editCallback);
 
                 $editColumns .= $editCallback;
             }
@@ -181,7 +182,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             if ($field->inIndex && $field->isSearchable && ($dataTableType = $this->getDataTableType($field->htmlType))) {
 
                 $filterCallback = fill_template($this->commandData->dynamicVars, $template);
-                $filterCallback = str_replace('$FIELD_TYPE$', $dataTableType, $template);
+                $filterCallback = str_replace('$FIELD_NAME$', $field->name, $filterCallback);
+                $filterCallback = str_replace('$FIELD_TYPE$', $dataTableType, $filterCallback);
 
                 $filterColumns .= $filterCallback;
             }
