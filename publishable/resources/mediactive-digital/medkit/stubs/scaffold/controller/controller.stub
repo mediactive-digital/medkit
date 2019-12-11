@@ -161,7 +161,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$, int $id) {
+    public function destroy( $MODEL_NAME$ $$MODEL_NAME_CAMEL$ ) {
 		
 		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
