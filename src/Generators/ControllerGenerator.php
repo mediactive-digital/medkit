@@ -504,7 +504,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function getDatatableType(string $htmlType): string {
 
-        switch $htmlType {
+        switch ($htmlType) {
 
             case 'checkbox' :
 
