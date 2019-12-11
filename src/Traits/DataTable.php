@@ -187,6 +187,6 @@ trait DataTable {
      */
     private function wrapColumn($column, bool $raw = false): string {
 
-		return $raw ? (string)$column : $this->query->getGrammar()->wrap($column);
+		return $raw ? (string)$column : $this->query->getConnection()->getQueryGrammar()->wrap($column);
     }
 }
