@@ -1,30 +1,30 @@
 <!-- Name Field -->
 <div class="form-group">
     {!! Form::label('name', 'Name:') !!}
-    <p>{!! $users->name !!}</p>
+    <p>{!! $user->name !!}</p>
 </div>
 
-<!-- Firstname Field -->
+<!-- First Name Field -->
 <div class="form-group">
-    {!! Form::label('firstname', 'Firstname:') !!}
-    <p>{!! $users->firstname !!}</p>
+    {!! Form::label('first_name', 'First Name:') !!}
+    <p>{!! $user->first_name !!}</p>
 </div>
 
 <!-- Email Field -->
 <div class="form-group">
     {!! Form::label('email', 'Email:') !!}
-    <p>{!! $users->email !!}</p>
+    <p>{!! $user->email !!}</p>
 </div>
 
 <!-- Login Field -->
 <div class="form-group">
     {!! Form::label('login', 'Login:') !!}
-    <p>{!! $users->login !!}</p>
+    <p>{!! $user->login !!}</p>
 </div>
 
 <!-- Theme Field -->
 <div class="form-group">
     {!! Form::label('theme', 'Theme:') !!}
-    <p>{!! $users->theme !!}</p>
+    <p>{!! $user->theme !!}</p>
 </div>
 

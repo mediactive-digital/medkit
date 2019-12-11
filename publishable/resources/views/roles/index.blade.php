@@ -2,7 +2,7 @@
 
 @section('content')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">{!! _i('Users') !!}</li>
+        <li class="breadcrumb-item">{!! _i('Roles') !!}</li>
     </ol>
     <div class="container-fluid">
         <div class="animated fadeIn">
@@ -12,13 +12,13 @@
                      <div class="card">
                          <div class="card-header">
                              <i class="material-icons">format_align_justify</i>
-                             {!! _i('Users') !!}
-                             <a class="pull-right" href="{!! route('back.users.create') !!}">
+                             {!! _i('Roles') !!}
+                             <a class="pull-right" href="{!! route('back.roles.create') !!}">
                                 <i class="material-icons">add_box</i>
                              </a>
                          </div>
                          <div class="card-body">
-                             @include('users.table')
+                             @include('roles.table')
                               <div class="pull-right mr-3">
                                      
                               </div>

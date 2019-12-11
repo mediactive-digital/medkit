@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-         <a href="{!! route('back.users.index') !!}">{!! _i('User') !!}</a>
+         <a href="{!! route('back.permissions.index') !!}">{!! _i('Permission') !!}</a>
       </li>
       <li class="breadcrumb-item active">{!! _i('Créer') !!}</li>
     </ol>
@@ -15,7 +15,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <i class="material-icons">add_box</i>
-                                <strong>{!! _i('Créer') !!} {!! _i('User') !!} </strong>
+                                <strong>{!! _i('Créer') !!} {!! _i('Permission') !!} </strong>
                             </div>
                             <div class="card-body">
                                 {!! form($form) !!}

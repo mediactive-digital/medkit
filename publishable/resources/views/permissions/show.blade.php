@@ -3,7 +3,7 @@
 @section('content')
      <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a href="{!! route('back.users.index') !!}">{!! _i('User') !!}</a>
+                <a href="{!! route('back.permissions.index') !!}">{!! _i('Permission') !!}</a>
             </li>
             <li class="breadcrumb-item active">{!! _i('Détail') !!}</li>
      </ol>
@@ -15,13 +15,13 @@
                          <div class="card">
                              <div class="card-header">
                                  <strong>{!! _i('Détails') !!}</strong> 
-                                  <a href="{!! route('back.users.index') !!}" class="btn btn-light">
+                                  <a href="{!! route('back.permissions.index') !!}" class="btn btn-light">
                                     <i class="material-icons">arrow_back</i> 
                                     {!! _i('Retour') !!}
                                     </a>
                              </div>
                              <div class="card-body">
-                                 @include('users.show_fields')
+                                 @include('permissions.show_fields')
                              </div>
                          </div>
                      </div>
