@@ -60,7 +60,7 @@ class PermissionGenerator extends BaseGenerator {
 	/**
 	 * Check if createdBy is in Bd
 	 *
-	 * @deprecated since version number
+	 * @deprecated use hasUserStamps()
 	 * @return boolean
 	 */
 	public function isCreateByExist() {
@@ -132,7 +132,7 @@ class PermissionGenerator extends BaseGenerator {
 			$role = Role::find($this->idRoleSuperAdmin);
 			foreach ($this->getPermissionsAbility() as $valuePermission) {
 
-				// existe deja
+				// existe deja?
 				$permissionName	 = $this->commandData->config->mDashedPlural . '_' . $valuePermission;
 				$permission		 = Permission::where('name', $permissionName);
 

@@ -222,7 +222,7 @@ class PolicyGenerator extends PermissionGenerator {
     {   
         if (Str::contains($this->providerTemplate, $this->providerTemplate)) {
             file_put_contents($this->providerPath, str_replace($this->providerTemplate, '', $this->providerTemplate));
-            $this->commandData->commandComment('Tracker history  deleted');
+            $this->commandData->commandComment('Provider deleted');
         } 
     }
 	
