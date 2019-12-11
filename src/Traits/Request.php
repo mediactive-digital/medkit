@@ -52,9 +52,13 @@ trait Request {
      * @return void
      */
     protected function prepareForValidation() {
-
+		
         $this->modelId = $this->route($this->tableNameSingular);
-
+		
+		if(is_object($this->modelId) ){
+			$this->modelId = $this->modelId->id;
+		} 
+		
         $this->setRules();
         $this->setMessages();
 

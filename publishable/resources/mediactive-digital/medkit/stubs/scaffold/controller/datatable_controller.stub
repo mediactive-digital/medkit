@@ -6,6 +6,8 @@ use $NAMESPACE_APP$\Http\Controllers\AppBaseController;
 
 use $NAMESPACE_REQUEST$\$MODEL_NAME$Request;
 
+use $NAMESPACE_MODEL$\$MODEL_NAME$;
+
 use $NAMESPACE_REPOSITORY$\$MODEL_NAME$Repository;
 
 use $NAMESPACE_DATATABLES$\$MODEL_NAME$DataTable;
@@ -22,7 +24,9 @@ class $MODEL_NAME$Controller extends AppBaseController {
     private $$MODEL_NAME_CAMEL$Repository;
 
     public function __construct($MODEL_NAME$Repository $$MODEL_NAME_CAMEL$Repo) {
-
+		 
+		$AUTHORIZE_RESOURCE$
+		
         $this->$MODEL_NAME_CAMEL$Repository = $$MODEL_NAME_CAMEL$Repo;
     }
 
@@ -43,7 +47,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(FormBuilder $formBuilder) {
+    public function create($MODEL_NAME$ $$MODEL_NAME_CAMEL$, FormBuilder $formBuilder) {
 
         $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
             'method' => 'POST',
@@ -75,12 +79,13 @@ class $MODEL_NAME$Controller extends AppBaseController {
     /**
      * Display the specified $MODEL_NAME$.
      *
-     * @param int $id
+     * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      *
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id) {
-
+    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL$ ) {
+		
+		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
@@ -96,12 +101,13 @@ class $MODEL_NAME$Controller extends AppBaseController {
     /**
      * Show the form for editing the specified $MODEL_NAME$.
      *
-     * @param int $id
+     * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(int $id, FormBuilder $formBuilder) {
-
+    public function edit($MODEL_NAME$ $$MODEL_NAME_CAMEL$, FormBuilder $formBuilder) {
+		
+		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
@@ -125,13 +131,14 @@ class $MODEL_NAME$Controller extends AppBaseController {
     /**
      * Update the specified $MODEL_NAME$ in storage.
      *
-     * @param int $id
+     * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      * @param \$NAMESPACE_REQUEST$\$MODEL_NAME$Request $request
      *
      * @return \Illuminate\Http\Response
      */
-    public function update(int $id, $MODEL_NAME$Request $request) {
-
+    public function update($MODEL_NAME$ $$MODEL_NAME_CAMEL$, $MODEL_NAME$Request $request) {
+		
+		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {
@@ -151,12 +158,13 @@ class $MODEL_NAME$Controller extends AppBaseController {
     /**
      * Remove the specified $MODEL_NAME$ from storage.
      *
-     * @param int $id
+     * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id) {
-
+    public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$, int $id) {
+		
+		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
 
         if (empty($$MODEL_NAME_CAMEL$)) {

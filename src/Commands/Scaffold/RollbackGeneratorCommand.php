@@ -11,7 +11,9 @@ use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator; 
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\PolicyGenerator;
 
 use InfyOm\Generator\Commands\RollbackGeneratorCommand as InfyOmRollbackGeneratorCommand;
 use InfyOm\Generator\Generators\MigrationGenerator;
@@ -119,6 +121,16 @@ class RollbackGeneratorCommand extends InfyOmRollbackGeneratorCommand
         if ( config('infyom.laravel_generator.add_on.tracks_history.enabled', true) ) {
             $trackerGenerator = new TracksHistoryGenerator($this->commandData);
             $trackerGenerator->rollback();
+        }
+
+        if ( config('infyom.laravel_generator.add_on.permissions.enabled', true) ) {
+            $permissionsGenerator = new PermissionGenerator($this->commandData);
+            $permissionsGenerator->rollback();
+			
+			if ( config('infyom.laravel_generator.add_on.permissions.policies', true) ) {
+				$policyGenerator = new PolicyGenerator($this->commandData);
+				$policyGenerator->rollback();
+			}
         }
 
         $this->info('Generating autoload files');
