@@ -76,9 +76,9 @@ class Role extends MedKitRole {
     
 /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     **/
+   
     public function permissions() {
     
         return $this->belongsToMany(\App\Models\Permission::class, 'role_has_permissions');
-    }
+    }  **/
 }
