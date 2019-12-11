@@ -127,7 +127,7 @@ class RollbackGeneratorCommand extends InfyOmRollbackGeneratorCommand
             $permissionsGenerator = new PermissionGenerator($this->commandData);
             $permissionsGenerator->rollback();
 			
-			if (!$this->isSkip('policies') and  config('infyom.laravel_generator.add_on.permissions.policies', true) ) {
+			if ( config('infyom.laravel_generator.add_on.permissions.policies', true) ) {
 				$policyGenerator = new PolicyGenerator($this->commandData);
 				$policyGenerator->rollback();
 			}
