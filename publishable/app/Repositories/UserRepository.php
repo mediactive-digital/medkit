@@ -2,24 +2,23 @@
 
 namespace App\Repositories;
 
-use App\Models\Role;
 use App\Models\User;
 use App\Repositories\BaseRepository;
 
 /**
- * Class usersRepository
+ * Class UserRepository
  * @package App\Repositories
- * @version December 4, 2019, 3:25 pm UTC
+ * @version December 3, 2019, 11:49 pm UTC
 */
 
-class usersRepository extends BaseRepository
+class UserRepository extends BaseRepository
 {
     /**
      * @var array
      */
     protected $fieldSearchable = [
         'name',
-        'firstname',
+        'first_name',
         'email',
         'login',
         'theme'
@@ -42,7 +41,8 @@ class usersRepository extends BaseRepository
     {
         return User::class;
     }
-
+	
+	
     public function create($input) {
         $user = parent::create($input);
         $this->updateRoles($input['roles'], $user);
@@ -76,4 +76,6 @@ class usersRepository extends BaseRepository
             $user->assignRole(Role::findOrFail($roleId));
         }
     }
+	
+	
 }
