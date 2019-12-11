@@ -15,4 +15,11 @@ Route::get('/back/history/list', 'Back\HistoryController@list')->name('back.hist
 
 Route::group(['prefix' => 'back'], function () {
     Route::resource('users', 'usersController', ["as" => 'back']);
+}); 
+Route::group(['prefix' => 'back'], function () {
+    Route::resource('roles', 'RoleController', ["as" => 'back']);
 });
+Route::group(['prefix' => 'back'], function () {
+    Route::resource('permissions', 'PermissionController', ["as" => 'back']);
+});
+ 
