@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RolesTableSeeder::class,
+            PermissionsTableSeeder::class,
+            RoleHasPermissionsTableSeeder::class,
 	    ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
