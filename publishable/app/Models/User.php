@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Wildside\Userstamps\Userstamps;
 
+use Hash;
+
 /**
  * Class User
  * @package App\Models
