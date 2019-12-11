@@ -28,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
     {
 		
 		# TracksHistory   
+        \App\Models\Permission::observe(ModelTrackObserver::class);
+        \App\Models\Role::observe(ModelTrackObserver::class);
+        \App\Models\User::observe(ModelTrackObserver::class);
         # fin TracksHistory  
         
     }
