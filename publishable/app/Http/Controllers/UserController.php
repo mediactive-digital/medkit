@@ -25,9 +25,14 @@ class UserController extends AppBaseController {
 
     public function __construct(UserRepository $userRepo) {
 		 
-		//$this->authorizeResource( \App\Models\User::class );
+		$this->authorizeResource( \App\Models\User::class );
 		
         $this->userRepository = $userRepo;
+		
+        // Si aucun role selectioné, on crée l'array vide
+        if(!request()->request->has('roles')){
+            request()->request->add(['roles'=>[]]);
+        }
     }
 
     /**

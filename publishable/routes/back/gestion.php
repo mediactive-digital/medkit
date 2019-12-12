@@ -14,7 +14,7 @@ Route::get('/back/history', 'Back\HistoryController@index')->name('back.history.
 Route::get('/back/history/list', 'Back\HistoryController@list')->name('back.history.list');
 
 Route::group(['prefix' => 'back'], function () {
-    Route::resource('users', 'usersController', ["as" => 'back']);
+    Route::resource('users', 'UserController', ["as" => 'back']);
 }); 
 Route::group(['prefix' => 'back'], function () {
     Route::resource('roles', 'RoleController', ["as" => 'back']);

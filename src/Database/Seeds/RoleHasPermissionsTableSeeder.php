@@ -3,8 +3,10 @@
 namespace MediactiveDigital\MedKit\Database\Seeds;
 
 use Illuminate\Database\Seeder;
-use App\Models\Permission;
+//use App\Models\Permission;   // Todo passer par un model et faire truncate dans le run
 use Carbon\Carbon;
+
+use DB;
 
 class RoleHasPermissionsTableSeeder extends Seeder {
 
@@ -14,7 +16,7 @@ class RoleHasPermissionsTableSeeder extends Seeder {
 	 * @return void
 	 */
 	public function run() {
-		Permission::truncate();
+		// Permission::truncate();
 
 		$dateNow = Carbon::now();
 
