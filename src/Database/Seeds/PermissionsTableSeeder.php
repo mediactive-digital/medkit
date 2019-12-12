@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Permission;
 use Carbon\Carbon;
 
+use DB;
 class PermissionsTableSeeder extends Seeder {
 
 	/**
