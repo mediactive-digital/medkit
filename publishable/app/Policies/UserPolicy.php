@@ -34,16 +34,14 @@ if ($user->can('users_view_own')) {
      * @param  App\Models\User $user
      * @return mixed
      */
-    public function view(User $user )
-    {   
+    public function view(User $u, User $user )
+    {    
 		
-		
-
- if ($user->can('users_view_own')) {
-            return $user->id == $user->created_by;
+ if ($u->can('users_view_own')) {
+            return $u->id == $user->created_by;
         }
 		
-        if ($user->can('users_view_all')) {
+        if ($u->can('users_view_all')) {
             return true;
         }
 		
@@ -88,15 +86,15 @@ if ($user->can('users_view_own')) {
      * @param  App\Models\User $user
      * @return mixed
      */
-    public function update(User $user )
+    public function update(User $u, User $user )
     {  
 		
 		
- if ($user->can('users_edit_own')) {
-            return $user->id == $user->created_by;
+ if ($u->can('users_edit_own')) {
+            return $u->id == $user->created_by;
         }
 		
-        if ($user->can('users_edit_all')) {
+        if ($u->can('users_edit_all')) {
             return true;
         }
     }
@@ -108,17 +106,17 @@ if ($user->can('users_view_own')) {
      * @param  App\Models\User $user
      * @return mixed
      */
-    public function delete(User $user )
+    public function delete(User $u, User $user )
     {
 		
 		 
 
-        if ($user->can('users_delete_own')) {
-            return $user->id == $user->created_by;
+        if ($u->can('users_delete_own')) {
+            return $u->id == $user->created_by;
         } 
 
 		
-        if ($user->can('users_delete_any')) {
+        if ($u->can('users_delete_any')) {
             return true;
         }
     }
