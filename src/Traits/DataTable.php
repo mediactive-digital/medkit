@@ -2,14 +2,11 @@
 
 namespace MediactiveDigital\MedKit\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
+
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 trait DataTable {
-
-	/** 
-     * @var \Illuminate\Database\Query\Builder $query
-     */
-    private $query;
 
     /**
      * Edit boolean column.
@@ -69,124 +66,116 @@ trait DataTable {
     /**
      * Filter boolean column.
      *
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
      * @param bool $raw
      * @return void
      */
-    private function filterBooleanColumn($column, string $keyword, bool $raw = false) {
+    private function filterBooleanColumn(Builder $query, $column, string $keyword, bool $raw = false) {
 
-    	$column = $this->wrapColumn($column, $raw);
+    	$column = $this->wrapColumn($query, $column, $raw);
+        $true = addcslashes(_i('Vrai'), '\'');
+        $false = addcslashes(_i('Faux'), '\'');
 
-    	$this->query->whereRaw('IF(' . $column . ' = 1, \'Vrai\', IF(' . $column . ' = 0, \'Faux\', NULL)) LIKE ?', ['%' . $keyword . '%']);
+    	$query->whereRaw('LOWER(IF(' . $column . ' = 1, \'' . $true . '\', IF(' . $column . ' = 0, \'' . $false . '\', NULL))) LIKE ?', ['%' . $keyword . '%']);
     }
 
     /**
      * Filter datetime column.
      *
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
      * @param bool $raw
      * @return void
      */
-    private function filterDateTimeColumn($column, string $keyword, bool $raw = false) {
+    private function filterDateTimeColumn(Builder $query, $column, string $keyword, bool $raw = false) {
 
-    	$this->query->whereRaw('DATE_FORMAT(' . $this->wrapColumn($column, $raw) . ', "' . _i('%d/%m/%Y %H:%i:%s') . '") LIKE ?', ['%' . $keyword . '%']);
+        $this->filterDateTime($query, $column, $keyword, _i('%d/%m/%Y %H:%i:%s'), $raw);
     }
 
     /**
      * Filter date column.
      *
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
      * @param bool $raw
      * @return void
      */
-    private function filterDateColumn($column, string $keyword, bool $raw = false) {
+    private function filterDateColumn(Builder $query, $column, string $keyword, bool $raw = false) {
 
-    	$this->query->whereRaw('DATE_FORMAT(' . $this->wrapColumn($column, $raw) . ', "' . _i('%d/%m/%Y') . '") LIKE ?', ['%' . $keyword . '%']);
+        $this->filterDateTime($query, $column, $keyword, _i('%d/%m/%Y'), $raw);
     }
 
     /**
      * Filter time column.
      *
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
      * @param bool $raw
      * @return void
      */
-    private function filterTimeColumn($column, string $keyword, bool $raw = false) {
+    private function filterTimeColumn(Builder $query, $column, string $keyword, bool $raw = false) {
 
-    	$this->query->whereRaw('DATE_FORMAT(' . $this->wrapColumn($column, $raw) . ', "' . _i('%H:%i:%s') . '") LIKE ?', ['%' . $keyword . '%']);
+        $this->filterDateTime($query, $column, $keyword, _i('%H:%i:%s'), $raw);
+    }
+
+    /**
+     * Filter datetime / date / time column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param string $format
+     * @param bool $raw
+     * @return void
+     */
+    private function filterDateTime(Builder $query, $column, string $keyword, string $format, bool $raw = false) {
+
+        $column = $this->wrapColumn($query, $column, $raw);
+        $format = addcslashes($format, '\'');
+
+        $query->whereRaw('LOWER(DATE_FORMAT(' . $column . ', \'' . $format . '\')) LIKE ?', ['%' . $keyword . '%']);
     }
 
     /**
      * Filter numeric column.
      *
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
      * @param bool $raw
      * @return void
      */
-    private function filterNumericColumn($column, string $keyword, bool $raw = false) {
+    private function filterNumericColumn(Builder $query, $column, string $keyword, bool $raw = false) {
 
-		$this->query->whereRaw($this->wrapColumn($column, $raw) . ' LIKE ?', ['%' . $this->formatNumericKeyword($keyword) . '%']);
-    }
+        $column = $this->wrapColumn($query, $column, $raw);
+        $separators = FormatHelper::getNumberSeparators();
+        $thousandsSeparator = addcslashes($separators['thousands'], '\'');
+        $decimalSeparator = addcslashes($separators['decimal'], '\'');
 
-    /**
-     * Format keyword for numeric column filtering.
-     *
-     * @param string $keyword
-     * @return string $keyword
-     */
-    private function formatNumericKeyword(string $keyword): string {
-
-    	$cleanKeyword = preg_replace('/\s+/', '', $keyword);
-
-		preg_match_all('/[^0-9]/', $cleanKeyword, $matches);
-
-		$matches = array_values(array_unique($matches[0]));
-
-		if ($matches && count($matches) <= 2) {
-		    
-		    $firstCharacter = $matches[0];
-		    $secondCharacter = isset($matches[1]) ? $matches[1] : '';
-		    $thousandSeparator = $decimalPoint = '';
-		    $valid = true;
-		    
-		    if ($secondCharacter) {
-		        
-		        $decimalPoint = strrpos($cleanKeyword, $firstCharacter) > strrpos($cleanKeyword, $secondCharacter) ? $firstCharacter : $secondCharacter;
-		        
-		        if (($valid = mb_substr_count($cleanKeyword, $decimalPoint) == 1)) {
-		            
-		            $thousandSeparator = $decimalPoint == $firstCharacter ? $secondCharacter : $firstCharacter;
-		        }
-		    }
-		    else if (mb_substr_count($cleanKeyword, $firstCharacter) > 1) {
-
-		    	$thousandSeparator = $firstCharacter;
-		    }
-
-		    if ($valid) {
-
-		    	$keyword = $thousandSeparator ? str_replace($thousandSeparator, '', $cleanKeyword) : $cleanKeyword;
-		    	$keyword = $decimalPoint ? str_replace($decimalPoint, '.', $keyword) : $keyword;
-		    }
-		}
-
-		return $keyword;
+        $query->whereRaw($column . ' LIKE ? OR LOWER(REPLACE(' . $column . ', \'.\', \'' . $decimalSeparator . '\')) LIKE ? OR LOWER(IF(\'' . 
+            $thousandsSeparator . '\' != \'.\', REPLACE(FORMAT(' . $column . ', IF(POSITION(\'.\' IN ' . $column . '), LENGTH(' . 
+            $column . ') - POSITION(\'.\' IN ' . $column . '), LENGTH(' . $column . '))), \',\', \'' . $thousandsSeparator . '\'), ' . 
+            $column . ')) LIKE ? OR LOWER(REPLACE(REPLACE(REPLACE(FORMAT(' . $column . ', IF(POSITION(\'.\' IN ' . $column . '), LENGTH(' . 
+            $column . ') - POSITION(\'.\' IN ' . $column . '), LENGTH(' . $column . '))), \',\', \'##THOUSANDS##\'), \'.\', \'' . 
+            $decimalSeparator . '\'), \'##THOUSANDS##\', \'' . $thousandsSeparator . '\')) LIKE ?', 
+            ['%' . $keyword . '%', '%' . $keyword . '%', '%' . $keyword . '%', '%' . $keyword . '%']);
     }
 
     /**
      * Wrap column.
      *
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string
      * @param bool $raw
      * @return string
      */
-    private function wrapColumn($column, bool $raw = false): string {
+    private function wrapColumn(Builder $query, $column, bool $raw = false): string {
 
-		return $raw ? (string)$column : $this->query->getConnection()->getQueryGrammar()->wrap($column);
+		return $raw ? (string)$column : $query->getConnection()->getQueryGrammar()->wrap($column);
     }
 }

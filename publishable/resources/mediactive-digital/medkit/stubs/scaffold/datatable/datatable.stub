@@ -34,9 +34,7 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
      */
     public function query($MODEL_NAME$ $model) {
 
-        $this->query = $model->newQuery();
-
-        return $this->query;
+        return $model->newQuery();
     }
 
     /**

@@ -5,6 +5,7 @@ namespace MediactiveDigital\MedKit\Helpers;
 use Carbon\Carbon;
 
 use Str;
+use LaravelGettext;
 
 class FormatHelper {
 
@@ -535,19 +536,36 @@ class FormatHelper {
 
         if (is_numeric($value)) {
 
-            $locale = $locale ?: LaravelGettext::getLocale();
-            $decimalSeparator = '.';
-            $thousandSeparator = ',';
-
-            if ($locale == 'fr') {
-
-                $decimalSeparator = ',';
-                $thousandSeparator = ' ';
-            }
-
-            $return = number_format($value, Str::length(Str::after($value, '.')), $decimalSeparator, $thousandSeparator); 
+            $separators = self::getNumberSeparators($locale);
+            $return = number_format($value, Str::length(Str::after($value, '.')), $separators['decimal'], $separators['thousands']); 
         }
 
         return $return;
+    }
+
+    /**
+     * Retourne les séparateurs numériques selon la locale
+     *
+     * @param string $locale
+     * @return array $separators
+     */
+    public static function getNumberSeparators(string $locale = ''): array {
+
+        $locale = $locale ?: LaravelGettext::getLocale();
+
+        $separators = [
+            'thousands' => ',',
+            'decimal' => '.'
+        ];
+
+        if ($locale == 'fr') {
+
+            $separators = [
+                'thousands' => ' ',
+                'decimal' => ','
+            ];
+        }
+
+        return $separators;
     }
 }
