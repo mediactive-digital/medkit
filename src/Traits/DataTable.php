@@ -53,6 +53,28 @@ trait DataTable {
     }
 
     /**
+     * Edit float column.
+     *
+     * @param int|float|null $value
+     * @return string
+     */
+    private function editFloatColumn($value): string {
+
+        return $this->editNumericColumn($value);
+    }
+
+    /**
+     * Edit integer column.
+     *
+     * @param int|float|null $value
+     * @return string
+     */
+    private function editIntegerColumn($value): string {
+
+        return $this->editNumericColumn($value);
+    }
+
+    /**
      * Edit numeric column.
      *
      * @param int|float|null $value
@@ -142,7 +164,7 @@ trait DataTable {
     }
 
     /**
-     * Filter numeric column.
+     * Filter float column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param \Illuminate\Database\Query\Expression|string $column
@@ -150,20 +172,71 @@ trait DataTable {
      * @param bool $raw
      * @return void
      */
-    private function filterNumericColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterFloatColumn(Builder $query, $column, string $keyword, bool $raw = false) {
 
         $column = $this->wrapColumn($query, $column, $raw);
         $separators = FormatHelper::getNumberSeparators();
         $thousandsSeparator = addcslashes($separators['thousands'], '\'');
         $decimalSeparator = addcslashes($separators['decimal'], '\'');
 
-        $query->whereRaw($column . ' LIKE ? OR LOWER(REPLACE(' . $column . ', \'.\', \'' . $decimalSeparator . '\')) LIKE ? OR LOWER(IF(\'' . 
-            $thousandsSeparator . '\' != \'.\', REPLACE(FORMAT(' . $column . ', IF(POSITION(\'.\' IN ' . $column . '), LENGTH(' . 
-            $column . ') - POSITION(\'.\' IN ' . $column . '), LENGTH(' . $column . '))), \',\', \'' . $thousandsSeparator . '\'), ' . 
-            $column . ')) LIKE ? OR LOWER(REPLACE(REPLACE(REPLACE(FORMAT(' . $column . ', IF(POSITION(\'.\' IN ' . $column . '), LENGTH(' . 
-            $column . ') - POSITION(\'.\' IN ' . $column . '), LENGTH(' . $column . '))), \',\', \'##THOUSANDS##\'), \'.\', \'' . 
-            $decimalSeparator . '\'), \'##THOUSANDS##\', \'' . $thousandsSeparator . '\')) LIKE ?', 
-            ['%' . $keyword . '%', '%' . $keyword . '%', '%' . $keyword . '%', '%' . $keyword . '%']);
+        $query = $column . ' LIKE ?';
+        $parameters = ['%' . $keyword . '%'];
+        $formatNumber = 'FORMAT(' . $column . ', LENGTH(RIGHT(' . $column . ', INSTR(REVERSE(' . $column . '), \'.\') -1))))';
+
+        if ($thousandsSeparator, != '.') {
+
+        	$replaceStart = $replaceEnd = '';
+
+	    	if ($thousandsSeparator != ',') {
+
+	    		$replaceStart = 'LOWER(REPLACE(';
+	    		$replaceEnd = ', \',\', \'' . $thousandsSeparator . '\'))';
+	    	}
+
+        	$query .= ' OR ' . $replaceStart . $formatNumber . $replaceEnd . ' LIKE ?';
+        	$parameters[] = $parameters[0];
+        }
+
+        if ($decimalSeparator != '.') {
+
+        	$query .= ' OR LOWER(REPLACE(' . $column . ', \'.\', \'' . $decimalSeparator . '\')) LIKE ?';
+        	$parameters[] = $parameters[0];
+        }
+
+        if ($thousandsSeparator != ',' && $decimalSeparator != '.') {
+
+        	$query .= ' OR LOWER(REPLACE(REPLACE(REPLACE(' . $formatNumber . ', \',\', \'##THOUSANDS##\'), \'.\', \'' . $decimalSeparator . '\'), \'##THOUSANDS##\', \'' . $thousandsSeparator . '\')) LIKE ?';
+            $parameters[] = $parameters[0];
+        }
+
+        $query->whereRaw($query, $parameters);
+    }
+
+    /**
+     * Filter integer column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterIntegerColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+
+        $column = $this->wrapColumn($query, $column, $raw);
+        $separators = FormatHelper::getNumberSeparators();
+        $thousandsSeparator = addcslashes($separators['thousands'], '\'');
+
+        $query = $column . ' LIKE ?';
+        $parameters = ['%' . $keyword . '%'];
+
+        if ($thousandsSeparator != ',') {
+
+        	$query .= ' OR LOWER(REPLACE(FORMAT(' . $column . ', 0), \',\', \'' . $thousandsSeparator . '\')) LIKE ?';
+        	$parameters[] = $parameters[0];
+        }
+
+        $query->whereRaw($query, $parameters);
     }
 
     /**

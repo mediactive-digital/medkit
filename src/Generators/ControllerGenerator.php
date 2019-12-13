@@ -154,7 +154,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         foreach ($this->commandData->fields as $field) {
 
-            if ($field->inIndex && ($dataTableType = $this->getDataTableType($field->htmlType))) {
+            if ($field->inIndex && ($dataTableType = $this->getDataTableType($field->htmlType, $field->dbInput))) {
 
                 $editCallback = fill_template($this->commandData->dynamicVars, $template);
                 $editCallback = str_replace('$FIELD_NAME$', $field->name, $editCallback);
@@ -179,7 +179,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         foreach ($this->commandData->fields as $field) {
 
-            if ($field->inIndex && $field->isSearchable && ($dataTableType = $this->getDataTableType($field->htmlType))) {
+            if ($field->inIndex && $field->isSearchable && ($dataTableType = $this->getDataTableType($field->htmlType, $field->dbInput))) {
 
                 $filterCallback = fill_template($this->commandData->dynamicVars, $template);
                 $filterCallback = str_replace('$FIELD_NAME$', $field->name, $filterCallback);
@@ -513,9 +513,10 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * Get field datatable type from HTML type
      *
      * @param string $htmlType
+     * @param string $dbType
      * @return string $dataTableType
      */
-    public function getDatatableType(string $htmlType): string {
+    public function getDatatableType(string $htmlType, string $dbType): string {
 
         switch ($htmlType) {
 
@@ -545,7 +546,14 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case 'number' :
 
-                $dataTableType = 'Numeric';
+                if (Str::startsWith($dbType, 'decimal') || Str::startsWith($dbType, 'float')) {
+
+                    $dataTableType = 'Float';
+                }
+                else {
+
+                    $dataTableType = 'Integer';
+                }
 
             break;
 
