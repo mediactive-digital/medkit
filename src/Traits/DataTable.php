@@ -181,7 +181,7 @@ trait DataTable {
 
         $query = $column . ' LIKE ?';
         $parameters = ['%' . $keyword . '%'];
-        $formatNumber = 'FORMAT(' . $column . ', LENGTH(RIGHT(' . $column . ', INSTR(REVERSE(' . $column . '), \'.\') -1))))';
+        $formatNumber = 'FORMAT(' . $column . ', LENGTH(RIGHT(' . $column . ', INSTR(REVERSE(' . $column . '), \'.\') -1)))';
 
         if ($thousandsSeparator, != '.') {
 
