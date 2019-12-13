@@ -98,6 +98,12 @@ class GenerateMenus {
 				->data('icon', 'history')
 				->data('order', '1000');
 
+			$menu->add(_i('UI KIT'), [ 
+					'route' => 'back.ui_kit'
+				])
+				->data('icon', 'perm_media') 
+				->data('order', '2000');
+
 			$menu->add('Permissions', [
 					'route'		 => 'back.permissions.index',
 					'nickname'	 => 'permissions'
