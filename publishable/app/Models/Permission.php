@@ -18,18 +18,14 @@ use Carbon\Carbon;
  * @property string name
  * @property string guard_name
  */
-class Permission extends Model {
-    
-
-
-
+class Permission extends \Spatie\Permission\Models\Permission {
+	
     public $table = 'permissions';
     
     const CREATED_AT = 'created_at';
     const UPDATED_AT = 'updated_at';
 
-    
-
+	
     protected $dates = [
         'created_at',
         'updated_at'
@@ -65,9 +61,10 @@ class Permission extends Model {
     
 /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     **/
+   
     public function roles() {
     
         return $this->belongsToMany(\App\Models\Role::class, 'role_has_permissions');
-    }
+    }  **/
+	
 }
