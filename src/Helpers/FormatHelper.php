@@ -530,14 +530,15 @@ class FormatHelper {
      * @param string $locale
      * @return string $return
      */
-    public static function numberFormat($value, string $locale = ''): string {
+    public static function numberFormat($value, int $decimalPlaces = null, string $locale = ''): string {
 
         $return = '';
 
         if (is_numeric($value)) {
 
+            $value = (float)$value;
             $separators = self::getNumberSeparators($locale);
-            $return = number_format($value, Str::length(Str::after($value, '.')), $separators['decimal'], $separators['thousands']); 
+            $return = number_format($value, Str::contains($value, '.') ? ($decimalPlaces !== null ? $decimalPlaces : Str::length(Str::after($value, '.'))) : 0, $separators['decimal'], $separators['thousands']); 
         }
 
         return $return;

@@ -183,7 +183,7 @@ trait DataTable {
         $parameters = ['%' . $keyword . '%'];
         $formatNumber = 'FORMAT(' . $column . ', LENGTH(RIGHT(' . $column . ', INSTR(REVERSE(' . $column . '), \'.\') -1)))';
 
-        if ($thousandsSeparator, != '.') {
+        if ($thousandsSeparator != '.') {
 
         	$replaceStart = $replaceEnd = '';
 
