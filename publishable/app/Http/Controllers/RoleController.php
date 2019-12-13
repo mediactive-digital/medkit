@@ -94,8 +94,14 @@ class RoleController extends AppBaseController {
 
             return redirect(route('back.roles.index'));
         }
-
-        return view('roles.show')->with('role', $role);
+		
+		$allPermission = \App\Models\Permission::all()
+			->sortBy('name'); 
+		
+        return view('roles.show')
+			->with('role', $role)
+			->with('rolePermissions', $role->permissions()->get() ) 
+			->with('permissions', $allPermission ) ;    
     }
 
     /**
