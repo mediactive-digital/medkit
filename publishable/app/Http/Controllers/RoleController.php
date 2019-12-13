@@ -129,9 +129,44 @@ class RoleController extends AppBaseController {
             'model' => $role
         ]);
 
+		$allPermission = \App\Models\Permission::all()
+			->sortBy('name'); 
+		 
+		$rolePermissions = $role->permissions()->get();
+		
+		
+$formOptionsRolePermissions = [
+    'url' => route('back.roles.update'),
+    'method' => 'POST'
+];
+$formRolePermissions = \FormBuilder::plain($formOptionsRolePermissions);
+foreach ($allPermission as $key => $permission) {
+	
+	$match		 = $rolePermissions->firstWhere('name', $permission->name);
+
+			$checked = false;
+			if ($match) {
+				
+			$checked = true;
+			}
+	
+		
+		$formRolePermissions->add( $permission->name, 'checkbox', [
+    'value' => 1,
+    'checked' => $checked
+]);
+	
+}
+
+
+		
+		
+		
+		
         return view('roles.edit')
             ->with('form', $form)
-            ->with('role', $role);
+            ->with('formRolePermissions', $formRolePermissions)
+            ->with('role', $role); 
     }
 
     /**
