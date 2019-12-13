@@ -527,6 +527,7 @@ class FormatHelper {
      * Formatage numérique selon la locale
      *
      * @param mixed $value
+     * @param null|int $decimalPlaces
      * @param string $locale
      * @return string $return
      */
