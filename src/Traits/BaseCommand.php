@@ -4,14 +4,14 @@ namespace MediactiveDigital\MedKit\Traits;
 
 use InfyOm\Generator\Utils\FileUtil;
 use InfyOm\Generator\Generators\MigrationGenerator;
-use InfyOm\Generator\Generators\RepositoryGenerator;
-use InfyOm\Generator\Generators\FactoryGenerator;
-use InfyOm\Generator\Generators\SeederGenerator;
 use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
 
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
-use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
+use MediactiveDigital\MedKit\Generators\RepositoryGenerator;
+use MediactiveDigital\MedKit\Generators\FactoryGenerator;
+use MediactiveDigital\MedKit\Generators\SeederGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
 use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator; 
@@ -24,6 +24,26 @@ trait BaseCommand {
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
      */
     public $modelGenerator;
+
+    /**
+     * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
+     */
+    public $modelGenerator;
+
+    /**
+     * @var MediactiveDigital\MedKit\Generators\RepositoryGenerator
+     */
+    public $repositoryGenerator;
+
+    /**
+     * @var MediactiveDigital\MedKit\Generators\FactoryGenerator
+     */
+    public $factoryGenerator;
+
+    /**
+     * @var MediactiveDigital\MedKit\Generators\SeederGenerator
+     */
+    public $seederGenerator;
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\Scaffold\requestGenerator
@@ -39,6 +59,11 @@ trait BaseCommand {
      * @var \MediactiveDigital\MedKit\Generators\ViewGenerator
      */
     public $viewGenerator;
+
+    /**
+     * @var \MediactiveDigital\MedKit\Generators\PolicyGenerator
+     */
+    public $policyGenerator;
 	
     public function generateCommonItems() {
 
@@ -57,21 +82,24 @@ trait BaseCommand {
 
         if (!$this->isSkip('repository') && $this->commandData->getOption('repositoryPattern')) {
 
-            $repositoryGenerator = new RepositoryGenerator($this->commandData);
-            $repositoryGenerator->generate();
+            $this->repositoryGenerator = new RepositoryGenerator($this->commandData);
+
+            $this->generateRepository();
         }
 
         if ($this->commandData->getOption('factory') || (!$this->isSkip('tests') and $this->commandData->getAddOn('tests'))) {
 
-            $factoryGenerator = new FactoryGenerator($this->commandData);
-            $factoryGenerator->generate();
+            $this->factoryGenerator = new FactoryGenerator($this->commandData);
+
+            $this->generateFactory();
         }
 
         if ($this->commandData->getOption('seeder')) {
 
-            $seederGenerator = new SeederGenerator($this->commandData);
-            $seederGenerator->generate();
-            $seederGenerator->updateMainSeeder();
+            $this->seederGenerator = new SeederGenerator($this->commandData);
+
+            $this->generateSeeder();
+            $this->seederGenerator->updateMainSeeder();
         }
 		
     }
@@ -126,9 +154,10 @@ trait BaseCommand {
 			
 			if (!$this->isSkip('policies') and  config('infyom.laravel_generator.add_on.permissions.policies', true) ) {
 
-				$policyGenerator = new PolicyGenerator($this->commandData);
-				$policyGenerator->generatePolicy(); 
-				$policyGenerator->generateProvider(); 
+				$this->policyGenerator = new PolicyGenerator($this->commandData);
+
+				$this->generatePolicy(); 
+				$this->policyGenerator->generateProvider(); 
 			}
 		}
         
@@ -222,6 +251,60 @@ trait BaseCommand {
         }
 
         $this->modelGenerator->generate();
+    }
+
+    /**
+     * Generate repository
+     *
+     * @return void
+     */
+    public function generateRepository() {
+
+        $path = $this->repositoryGenerator->getReflectionProperty('path');
+        $fileName = $this->repositoryGenerator->getReflectionProperty('fileName');
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Repository ' . $fileName)) {
+
+            return;
+        }
+
+        $this->repositoryGenerator->generate();
+    }
+
+    /**
+     * Generate factory
+     *
+     * @return void
+     */
+    public function generateFactory() {
+
+        $path = $this->factoryGenerator->getReflectionProperty('path');
+        $fileName = $this->factoryGenerator->getReflectionProperty('fileName');
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Factory ' . $fileName)) {
+
+            return;
+        }
+
+        $this->factoryGenerator->generate();
+    }
+
+    /**
+     * Generate seeder
+     *
+     * @return void
+     */
+    public function generateSeeder() {
+
+        $path = $this->seederGenerator->getReflectionProperty('path');
+        $fileName = $this->seederGenerator->getReflectionProperty('fileName');
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Seeder ' . $fileName)) {
+
+            return;
+        }
+
+        $this->seederGenerator->generate();
     }
 
     /**
@@ -334,6 +417,22 @@ trait BaseCommand {
 
         $this->viewGenerator->generate();
 	}
-	
+
+    /**
+     * Generate policy
+     *
+     * @return void
+     */
+    public function generatePolicy() {
+
+        $path = $this->policyGenerator->getReflectionProperty('path', true);
+        $fileName = $this->policyGenerator->getReflectionProperty('fileName', true);
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Policy ' . $fileName)) {
+
+            return;
         }
 
+        $this->policyGenerator->generatePolicy();
+    }
+}
