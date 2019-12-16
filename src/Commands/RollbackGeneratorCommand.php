@@ -1,6 +1,6 @@
 <?php
 
-namespace MediactiveDigital\MedKit\Commands\Scaffold;
+namespace MediactiveDigital\MedKit\Commands;
 
 // use Illuminate\Console\Command;
  

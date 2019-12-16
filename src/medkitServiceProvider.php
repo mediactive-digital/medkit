@@ -19,10 +19,10 @@ use MediactiveDigital\MedKit\Commands\CleanupCommand;
 use MediactiveDigital\MedKit\Commands\GenerateTranslationsCommand;
 use MediactiveDigital\MedKit\Commands\GenerateJsTranslationsCommand;
 use MediactiveDigital\MedKit\Commands\GenerateJsRoutesCommand;
+use MediactiveDigital\MedKit\Commands\RollbackGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ScaffoldGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\RequestsGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ControllerGeneratorCommand;
-use MediactiveDigital\MedKit\Commands\Scaffold\RollbackGeneratorCommand;
 
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
