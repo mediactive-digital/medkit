@@ -26,11 +26,6 @@ trait BaseCommand {
     public $modelGenerator;
 
     /**
-     * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
-     */
-    public $modelGenerator;
-
-    /**
      * @var MediactiveDigital\MedKit\Generators\RepositoryGenerator
      */
     public $repositoryGenerator;
@@ -388,29 +383,33 @@ trait BaseCommand {
      * @return void
 	 */
     public function generateView() {
+
 		$path = $this->viewGenerator->getReflectionProperty('path', true);
 		 
 		// pour l'instant on part du principe que si il y a un des fichier blade 
 		// on demande si on veux refaire tout
 		 $files = [
-			 ViewGenerator::TABLE_GENERATE_BLADE_FILE, 
-			 ViewGenerator::INDEX_GENERATE_BLADE_FILE,	 
-			 ViewGenerator::FIELDS_GENERATE_BLADE_FILE, 
-			 ViewGenerator::CREATE_GENERATE_BLADE_FILE, 
-			 ViewGenerator::EDIT_GENERATE_BLADE_FILE, 
-			 ViewGenerator::SHOW_GENERATE_BLADE_FILE, 
-			 ViewGenerator::SHOW_FIELDS_GENERATE_BLADE_FILE, 
-			 ViewGenerator::SHOW_FIELDS_GENERATE_BLADE_FILE,  
+			ViewGenerator::TABLE_GENERATE_BLADE_FILE, 
+			ViewGenerator::INDEX_GENERATE_BLADE_FILE,	 
+			ViewGenerator::FIELDS_GENERATE_BLADE_FILE, 
+			ViewGenerator::CREATE_GENERATE_BLADE_FILE, 
+			ViewGenerator::EDIT_GENERATE_BLADE_FILE, 
+			ViewGenerator::SHOW_GENERATE_BLADE_FILE, 
+			ViewGenerator::SHOW_FIELDS_GENERATE_BLADE_FILE, 
+			ViewGenerator::SHOW_FIELDS_GENERATE_BLADE_FILE
         ];
  
 		$isOneFileExist = false;
+
         foreach ($files as $fileName) {
-           if (file_exists($path . $fileName) ){
+
+           if (file_exists($path . $fileName)) {
+
 			 $isOneFileExist = true;
 		   }
         }
 		  
-        if ( $isOneFileExist && !$this->confirmOverwrite('Views')) {
+        if ($isOneFileExist && !$this->confirmOverwrite('Views')) {
 
             return;
         }
