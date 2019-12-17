@@ -18,8 +18,6 @@ class PermissionPolicy
     public function viewAny(User $user )
     { 
 		 
-		
- 
         if ( $user->can('permissions_view_all') ) { 
             return true;
         } 
@@ -34,9 +32,7 @@ class PermissionPolicy
      */
     public function view(User $user, Permission $permission)
     {   
-		
-		
-		
+		 
         if ($user->can('permissions_view_all')) {
             return true;
         }

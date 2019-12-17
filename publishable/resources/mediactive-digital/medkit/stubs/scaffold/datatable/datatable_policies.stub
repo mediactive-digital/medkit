@@ -1,15 +1,15 @@
 <?php
 
-namespace App\DataTables;
+namespace $NAMESPACE_DATATABLES$;
 
-use App\Models\User;
+use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
 use Yajra\DataTables\Services\DataTable as YajraDataTable;
 use Yajra\DataTables\EloquentDataTable;
 
 use App\Traits\DataTable;
 
-class UserDataTable extends YajraDataTable {
+class $MODEL_NAME$DataTable extends YajraDataTable {
 
     use DataTable;
 
@@ -23,28 +23,18 @@ class UserDataTable extends YajraDataTable {
 
         $dataTable = new EloquentDataTable($query);
 
-        return $dataTable->addColumn('action', 'users.datatables_actions')
-            ->editColumn('theme', function(User $user) {
-
-                return $this->editBooleanColumn($user->theme);
-            })
-            ->filterColumn('theme', function($query, $keyword) {
-
-                $this->filterBooleanColumn('users.theme', $keyword);
-            });
+        return $dataTable->addColumn('action', '$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.datatables_actions')$EDIT_COLUMNS$$FILTER_COLUMNS$;
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\User $model
+     * @param \App\Models\$MODEL_NAME$ $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(User $model) {
+    public function query($MODEL_NAME$ $model) {
 
-        $this->query = $model->newQuery();
-
-        return $this->query;
+        return $model->newQuery();
     }
 
     /**
@@ -53,7 +43,7 @@ class UserDataTable extends YajraDataTable {
      * @return \Yajra\DataTables\Html\Builder
      */
     public function html() {
-
+ 
 		$user	 = \Auth::user();
 		$aBtn	 = [
 			['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'],
@@ -62,10 +52,11 @@ class UserDataTable extends YajraDataTable {
 			['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
 		];
-		if ($user->cannot('users_create')) {
+	 
+		if ($user->cannot('$MODEL_NAME_PLURAL_DASHED$_create')) { 
 			unset($aBtn[0]);
 		}
-
+ 
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
@@ -85,28 +76,7 @@ class UserDataTable extends YajraDataTable {
      */
     protected function getColumns() {
 
-        return [
-            _i('Nom') => [
-                'name' => 'name',
-                'data' => 'name'
-            ],
-            _i('Prénom') => [
-                'name' => 'first_name',
-                'data' => 'first_name'
-            ],
-            _i('Adresse email') => [
-                'name' => 'email',
-                'data' => 'email'
-            ],
-            _i('Login') => [
-                'name' => 'login',
-                'data' => 'login'
-            ],
-            _i('Theme') => [
-                'name' => 'theme',
-                'data' => 'theme'
-            ]
-        ];
+        return $DATATABLE_COLUMNS$;
     }
 
     /**
@@ -116,6 +86,6 @@ class UserDataTable extends YajraDataTable {
      */
     protected function filename() {
 
-        return 'usersdatatable_' . time();
+        return '$MODEL_NAME_PLURAL_SNAKE$datatable_' . time();
     }
 }
