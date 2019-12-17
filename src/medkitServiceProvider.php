@@ -24,6 +24,9 @@ use MediactiveDigital\MedKit\Commands\Scaffold\ScaffoldGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\RequestsGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ControllerGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Scaffold\ViewsGeneratorCommand;
+use MediactiveDigital\MedKit\Commands\Common\MigrationGeneratorCommand;
+use MediactiveDigital\MedKit\Commands\Common\ModelGeneratorCommand;
+use MediactiveDigital\MedKit\Commands\Common\RepositoryGeneratorCommand;
 
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
@@ -112,6 +115,9 @@ class MedKitServiceProvider extends ServiceProvider {
             RequestsGeneratorCommand::class,
             ControllerGeneratorCommand::class,
             ViewsGeneratorCommand::class,
+            MigrationGeneratorCommand::class,
+            ModelGeneratorCommand::class,
+            RepositoryGeneratorCommand::class,
             RollbackGeneratorCommand::class,
             GenerateTranslationsCommand::class,
             GenerateJsTranslationsCommand::class,
