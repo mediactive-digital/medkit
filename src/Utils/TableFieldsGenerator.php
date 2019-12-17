@@ -210,7 +210,7 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                     }
 
                     $indexes = $this->schemaManager->listTableDetails($this->tableName)->getIndexes();
-                    $primaryKey = $indexes['primary']->getColumns()[0];
+                    $primaryKey = isset($indexes['primary']) ? $indexes['primary']->getColumns()[0] : '';
 
                     foreach ($indexes as $index) {
 
@@ -228,7 +228,7 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                                     });
                                 }
 
-                                $uniqueValidation = 'unique:' . $this->tableName . ',' . $columns[0] . ',$this->' . $primaryKey . ',' . $primaryKey;
+                                $uniqueValidation = 'unique:' . $this->tableName . ',' . $columns[0] . ',' . ($primaryKey ? '$this->' . $primaryKey . ',' . $primaryKey : 'null,null');
 
                                 for ($i = 1; $i < count($columns); $i++) {
 

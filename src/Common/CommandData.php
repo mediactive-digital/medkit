@@ -4,6 +4,7 @@ namespace MediactiveDigital\MedKit\Common;
 
 use InfyOm\Generator\Common\CommandData as InfyOmCommandData;
 use InfyOm\Generator\Common\GeneratorField;
+use InfyOm\Generator\Common\GeneratorFieldRelation;
 use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 
 use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
