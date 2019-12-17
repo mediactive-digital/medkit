@@ -29,6 +29,8 @@
           </div>
     </div>
  
+
+	@if(auth()->user()->can('viewAny', App\Models\Permission::class)) 
      <div class="container-fluid">
           <div class="animated fadeIn">
                  
@@ -50,4 +52,6 @@
                  </div>
           </div>
     </div>
+	@endif
+	
 @endsection

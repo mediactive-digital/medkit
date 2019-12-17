@@ -13,9 +13,12 @@
                          <div class="card-header">
                              <i class="material-icons">format_align_justify</i>
                              {!! _i('Users') !!}
+							 
+							@if(auth()->user()->can('create', App\Models\User::class)) 
                              <a class="pull-right" href="{!! route('back.users.create') !!}">
                                 <i class="material-icons">add_box</i>
                              </a>
+							@endif
                          </div>
                          <div class="card-body">
                              @include('users.table')

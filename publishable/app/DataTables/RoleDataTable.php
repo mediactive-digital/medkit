@@ -46,6 +46,18 @@ class RoleDataTable extends YajraDataTable {
      */
     public function html() {
 
+		$user	 = \Auth::user();
+		$aBtn	 = [
+			['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'],
+			['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner'],
+			['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner'],
+			['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
+			['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
+		];
+		if ($user->cannot('roles_create')) {
+			unset($aBtn[0]);
+		}
+
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
@@ -54,13 +66,7 @@ class RoleDataTable extends YajraDataTable {
                 'dom' => 'Bfrtip',
                 'stateSave' => true,
                 'order' => [[0, 'asc']],
-                'buttons' => [
-                    ['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'],
-                    ['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner'],
-                    ['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner'],
-                    ['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
-                    ['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
-                ]
+                'buttons' => $aBtn
             ]);
     }
 

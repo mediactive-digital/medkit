@@ -98,9 +98,17 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         }
     }
 
-    private function generateDataTable() {
-
-        $templateData = get_template('scaffold.datatable.datatable');
+	/**
+	 * 
+	 */
+    private function generateDataTable() { 
+		
+        $templateName = 'datatable';
+		if ( config('infyom.laravel_generator.add_on.permissions.enabled', true) && config('infyom.laravel_generator.add_on.permissions.policies', true) ) { 
+				$templateName .= '_policies';
+		}
+		
+        $templateData = get_template('scaffold.datatable.' . $templateName);
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$DATATABLE_COLUMNS$', FormatHelper::writeValueToPhp($this->generateDataTableColumns(), 2), $templateData);
         $templateData = str_replace('$EDIT_COLUMNS$', $this->generateDataTableEditColumns(), $templateData);

@@ -13,9 +13,12 @@
                          <div class="card-header">
                              <i class="material-icons">format_align_justify</i>
                              {!! _i('Roles') !!}
+							 
+							@if(auth()->user()->can('create', App\Models\Role::class)) 
                              <a class="pull-right" href="{!! route('back.roles.create') !!}">
                                 <i class="material-icons">add_box</i>
-                             </a>
+                             </a> 
+							@endif
                          </div>
                          <div class="card-body">
                              @include('roles.table')

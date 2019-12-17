@@ -128,6 +128,11 @@ class ViewGenerator extends InfyOmViewGenerator
     {
         $templateName = 'datatables_actions';
 
+		if ( config('infyom.laravel_generator.add_on.permissions.enabled', true) && config('infyom.laravel_generator.add_on.permissions.policies', true) ) { 
+				$templateName .= '_policies';
+		}
+		
+		// Plus besoin du localizeTemplate, on part sur du _i de base
         if ($this->commandData->isLocalizedTemplates()) {
             $templateName .= '_locale';
         }
@@ -145,6 +150,11 @@ class ViewGenerator extends InfyOmViewGenerator
     {
         $templateName = 'index';
 
+		if ( config('infyom.laravel_generator.add_on.permissions.enabled', true) && config('infyom.laravel_generator.add_on.permissions.policies', true) ) { 
+				$templateName .= '_policies';
+		}
+		
+		// Plus besoin du localizeTemplate, on part sur du _i de base
         if ($this->commandData->isLocalizedTemplates()) {
             $templateName .= '_locale';
         }
