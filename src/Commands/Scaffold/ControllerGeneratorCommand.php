@@ -30,7 +30,7 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
         $this->commandData = new CommandData($this, CommandData::$COMMAND_TYPE_SCAFFOLD);
     }
 
-     /**
+    /**
      * Execute the command.
      *
      * @return void
@@ -41,7 +41,6 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
 
         $this->controllerGenerator = new ControllerGenerator($this->commandData);
 
-        $this->saveSchemaFile();
         $this->generateForm();
         $this->generateDataTable();
         $this->generateController();

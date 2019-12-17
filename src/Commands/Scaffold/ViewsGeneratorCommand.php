@@ -2,13 +2,14 @@
 
 namespace MediactiveDigital\MedKit\Commands\Scaffold;
 
-use InfyOm\Generator\Commands\Scaffold\ScaffoldGeneratorCommand as InfyOmScaffoldGeneratorCommand;
+use InfyOm\Generator\Commands\Scaffold\ViewsGeneratorCommand as InfyOmViewsGeneratorCommand;
 use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
 
 use MediactiveDigital\MedKit\Traits\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
+use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator;
 
-class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
+class ViewsGeneratorCommand extends InfyOmViewsGeneratorCommand {
 
     use BaseCommand;
 
@@ -17,7 +18,7 @@ class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
      *
      * @var string
      */
-    protected $name = 'medkit:scaffold';
+    protected $name = 'medkit.scaffold:views';
 
     /**
      * Create a new command instance.
@@ -38,15 +39,9 @@ class ScaffoldGeneratorCommand extends InfyOmScaffoldGeneratorCommand {
 
         InfyOmBaseCommand::handle();
 
-        if ($this->checkIsThereAnyDataToGenerate()) {
+        $this->viewGenerator = new ViewGenerator($this->commandData);
 
-            $this->generateCommonItems();
-            $this->generateScaffoldItems();
-            $this->performPostActionsWithMigration();
-        } 
-        else {
-
-            $this->commandData->commandInfo('There are not enough input fields for scaffold generation.');
-        }
+        $this->generateView();
+        $this->performPostActions();
     }
 }

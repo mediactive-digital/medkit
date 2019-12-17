@@ -13,6 +13,7 @@ use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Str;
 use DB;
+use File;
 
 class ControllerGenerator extends InfyOmControllerGenerator {
 
@@ -239,12 +240,13 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             }
         }
 
-		if(  in_array($templateName, ['controller' , 'datatable_controller'] ) ){
+		if (in_array($templateName, ['controller' , 'datatable_controller'])) {
 			
-			if( config('infyom.laravel_generator.add_on.permissions.policies', true) ){
+			if (config('infyom.laravel_generator.add_on.permissions.policies', true)) {
 				
-				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource( \$NAMESPACE_MODEL$\$MODEL_NAME$::class );', $templateData);
-			} else {
+				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource(\$NAMESPACE_MODEL$\$MODEL_NAME$::class);', $templateData);
+			} 
+            else {
 				
 				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '', $templateData);
 			}
@@ -259,48 +261,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
-     * Get form fields from JSON schema file
-     *
-     * @return array $fields 
-     */
-    public function getJsonFields() {
-
-        $json = file_get_contents($this->schemaPath . $this->commandData->config->mName . '.json');
-        $datas = json_decode($json, true);
-        $fields = $relations = [];
-
-        foreach ($datas as $data) {
-
-            if (isset($data['type'])) {
-
-                if ($data['relation']) {
-
-                    $relation = GeneratorFieldRelation::parseRelation($data['relation']);
-
-                    if ($relation->type == 'mt1') {
-
-                        $relations[$relation->inputs[1]] = $relation;
-                    }
-                }
-            } 
-            else if ($data['inForm']) {
-
-                $fields[] = GeneratorField::parseFieldFromFile($data);
-            }
-        }
-
-        foreach ($fields as $field) {
-
-            if (isset($relations[$field->name])) {
-
-                $field->relation = $relations[$field->name];
-            }
-        }
-
-        return $fields;
-    }
-
-    /** 
      * Get select choices for a field that has a relation
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
@@ -309,66 +269,71 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     public function getRelationChoices(GeneratorField $field) {
 
         $choices = [];
+        $file = $this->schemaPath . $field->relation->inputs[0] . '.json';
 
-        $relationJson = file_get_contents($this->schemaPath . $field->relation->inputs[0] . '.json');
-        $relationDatas = json_decode($relationJson, true);
+        if (File::exists($file)) {
 
-        $colId = $colName = $nom = $name = $libelle = $label = null;
+            $relationJson = file_get_contents($file);
+            $relationDatas = json_decode($relationJson, true);
 
-        foreach ($relationDatas as $relationData) {
+            $colId = $colName = $nom = $name = $libelle = $label = null;
 
-            if (!isset($relationData['type'])) {
+            foreach ($relationDatas as $relationData) {
 
-                $relationData = GeneratorField::parseFieldFromFile($relationData);
+                if (!isset($relationData['type'])) {
 
-                if ($relationData->isPrimary) {
+                    $relationData = GeneratorField::parseFieldFromFile($relationData);
 
-                    $colId = $relationData->name;
-                }
-                else if (!$colName) {
+                    if ($relationData->isPrimary) {
 
-                    switch ($relationData->name) {
+                        $colId = $relationData->name;
+                    }
+                    else if (!$colName) {
 
-                        case 'nom' :
+                        switch ($relationData->name) {
 
-                            $nom = $relationData->name;
+                            case 'nom' :
 
-                        break;
+                                $nom = $relationData->name;
 
-                        case 'name' :
+                            break;
 
-                            $name = $relationData->name;
+                            case 'name' :
 
-                        break;
+                                $name = $relationData->name;
 
-                        case 'libelle' :
+                            break;
 
-                            $libelle = $relationData->name;
+                            case 'libelle' :
 
-                        break;
+                                $libelle = $relationData->name;
 
-                        case 'label' :
+                            break;
 
-                            $label = $relationData->name;
+                            case 'label' :
 
-                        break;
+                                $label = $relationData->name;
+
+                            break;
+                        }
                     }
                 }
             }
-        }
 
-        $colName = $nom ?: ($name ?: ($libelle ?: ($label ?: $colName)));
+            $colName = $nom ?: ($name ?: ($libelle ?: ($label ?: $colName)));
 
-        if ($colId && $colName) {
+            if ($colId) {
 
-            $class = '\\' . $this->commandData->config->nsModel . '\\' . $field->relation->inputs[0];
-            $table = (new $class)->getTable();
+                $class = '\\' . $this->commandData->config->nsModel . '\\' . $field->relation->inputs[0];
+                $table = (new $class)->getTable();
+                $colSelect = $colName ?: DB::raw('CONCAT(\'' . addcslashes($this->getLabel($table), '\'') . ' ' . '\', `' . $colId . '`)  AS `' . $colName . '`');
 
-            $relations = DB::table($table)->select([$colId, $colName])->orderBy($colName)->limit(100)->get();
+                $relations = DB::table($table)->select([$colId, $colSelect])->orderBy($colName)->limit(100)->get();
 
-            if ($relations) {
+                if ($relations) {
 
-                $choices = $relations->pluck($colName, $colId)->toArray();
+                    $choices = $relations->pluck($colName, $colId)->toArray();
+                }
             }
         }
 
@@ -581,10 +546,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @return string
      */
     public function getFormFields() {
-
-        $fields = $this->getJsonFields();
         
-        foreach ($fields as $key => $field) {
+        foreach ($this->commandData->fields as $key => $field) {
 
             if ($key == 0) {
 
@@ -594,20 +557,19 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $field->htmlOptions = $this->getHtmlOptions($field);
         }
 
-        return $this->prepareFormFields($fields);
+        return $this->prepareFormFields();
     }
 
     /** 
      * Prepare form fields as a string for the template
      *
-     * @param array $fields
      * @return string
      */
-    public function prepareFormFields(array $fields) {
+    public function prepareFormFields() {
 
         $formFields = [];
 
-        foreach ($fields as $field) {
+        foreach ($this->commandData->fields as $field) {
 
             $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
 

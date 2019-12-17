@@ -18,7 +18,7 @@ use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator; 
 use MediactiveDigital\MedKit\Generators\Scaffold\PolicyGenerator; 
 
-trait BaseCommand { 
+trait BaseCommand {
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
@@ -65,6 +65,7 @@ trait BaseCommand {
         if (!$this->commandData->getOption('fromTable') and !$this->isSkip('migration')) {
 
             $migrationGenerator = new MigrationGenerator($this->commandData);
+            
             $migrationGenerator->generate();
         }
 
@@ -119,31 +120,36 @@ trait BaseCommand {
 
         if (!$this->isSkip('views')) {
 
-            $this->viewGenerator = new ViewGenerator($this->commandData); 
+            $this->viewGenerator = new ViewGenerator($this->commandData);
+
             $this->generateView();
         }
 
         if (!$this->isSkip('routes') and !$this->isSkip('scaffold_routes')) {
 
             $routeGenerator = new RoutesGenerator($this->commandData);
+
             $routeGenerator->generate();
         }
 
         if (!$this->isSkip('menu') and $this->commandData->config->getAddOn('menu.enabled')) {
 
             $menuGenerator = new MenuGenerator($this->commandData);
+
             $menuGenerator->generate();
         }
 		 
 		if (!$this->isSkip('tracks_history') and  config('infyom.laravel_generator.add_on.tracks_history.enabled', true) ) {
 		
             $trackerGenerator = new TracksHistoryGenerator($this->commandData);
+
             $trackerGenerator->generate(); 
 		}
         
 		if (!$this->isSkip('permissions') and  config('infyom.laravel_generator.add_on.permissions.enabled', true) ) {
 		
             $permissionsGenerator = new PermissionGenerator($this->commandData);
+
             $permissionsGenerator->generate(); 
 			
 			
@@ -159,6 +165,11 @@ trait BaseCommand {
     }
     
     public function performPostActions($runMigration = false) {
+
+        if ($this->commandData->getOption('save')) {
+            
+            $this->saveSchemaFile();
+        }
 
         if ($runMigration) {
 

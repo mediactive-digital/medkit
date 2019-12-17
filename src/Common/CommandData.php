@@ -10,6 +10,8 @@ use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
 use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Traits\Reflection;
 
+use File;
+
 class CommandData extends InfyOmCommandData {
 
     /** 
@@ -23,17 +25,68 @@ class CommandData extends InfyOmCommandData {
 
         $this->fields = [];
 
-        if ($this->getOption('fieldsFile') or $this->getOption('jsonFromGUI')) {
+        $schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
+        $fileName = $this->modelName . '.json';
+        $filePath = $schemaPath . $fileName;
+        $getInput = true;
 
-            $this->callReflectionMethod('getInputFromFileOrJson');
-        } 
-        elseif ($this->getOption('fromTable')) {
+        if (File::exists($filePath)) {
 
-            $this->getInputFromTable();
-        } 
-        else {
+            $default = $this->getOption('fieldsFile') || $this->getOption('jsonFromGUI') || $this->getOption('fromTable') ? false : true;
 
-            $this->getInputFromConsole();
+            if ($this->commandObj->confirm('A schema file already exists (' . $filePath . '), do you wish to use it as source ?', $default)) {
+
+                $this->setOption('fieldsFile', $fileName);
+                $this->callReflectionMethod('getInputFromFileOrJson');
+            }
+            else {
+
+                $getInput = false;
+            }
+        }
+
+        if ($getInput) {
+
+            if ($this->getOption('fieldsFile') || $this->getOption('jsonFromGUI')) {
+
+                $this->callReflectionMethod('getInputFromFileOrJson');
+            } 
+            elseif ($this->getOption('fromTable')) {
+
+                $this->getInputFromTable();
+            } 
+            else {
+
+                $this->getInputFromConsole();
+            }
+        }
+
+        $this->formatInput();
+    }
+
+    /** 
+     * Format input.
+     *
+     * @return void
+     */
+    private function formatInput() {
+
+        foreach ($this->relations as $relation) {
+
+            $column = isset($relation->inputs[1]) ? $relation->inputs[1] : '';
+
+            if ($column) {
+
+                foreach ($this->fields as $field) {
+
+                    if ($field->name == $column) {
+
+                        $field->relation = $relation;
+
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -154,7 +207,6 @@ class CommandData extends InfyOmCommandData {
     private function getInputFromTable() {
 
         $tableName = $this->dynamicVars['$TABLE_NAME$'];
-
         $ignoredFields = $this->getOption('ignoreFields');
 
         if (!empty($ignoredFields)) {

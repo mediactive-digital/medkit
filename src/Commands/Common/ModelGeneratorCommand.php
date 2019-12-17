@@ -1,15 +1,15 @@
 <?php
 
-namespace MediactiveDigital\MedKit\Commands\Scaffold;
+namespace MediactiveDigital\MedKit\Commands\Common;
 
-use InfyOm\Generator\Commands\Scaffold\RequestsGeneratorCommand as InfyOmRequestsGeneratorCommand;
+use InfyOm\Generator\Commands\Common\ModelGeneratorCommand as InfyOmModelGeneratorCommand;
 use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
 
 use MediactiveDigital\MedKit\Traits\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
-use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
+use MediactiveDigital\MedKit\Generators\ModelGenerator;
 
-class RequestsGeneratorCommand extends InfyOmRequestsGeneratorCommand {
+class ModelGeneratorCommand extends InfyOmModelGeneratorCommand {
 
     use BaseCommand;
 
@@ -18,7 +18,7 @@ class RequestsGeneratorCommand extends InfyOmRequestsGeneratorCommand {
      *
      * @var string
      */
-    protected $name = 'medkit.scaffold:requests';
+    protected $name = 'medkit:model';
 
     /**
      * Create a new command instance.
@@ -27,7 +27,7 @@ class RequestsGeneratorCommand extends InfyOmRequestsGeneratorCommand {
 
         InfyOmBaseCommand::__construct();
 
-        $this->commandData = new CommandData($this, CommandData::$COMMAND_TYPE_SCAFFOLD);
+        $this->commandData = new CommandData($this, CommandData::$COMMAND_TYPE_API);
     }
 
     /**
@@ -39,8 +39,9 @@ class RequestsGeneratorCommand extends InfyOmRequestsGeneratorCommand {
 
         InfyOmBaseCommand::handle();
 
-        $this->requestGenerator = new RequestGenerator($this->commandData);
+        $this->modelGenerator = new ModelGenerator($this->commandData);
 
-        $this->generateRequest();
+        $this->generateModel();
+        $this->performPostActions();
     }
 }
