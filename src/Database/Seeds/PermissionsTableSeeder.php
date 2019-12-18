@@ -138,6 +138,22 @@ class PermissionsTableSeeder extends Seeder {
 			'created_at' => $dateNow,
 			'updated_at' => $dateNow
 		]);
+		
+		DB::table('permissions')->insert([
+			'id'		 => 16,
+			'name'		 => 'role-has-permissions_edit_all',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+		
+		DB::table('permissions')->insert([
+			'id'		 => 17,
+			'name'		 => 'role-has-permissions_view_all',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]); 
 	}
 
 }
