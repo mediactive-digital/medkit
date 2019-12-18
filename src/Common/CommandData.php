@@ -58,6 +58,11 @@ class CommandData extends InfyOmCommandData {
     public function __construct(Command $commandObj, $commandType, TemplatesManager $templatesManager = null) {
 
         parent::__construct($commandObj, $commandType, $templatesManager);
+    }
+
+    public function initCommandData() {
+
+        $this->config->init($this);
 
         $this->setConfiguration();
     }
