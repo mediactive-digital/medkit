@@ -83,7 +83,9 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
 	/**
-	 * 
+	 * Generate datatable
+     *
+     * @return void
 	 */
     private function generateDataTable() { 
 		
@@ -139,7 +141,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      *
      * @return string $editColumns
      */
-    private function generateDataTableEditColumns() {
+    private function generateDataTableEditColumns(): string {
 
         $editColumns = '';
         $template = get_template('scaffold.datatable.edit_column');
@@ -164,7 +166,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      *
      * @return string $filterColumns
      */
-    private function generateDataTableFilterColumns() {
+    private function generateDataTableFilterColumns(): string {
 
         $filterColumns = '';
         $template = get_template('scaffold.datatable.filter_column');
@@ -249,7 +251,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return array $choices 
      */
-    public function getRelationChoices(GeneratorField $field) {
+    public function getRelationChoices(GeneratorField $field): array {
 
         $choices = [];
         $file = $this->schemaPath . $field->relation->inputs[0] . '.json';
@@ -329,7 +331,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return array $attributes 
      */
-    public function getAttributes(GeneratorField $field) {
+    public function getAttributes(GeneratorField $field): array {
 
         $attributes = [];
 
@@ -382,7 +384,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return array $options 
      */
-    public function getHtmlOptions(GeneratorField $field) {
+    public function getHtmlOptions(GeneratorField $field): array {
 
         $options = [
             'label' => FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->name)) . ')'
@@ -528,16 +530,26 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      *
      * @return string
      */
-    public function getFormFields() {
+    public function getFormFields(): string {
+
+        $fields = [];
+        $first = false;
         
-        foreach ($this->commandData->formatedFields as $key => $field) {
+        foreach ($this->commandData->formatedFields as $field) {
 
-            if ($key == 0) {
+            if ($field->inForm) {
 
-                $field->autofocus = true;
+                if (!$first) {
+
+                    $field->autofocus = true;
+                    
+                    $first = true;
+                }
+
+                $field->htmlOptions = $this->getHtmlOptions($field);
+
+                $fields[] = $field;
             }
-
-            $field->htmlOptions = $this->getHtmlOptions($field);
         }
 
         return $this->prepareFormFields();
@@ -548,15 +560,18 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      *
      * @return string
      */
-    public function prepareFormFields() {
+    public function prepareFormFields(): string {
 
         $formFields = [];
 
         foreach ($this->commandData->formatedFields as $field) {
 
-            $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
+            if ($field->inForm) {
 
-            $formFields[] = '$this->add(\'' . $field->name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
+                $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
+
+                $formFields[] = '$this->add(\'' . $field->name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
+            }
         }
 
         return implode(infy_nl_tab(2, 2), $formFields);
