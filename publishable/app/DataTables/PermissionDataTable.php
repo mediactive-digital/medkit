@@ -47,17 +47,19 @@ class PermissionDataTable extends YajraDataTable {
 	public function html() {
 
 		$user	 = \Auth::user();
+		$disabledCreate = "";
+		if ($user->cannot('permissions_create')) {
+			$disabledCreate = " disabled";
+		}
+			 
 		$aBtn	 = [
-			['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'],
+			['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'.$disabledCreate], 
 			['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
 		];
-		if ($user->cannot('permissions_create')) {
-			unset($aBtn[0]);
-		}
-
+		 
 		return $this->builder()
 				->columns($this->getColumns())
 				->minifiedAjax()

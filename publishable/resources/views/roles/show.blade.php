@@ -11,7 +11,14 @@
           <div class="animated fadeIn">
                  
                  <div class="row">
+                 
+					@if(auth()->user()->can('role-has-permissions_view_all'))
+                     <div class="col-lg-6">
+					@endif
+                    
+					@if(auth()->user()->cannot('role-has-permissions_view_all'))
                      <div class="col-lg-12">
+					@endif
                          <div class="card">
                              <div class="card-header">
                                  <strong>{!! _i('Détails') !!}</strong> 
@@ -25,17 +32,9 @@
                              </div>
                          </div>
                      </div>
-                 </div>
-          </div>
-    </div>
- 
-
-	@if(auth()->user()->can('viewAny', App\Models\Permission::class)) 
-     <div class="container-fluid">
-          <div class="animated fadeIn">
-                 
-                 <div class="row">
-                     <div class="col-lg-12">
+					 
+					@if(auth()->user()->can('role-has-permissions_view_all'))
+					 <div class="col-lg-6">
                          <div class="card">
                              <div class="card-header">
                                  <strong>{!! _i('Permissions pour ') !!}: {!! $role->name !!}</strong> 
@@ -49,9 +48,9 @@
                              </div>
                          </div>
                      </div>
+					@endif
+					 
                  </div>
           </div>
-    </div>
-	@endif
-	
+    </div> 
 @endsection

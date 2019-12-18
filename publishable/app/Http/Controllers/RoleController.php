@@ -28,6 +28,11 @@ class RoleController extends AppBaseController {
 		$this->authorizeResource( \App\Models\Role::class );
 		
         $this->roleRepository = $roleRepo;
+        
+        // Si aucun role selectioné, on crée l'array vide
+        if(!request()->request->has('permissions')){
+            request()->request->add(['permissions'=>[]]);
+        }
     }
 
     /**
@@ -70,6 +75,11 @@ class RoleController extends AppBaseController {
         $input = $request->all();
 
         $role = $this->roleRepository->create($input);
+		
+		$user	 = \Auth::user();
+		if ($user->can('role-has-permissions_edit_all')) { 
+			$role->permissions()->attach($request->permissions);
+		}
 
         Flash::success('Role saved successfully.');
 
@@ -128,44 +138,9 @@ class RoleController extends AppBaseController {
             'url' => route('back.roles.update', $role->id),
             'model' => $role
         ]);
-
-		$allPermission = \App\Models\Permission::all()
-			->sortBy('name'); 
-		 
-		$rolePermissions = $role->permissions()->get();
-		
-		
-$formOptionsRolePermissions = [
-    'url' => route('back.roles.update'),
-    'method' => 'POST'
-];
-$formRolePermissions = \FormBuilder::plain($formOptionsRolePermissions);
-foreach ($allPermission as $key => $permission) {
-	
-	$match		 = $rolePermissions->firstWhere('name', $permission->name);
-
-			$checked = false;
-			if ($match) {
-				
-			$checked = true;
-			}
-	
-		
-		$formRolePermissions->add( $permission->name, 'checkbox', [
-    'value' => 1,
-    'checked' => $checked
-]);
-	
-}
-
-
-		
-		
-		
-		
+  
         return view('roles.edit')
-            ->with('form', $form)
-            ->with('formRolePermissions', $formRolePermissions)
+            ->with('form', $form) 
             ->with('role', $role); 
     }
 
@@ -175,7 +150,7 @@ foreach ($allPermission as $key => $permission) {
      * @param \App\Models\Role $role
      * @param \App\Http\Requests\RoleRequest $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response 
      */
     public function update(Role $role, RoleRequest $request) {
 		
@@ -191,11 +166,17 @@ foreach ($allPermission as $key => $permission) {
 
         $role = $this->roleRepository->update($request->all(), $id);
 
+		
+		$user	 = \Auth::user();
+		if ($user->can('role-has-permissions_edit_all')) { 
+			$role->permissions()->sync($request->permissions); 
+		}
+        
         Flash::success('Role updated successfully.');
 
         return redirect(route('back.roles.index'));
     }
-
+  
     /**
      * Remove the specified Role from storage.
      *
