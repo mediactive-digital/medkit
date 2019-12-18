@@ -179,7 +179,7 @@ class CommandData extends InfyOmCommandData {
             }
         }
 
-        $this->formatedFields = $fields;
+        $this->formatedFields = $this->fields;
     }
 
     private function getInputFromConsole() {
