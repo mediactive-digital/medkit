@@ -57,7 +57,6 @@ class ModelGenerator extends InfyOmModelGenerator {
         $this->commandData = $commandData;
         $this->path = $this->getReflectionProperty('path');
         $this->fileName = $this->getReflectionProperty('fileName');
-        $this->table = $this->getReflectionProperty('table');
         $this->timestamps = $this->commandData->timestamps;
         $this->userStamps = $this->commandData->userStamps;
         $this->lastActivity = $this->commandData->lastActivity;
@@ -202,13 +201,7 @@ class ModelGenerator extends InfyOmModelGenerator {
         $templateData = $this->callReflectionMethod('fillDocs', $templateData);
         $templateData = $this->fillTimestamps($templateData);
 
-        $primaryKey = $this->commandData->getOption('primary') ?: "";
-
-        if (!$primaryKey && $this->commandData->getOption('fromTable')) {
-
-            $primaryKey = $this->commandData->tableFieldsGenerator->getPrimaryKeyOfTable($this->table);
-        }
-
+        $primaryKey = $this->commandData->getOption('primary') ?: '';
         $primary = $primaryKey ? infy_tab() . "protected \$primaryKey = '" . $primaryKey . "';\n" : "";
 
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);

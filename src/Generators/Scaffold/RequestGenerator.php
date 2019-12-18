@@ -50,7 +50,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
     /** 
      * @var string 
      */
-    private $primaryKeyName;
+    private $primaryName;
 
     public function __construct(CommandData $commandData) {
 
@@ -62,7 +62,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
         $this->timestamps = $this->commandData->timestamps;
         $this->userStamps = $this->commandData->userStamps;
         $this->lastActivity = $this->commandData->lastActivity;
-        $this->primaryKeyName = $this->commandData->primaryKeyName;
+        $this->primaryName = $this->commandData->primaryName;
     }
 
     /** 
@@ -120,7 +120,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
 
                     $field->validations[$lastKey] = preg_replace_callback('/\$this->([a-zA-Z0-9_]+)/', function($matches) {
 
-                        return $matches[1] == $this->primaryKeyName ? '\' . $this->modelId . \'' : '\' . $this->' . $matches[1] . ' . \'';
+                        return $matches[1] == $this->primaryName ? '\' . $this->modelId . \'' : '\' . $this->' . $matches[1] . ' . \'';
 
                     }, $field->validations[$lastKey]);
 

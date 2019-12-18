@@ -15,6 +15,7 @@ use MediactiveDigital\MedKit\Traits\Reflection;
 
 use File;
 use Str;
+use Schema;
 
 class CommandData extends InfyOmCommandData {
 
@@ -44,9 +45,9 @@ class CommandData extends InfyOmCommandData {
     public $lastActivity;
 
     /** 
-     * @var string 
+     * @var mixed 
      */
-    public $primaryKeyName;
+    public $model;
 
     use Reflection;
 
@@ -64,7 +65,41 @@ class CommandData extends InfyOmCommandData {
 
         $this->config->init($this);
 
+        $this->setDefaults();
         $this->setConfiguration();
+    }
+
+    /**
+     * Set default values
+     *
+     * @return void
+     */
+    public function setDefaults() {
+
+        $this->model = $this->getModel();
+
+        if (!$this->getOption('tableName') && $this->model && !Schema::hasTable($this->dynamicVars['$TABLE_NAME$']) && ($table = $this->model->getTable())) {
+
+            $this->config->tableName = $table;
+            $this->addDynamicVariable('$TABLE_NAME$', $table);
+            $this->addDynamicVariable('$TABLE_NAME_TITLE$', Str::studly($table));
+            $this->setOption('tableName', $table);
+        }
+
+        $this->tableFieldsGenerator = $this->getTableFieldsGenerator();
+
+        if (!$this->getOption('primary')) {
+
+            $primary = Schema::hasTable($this->dynamicVars['$TABLE_NAME$']) ? $this->tableFieldsGenerator->getPrimaryKeyOfTable($this->dynamicVars['$TABLE_NAME$']) : '';
+            $primary = $primary ?: ($this->model ? $this->model->getKeyName() : $primary);
+            
+            if ($primary) {
+
+                $this->config->primaryName = $primary;
+                $this->addDynamicVariable('$PRIMARY_KEY_NAME$', $primary);
+                $this->setOption('primary', $primary);
+            }
+        }
     }
 
     /**
@@ -77,7 +112,6 @@ class CommandData extends InfyOmCommandData {
         // Initialization
         $nameSpacePrefix = $this->getNameSpacePrefix();
         $pathPrefix = $this->getPathPrefix();
-        $model = $this->getModel();
 
         // Options
         $this->config->options['userStamps'] = config('infyom.laravel_generator.options.userStamps', false);
@@ -87,7 +121,7 @@ class CommandData extends InfyOmCommandData {
         $this->addDynamicVariable('$NAMESPACE_FORMS$', config('infyom.laravel_generator.namespace.forms', 'App\Forms') . $nameSpacePrefix);
         $this->addDynamicVariable('$BD_FIELD_CREATED_BY_NAME$', config('infyom.laravel_generator.user_stamps.created_by', 'created_by'));
         $this->addDynamicVariable('$NAMESPACE_POLICIES$', config('infyom.laravel_generator.namespace.policies', 'App\Policies') . $nameSpacePrefix);
-        $this->addDynamicVariable('$TABLE_NAME_SINGULAR$', Str::singular($model->getTable()));
+        $this->addDynamicVariable('$TABLE_NAME_SINGULAR$', Str::singular($this->dynamicVars['$TABLE_NAME$']));
 
         // Add ons
         $this->config->addOns['forms'] = config('infyom.laravel_generator.add_on.forms', true);
@@ -107,7 +141,6 @@ class CommandData extends InfyOmCommandData {
         $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
         $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
         $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
-        $this->primaryKeyName = $model->getKeyName();
     }
 
     public function getFields() {
@@ -298,19 +331,6 @@ class CommandData extends InfyOmCommandData {
 
     private function getInputFromTable() {
 
-        $tableName = $this->dynamicVars['$TABLE_NAME$'];
-        $ignoredFields = $this->getOption('ignoreFields');
-
-        if (!empty($ignoredFields)) {
-
-            $ignoredFields = explode(',', trim($ignoredFields));
-        } 
-        else {
-            
-            $ignoredFields = [];
-        }
-
-        $this->tableFieldsGenerator = new TableFieldsGenerator($tableName, $ignoredFields, $this->config->connection);
         $this->tableFieldsGenerator->prepareRelations();
         $this->tableFieldsGenerator->prepareFieldsFromTable();
 
@@ -355,13 +375,25 @@ class CommandData extends InfyOmCommandData {
     /**
      * Get model
      *
-     * @return mixed $model
+     * @return mixed|null $model
      */
     public function getModel() {
 
         $class = '\\' . $this->config->nsModel . '\\' . $this->modelName;
-        $model = new $class;
+        $model = class_exists($class) ? new $class : null;
 
         return $model;
+    }
+
+    /**
+     * Get table fields generator
+     *
+     * @return \MediactiveDigital\MedKit\Utils\TableFieldsGenerator
+     */
+    public function getTableFieldsGenerator() {
+
+        $ignoredFields = ($ignoredFields = $this->getOption('ignoreFields')) ? explode(',', trim($ignoredFields)) : [];
+
+        $this->tableFieldsGenerator = new TableFieldsGenerator($this->dynamicVars['$TABLE_NAME$'], $ignoredFields, $this->config->connection);
     }
 }
