@@ -7,7 +7,6 @@ use InfyOm\Generator\Utils\FileUtil;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
-use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Str;
@@ -31,7 +30,7 @@ class ModelGenerator extends InfyOmModelGenerator {
      */
     private $fileName;
 
-     /** 
+    /** 
      * @var array
      */
     private $timestamps;
@@ -55,15 +54,13 @@ class ModelGenerator extends InfyOmModelGenerator {
 
         parent::__construct($commandData);
 
-        $commandData->config->options['userStamps'] = config('infyom.laravel_generator.options.userStamps', false);
-
         $this->commandData = $commandData;
         $this->path = $this->getReflectionProperty('path');
         $this->fileName = $this->getReflectionProperty('fileName');
         $this->table = $this->getReflectionProperty('table');
-        $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
-        $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
-        $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
+        $this->timestamps = $this->commandData->timestamps;
+        $this->userStamps = $this->commandData->userStamps;
+        $this->lastActivity = $this->commandData->lastActivity;
     }
 
     public function generate() {

@@ -34,13 +34,12 @@ class MenuGenerator extends InfyOmMenuGenerator {
     public function __construct(CommandData $commandData) {
 
         $this->commandData = $commandData;
-
-        $this->setMenuConfiguration();
-
         $this->path = $this->commandData->config->pathMiddlewares . $commandData->getAddOn('menu.menu_file');
         $this->menuContents = file_get_contents($this->path);
         $this->menuTemplate = get_template('scaffold.menu.menu');
         $this->menuTemplate = fill_template($this->commandData->dynamicVars, $this->menuTemplate);
+
+        $this->setMenuConfiguration();
     }
 
     /** 
@@ -49,10 +48,6 @@ class MenuGenerator extends InfyOmMenuGenerator {
      * @return void 
      */
     private function setMenuConfiguration() {
-
-        $prefix = $this->commandData->getNameSpacePrefix();
-
-        $this->commandData->config->pathMiddlewares = config('infyom.laravel_generator.path.middlewares', app_path('Http/Middleware/')) . $prefix;
 
         $this->setReflectionProperty('commandData', $this->commandData);
         $this->setReflectionProperty('path', $this->path);

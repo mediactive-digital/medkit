@@ -2,7 +2,10 @@
 
 namespace MediactiveDigital\MedKit\Common;
 
+use Illuminate\Console\Command;
+
 use InfyOm\Generator\Common\CommandData as InfyOmCommandData;
+use InfyOm\Generator\Common\TemplatesManager;
 use InfyOm\Generator\Common\GeneratorField;
 use InfyOm\Generator\Common\GeneratorFieldRelation;
 use InfyOm\Generator\Utils\GeneratorFieldsInputUtil;
@@ -11,6 +14,7 @@ use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Traits\Reflection;
 
 use File;
+use Str;
 
 class CommandData extends InfyOmCommandData {
 
@@ -19,7 +23,87 @@ class CommandData extends InfyOmCommandData {
      */
     public $tableFieldsGenerator;
 
+    /** 
+     * @var GeneratorField[] 
+     */
+    public $formatedFields = [];
+
+    /** 
+     * @var array
+     */
+    public $timestamps;
+
+    /** 
+     * @var array
+     */
+    public $userStamps;
+
+    /** 
+     * @var string 
+     */
+    public $lastActivity;
+
+    /** 
+     * @var string 
+     */
+    public $primaryKeyName;
+
     use Reflection;
+
+    /**
+     * @param Command $commandObj
+     * @param string $commandType
+     * @param TemplatesManager $templatesManager
+     */
+    public function __construct(Command $commandObj, $commandType, TemplatesManager $templatesManager = null) {
+
+        parent::__construct($commandObj, $commandType, $templatesManager);
+
+        $this->setConfiguration();
+    }
+
+    /**
+     * Set configuration
+     *
+     * @return void
+     */
+    public function setConfiguration() {
+
+        // Initialization
+        $nameSpacePrefix = $this->getNameSpacePrefix();
+        $pathPrefix = $this->getPathPrefix();
+        $model = $this->getModel();
+
+        // Options
+        $this->config->options['userStamps'] = config('infyom.laravel_generator.options.userStamps', false);
+        $this->config->options['flashValidationErrors'] = config('infyom.laravel_generator.options.flashValidationErrors', false);
+
+        // Dynamic variables
+        $this->addDynamicVariable('$NAMESPACE_FORMS$', config('infyom.laravel_generator.namespace.forms', 'App\Forms') . $nameSpacePrefix);
+        $this->addDynamicVariable('$BD_FIELD_CREATED_BY_NAME$', config('infyom.laravel_generator.user_stamps.created_by', 'created_by'));
+        $this->addDynamicVariable('$NAMESPACE_POLICIES$', config('infyom.laravel_generator.namespace.policies', 'App\Policies') . $nameSpacePrefix);
+        $this->addDynamicVariable('$TABLE_NAME_SINGULAR$', Str::singular($model->getTable()));
+
+        // Add ons
+        $this->config->addOns['forms'] = config('infyom.laravel_generator.add_on.forms', true);
+        $this->config->addOns['permissions.superadmin_role_id'] = config('infyom.laravel_generator.add_on.permissions.superadmin_role_id', 1);
+        $this->config->addOns['user_stamps.enabled'] = config('infyom.laravel_generator.add_on.user_stamps.enabled', true);
+        $this->config->addOns['tracks_history.provider_file'] = config('infyom.laravel_generator.add_on.tracks_history.provider_file', 'AppServiceProvider.php');
+
+        // Paths
+        $this->config->pathForms = config('infyom.laravel_generator.path.forms', app_path('Forms/')) . $pathPrefix;
+        $this->config->pathSchema = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
+        $this->config->pathMiddlewares = config('infyom.laravel_generator.path.middlewares', app_path('Http/Middleware/')) . $pathPrefix;
+        $this->config->pathPolicies = config('infyom.laravel_generator.path.policies', app_path('Policies/')) . $pathPrefix;
+        $this->config->pathAuthProvider = config('infyom.laravel_generator.path.auth_provider', app_path('Providers/AuthServiceProvider.php'));
+        $this->config->pathProviders = config('infyom.laravel_generator.path.providers', app_path('Providers/')) . $pathPrefix;
+
+        // Others
+        $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
+        $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
+        $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
+        $this->primaryKeyName = $model->getKeyName();
+    }
 
     public function getFields() {
 
@@ -37,6 +121,7 @@ class CommandData extends InfyOmCommandData {
             if ($this->commandObj->confirm('A schema file already exists (' . $filePath . '), do you wish to use it as source ?', $default)) {
 
                 $this->setOption('fieldsFile', $fileName);
+                $this->setOption('save', false);
                 $this->callReflectionMethod('getInputFromFileOrJson');
             }
             else {
@@ -88,6 +173,8 @@ class CommandData extends InfyOmCommandData {
                 }
             }
         }
+
+        $this->formatedFields = $fields;
     }
 
     private function getInputFromConsole() {
@@ -148,14 +235,14 @@ class CommandData extends InfyOmCommandData {
     private function addTimestamps() {
 
         $createdAt = new GeneratorField();
-        $createdAt->name = 'created_at';
+        $createdAt->name = $this->timestamps[0];
         $createdAt->parseDBType('timestamp');
         $createdAt->parseOptions('s,f,if,ii');
 
         $this->fields[] = $createdAt;
 
         $updatedAt = new GeneratorField();
-        $updatedAt->name = 'updated_at';
+        $updatedAt->name = $this->timestamps[1];
         $updatedAt->parseDBType('timestamp');
         $updatedAt->parseOptions('s,f,if,ii');
 
@@ -164,7 +251,7 @@ class CommandData extends InfyOmCommandData {
         if ($this->getOption('softDelete')) {
 
             $deletedAt = new GeneratorField();
-            $deletedAt->name = 'deleted_at';
+            $deletedAt->name = $this->timestamps[2];
             $deletedAt->parseDBType('timestamp');
             $deletedAt->parseOptions('s,f,if,ii');
 
@@ -180,14 +267,14 @@ class CommandData extends InfyOmCommandData {
     private function addUserStamps() {
 
         $createdBy = new GeneratorField();
-        $createdBy->name = 'created_by';
+        $createdBy->name = $this->userStamps[0];
         $createdBy->parseDBType('number');
         $createdBy->parseOptions('s,f,if,ii');
 
         $this->fields[] = $createdBy;
 
         $updatedBy = new GeneratorField();
-        $updatedBy->name = 'updated_by';
+        $updatedBy->name = $this->userStamps[1];
         $updatedBy->parseDBType('number');
         $updatedBy->parseOptions('s,f,if,ii');
 
@@ -196,7 +283,7 @@ class CommandData extends InfyOmCommandData {
         if ($this->getOption('softDelete')) {
 
             $deletedBy = new GeneratorField();
-            $deletedBy->name = 'deleted_by';
+            $deletedBy->name = $this->userStamps[2];
             $deletedBy->parseDBType('number');
             $deletedBy->parseOptions('s,f,if,ii');
 
@@ -231,7 +318,7 @@ class CommandData extends InfyOmCommandData {
      *
      * @return string $prefix
      */
-    public function getNameSpacePrefix() {
+    public function getNameSpacePrefix(): string {
 
         $prefix = $this->config->prefixes['ns'];
 
@@ -241,5 +328,35 @@ class CommandData extends InfyOmCommandData {
         }
 
         return $prefix;
+    }
+
+    /**
+     * Get path prefix
+     *
+     * @return string $prefix
+     */
+    public function getPathPrefix(): string {
+
+        $prefix = $this->config->prefixes['path'];
+
+        if (!empty($prefix)) {
+
+            $prefix .= '/';
+        }
+
+        return $prefix;
+    }
+
+    /**
+     * Get model
+     *
+     * @return mixed $model
+     */
+    public function getModel() {
+
+        $class = '\\' . $this->config->nsModel . '\\' . $this->modelName;
+        $model = new $class;
+
+        return $model;
     }
 }

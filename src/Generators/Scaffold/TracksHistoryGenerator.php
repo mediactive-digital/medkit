@@ -24,10 +24,10 @@ class TracksHistoryGenerator {
 
 		$this->commandData = $commandData;
 
-		$this->path				 = config('infyom.laravel_generator.path.providers', app_path('Providers/')) . config('infyom.laravel_generator.add_on.tracks_history.provider_file', "AppServiceProvider.php");
-		$this->providerContents	 = file_get_contents($this->path);
-		$this->providerTemplate	 = get_template('scaffold.tracker.provider');
-		$this->providerTemplate	 = fill_template($this->commandData->dynamicVars, $this->providerTemplate);
+		$this->path	= $this->commandData->config->pathProviders . $this->commandData->config->addOns['tracks_history.provider_file'];
+		$this->providerContents	= file_get_contents($this->path);
+		$this->providerTemplate	= get_template('scaffold.tracker.provider');
+		$this->providerTemplate	= fill_template($this->commandData->dynamicVars, $this->providerTemplate);
 	}
 
 	/**

@@ -44,7 +44,7 @@ class PolicyGenerator extends PermissionGenerator {
 
 		$this->commandData = $commandData;
 
-		$this->path = config('infyom.laravel_generator.path.policies', app_path('Policies/'));
+		$this->path = $this->commandData->config->pathPolicies;
 
 		$this->fileName = $this->commandData->modelName . 'Policy.php';
 
@@ -52,7 +52,7 @@ class PolicyGenerator extends PermissionGenerator {
 
 		$this->setRequestConfiguration();
 		
-        $this->providerPath = config('infyom.laravel_generator.path.auth_provider', app_path('Providers/AuthServiceProvider.php'));
+        $this->providerPath = $this->commandData->config->pathAuthProvider;
         $this->providerContents = file_get_contents($this->providerPath); 
         $this->providerTemplate = get_template('scaffold.policy.provider');
         $this->providerTemplate = fill_template($this->commandData->dynamicVars, $this->providerTemplate);
@@ -77,15 +77,10 @@ class PolicyGenerator extends PermissionGenerator {
 		 * $VIEW_ALL$
 		 */
 		foreach ($this->getPermissionsAbility() as $valuePermission) {
+			
 			$permissionName = $this->commandData->config->mDashedPlural . '_' . $valuePermission;
 			$this->commandData->addDynamicVariable('$' . strtoupper($valuePermission) . '$', $permissionName);
 		}
-
-		$champCreatedByName = config('infyom.laravel_generator.user_stamps.created_by', 'created_by');
-		$this->commandData->addDynamicVariable('$BD_FIELD_CREATED_BY_NAME$', $champCreatedByName);
-
-		$namespaceName = config('infyom.laravel_generator.namespace.policies', 'App\Policies');
-		$this->commandData->addDynamicVariable('$NAMESPACE_POLICIES$', $namespaceName);
 	}
 
 	/**

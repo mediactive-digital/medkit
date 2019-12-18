@@ -7,7 +7,6 @@ use InfyOm\Generator\Utils\FileUtil;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
-use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Illuminate\Validation\ValidationRuleParser;
@@ -53,11 +52,6 @@ class RequestGenerator extends InfyOmRequestGenerator {
      */
     private $primaryKeyName;
 
-    /** 
-     * @var string 
-     */
-    private $tableNameSingular;
-
     public function __construct(CommandData $commandData) {
 
         parent::__construct($commandData);
@@ -65,27 +59,10 @@ class RequestGenerator extends InfyOmRequestGenerator {
         $this->commandData = $commandData;
         $this->path = $this->getReflectionProperty('path');
         $this->fileName = $this->commandData->modelName . 'Request.php';
-        $this->timestamps = TableFieldsGenerator::getTimestampFieldNames();
-        $this->userStamps = TableFieldsGenerator::getUserStampsFieldNames();
-        $this->lastActivity = TableFieldsGenerator::getLastActivityFieldName();
-
-        $class = '\\' . $this->commandData->config->nsModel . '\\' . $this->commandData->modelName;
-        $model = new $class;
-
-        $this->primaryKeyName = $model->getKeyName();
-        $this->tableNameSingular = Str::singular($model->getTable());
-
-        $this->setRequestConfiguration();
-    }
-
-    /** 
-     * Set configuration for request generation
-     *
-     * @return void 
-     */
-    private function setRequestConfiguration() {
-
-        $this->commandData->addDynamicVariable('$TABLE_NAME_SINGULAR$', $this->tableNameSingular);
+        $this->timestamps = $this->commandData->timestamps;
+        $this->userStamps = $this->commandData->userStamps;
+        $this->lastActivity = $this->commandData->lastActivity;
+        $this->primaryKeyName = $this->commandData->primaryKeyName;
     }
 
     /** 
@@ -119,7 +96,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
 
         $rules = [];
 
-        foreach ($this->commandData->fields as $field) {
+        foreach ($this->commandData->formatedFields as $field) {
 
             if (!$field->isPrimary && $field->isNotNull && !$field->validations && !in_array($field->name, $dontRequireFields)) {
 
@@ -178,7 +155,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
 
         $messages = [];
 
-        foreach ($this->commandData->fields as $field) {
+        foreach ($this->commandData->formatedFields as $field) {
 
             if ($field->validations) {
 

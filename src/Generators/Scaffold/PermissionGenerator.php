@@ -2,7 +2,6 @@
 
 namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
-use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 
@@ -22,10 +21,11 @@ class PermissionGenerator extends BaseGenerator {
 	 */
 	private $commandData;
 
-	/**
-	 * @var array
-	 */
-	private $userStamps;
+	/** 
+     * @var array
+     */
+    private $userStamps;
+
 	public $permissionsAbilityCrudOwn = [
 		'edit_own',
 		'delete_own',
@@ -49,11 +49,10 @@ class PermissionGenerator extends BaseGenerator {
 
 	public function __construct(CommandData $commandData) {
 
-		$this->commandData		 = $commandData;
-		$this->idRoleSuperAdmin	 = config('infyom.laravel_generator.add_on.permissions.superadmin_role_id', 1);
-
-		$this->userStamps		 = TableFieldsGenerator::getUserStampsFieldNames();
-		$this->optionUserStamps	 = config('infyom.laravel_generator.add_on.user_stamps.enabled', true);
+		$this->commandData = $commandData;
+		$this->idRoleSuperAdmin	= $this->commandData->config->addOns['permissions.superadmin_role_id'];
+		$this->userStamps = $this->commandData->userStamps;
+		$this->optionUserStamps	= $this->commandData->config->addOns['user_stamps.enabled'];
 		// $this->table = $this->commandData->dynamicVars['$TABLE_NAME$'];
 	}
 
@@ -174,5 +173,4 @@ class PermissionGenerator extends BaseGenerator {
 
 		$this->commandData->commandComment('Permissions deleted & unassign to <' . $role->name . '>');
 	}
-
 }

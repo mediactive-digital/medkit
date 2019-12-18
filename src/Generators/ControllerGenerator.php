@@ -54,28 +54,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         parent::__construct($commandData);
 
         $this->commandData = $commandData;
-
-        $this->setFormConfiguration();
-
         $this->path = $this->getReflectionProperty('path');
         $this->formPath = $this->commandData->config->pathForms;
         $this->fileName = $this->getReflectionProperty('fileName');
         $this->formFileName = $this->commandData->modelName . 'Form.php';
-        $this->schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
-    }
-
-    /** 
-     * Set configuration for form generation
-     *
-     * @return void 
-     */
-    private function setFormConfiguration() {
-
-        $prefix = $this->commandData->getNameSpacePrefix();
-
-        $this->commandData->addDynamicVariable('$NAMESPACE_FORMS$', config('infyom.laravel_generator.namespace.forms', 'App\Forms') . $prefix);
-        $this->commandData->config->addOns['forms'] = config('infyom.laravel_generator.add_on.forms', true);
-        $this->commandData->config->pathForms = config('infyom.laravel_generator.path.forms', app_path('Forms/')) . $prefix;
+        $this->schemaPath = $this->commandData->config->pathSchema;
     }
 
     /** 
@@ -547,7 +530,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function getFormFields() {
         
-        foreach ($this->commandData->fields as $key => $field) {
+        foreach ($this->commandData->formatedFields as $key => $field) {
 
             if ($key == 0) {
 
@@ -569,7 +552,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $formFields = [];
 
-        foreach ($this->commandData->fields as $field) {
+        foreach ($this->commandData->formatedFields as $field) {
 
             $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
 

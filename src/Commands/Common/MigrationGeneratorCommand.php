@@ -4,10 +4,10 @@ namespace MediactiveDigital\MedKit\Commands\Common;
 
 use InfyOm\Generator\Commands\Common\MigrationGeneratorCommand as InfyOmMigrationGeneratorCommand;
 use InfyOm\Generator\Commands\BaseCommand as InfyOmBaseCommand;
-use InfyOm\Generator\Generators\MigrationGenerator;
 
 use MediactiveDigital\MedKit\Traits\BaseCommand;
 use MediactiveDigital\MedKit\Common\CommandData;
+use MediactiveDigital\MedKit\Generators\MigrationGenerator;
 
 class MigrationGeneratorCommand extends InfyOmMigrationGeneratorCommand {
 

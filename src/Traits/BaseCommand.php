@@ -3,9 +3,9 @@
 namespace MediactiveDigital\MedKit\Traits;
 
 use InfyOm\Generator\Utils\FileUtil;
-use InfyOm\Generator\Generators\MigrationGenerator;
 use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
 
+use MediactiveDigital\MedKit\Generators\MigrationGenerator;
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
 use MediactiveDigital\MedKit\Generators\RepositoryGenerator;
 use MediactiveDigital\MedKit\Generators\FactoryGenerator;

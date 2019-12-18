@@ -26,9 +26,6 @@ class ViewGenerator extends InfyOmViewGenerator
     /** @var string */
     private $path;
 
-    /** @var string */
-    private $templateType;
-
     /** @var array */
     private $htmlFields;
 
@@ -46,11 +43,10 @@ class ViewGenerator extends InfyOmViewGenerator
 	const SHOW_FIELDS_GENERATE_BLADE_FILE		 = 'show_fields.blade.php';
 	const DATATABLES_ACTIONS_GENERATE_BLADE_FILE = 'datatables_actions.blade.php';
 	
-    public function __construct(CommandData $commandData)   
-    {
+    public function __construct(CommandData $commandData) {
+
         $this->commandData = $commandData;
         $this->path = $commandData->config->pathViews; 
-        $this->templateType = config('infyom.laravel_generator.templates', 'adminlte-templates');
     }
  
     public function generate()
@@ -119,7 +115,7 @@ class ViewGenerator extends InfyOmViewGenerator
 
     private function generateDataTableBody()
     {
-        $templateData = get_template('scaffold.views.datatable_body', $this->templateType);
+        $templateData = get_template('scaffold.views.datatable_body');
 
         return fill_template($this->commandData->dynamicVars, $templateData);
     }
@@ -137,7 +133,7 @@ class ViewGenerator extends InfyOmViewGenerator
             $templateName .= '_locale';
         }
 
-        $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $templateData = get_template('scaffold.views.'.$templateName);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
@@ -159,7 +155,7 @@ class ViewGenerator extends InfyOmViewGenerator
             $templateName .= '_locale';
         }
 
-        $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $templateData = get_template('scaffold.views.'.$templateName);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
@@ -169,7 +165,7 @@ class ViewGenerator extends InfyOmViewGenerator
             $paginate = $this->commandData->getOption('paginate');
 
             if ($paginate) {
-                $paginateTemplate = get_template('scaffold.views.paginate', $this->templateType);
+                $paginateTemplate = get_template('scaffold.views.paginate');
 
                 $paginateTemplate = fill_template($this->commandData->dynamicVars, $paginateTemplate);
 
@@ -221,7 +217,7 @@ class ViewGenerator extends InfyOmViewGenerator
             }
             $this->commandData->addDynamicVariable('$SIZE$', $minMaxRules);
 
-            $fieldTemplate = HTMLFieldGenerator::generateHTML($field, $this->templateType, $localized);
+            $fieldTemplate = HTMLFieldGenerator::generateHTML($field, $localized);
 
             if ($field->htmlType == 'selectTable') {
                 $inputArr = explode(',', $field->htmlValues[1]);
@@ -249,7 +245,7 @@ class ViewGenerator extends InfyOmViewGenerator
             }
         }
 
-        $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $templateData = get_template('scaffold.views.'.$templateName);
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
         $templateData = str_replace('$FIELDS$', implode("\n\n", $this->htmlFields), $templateData);
@@ -267,7 +263,7 @@ class ViewGenerator extends InfyOmViewGenerator
             $templateName .= '_locale';
         }
 
-        $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $templateData = get_template('scaffold.views.'.$templateName);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
@@ -284,7 +280,7 @@ class ViewGenerator extends InfyOmViewGenerator
             $templateName .= '_locale';
         }
 
-        $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $templateData = get_template('scaffold.views.'.$templateName);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
@@ -299,7 +295,7 @@ class ViewGenerator extends InfyOmViewGenerator
         if ($this->commandData->isLocalizedTemplates()) {
             $templateName .= '_locale';
         }
-        $fieldTemplate = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $fieldTemplate = get_template('scaffold.views.'.$templateName);
 
         $fieldsStr = '';
 
@@ -327,7 +323,7 @@ class ViewGenerator extends InfyOmViewGenerator
             $templateName .= '_locale';
         }
 
-        $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
+        $templateData = get_template('scaffold.views.'.$templateName);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
