@@ -92,10 +92,9 @@ class CommandData extends InfyOmCommandData {
 
             $primary = Schema::hasTable($this->dynamicVars['$TABLE_NAME$']) ? $this->tableFieldsGenerator->getPrimaryKeyOfTable($this->dynamicVars['$TABLE_NAME$']) : '';
             $primary = $primary ?: ($this->model ? $this->model->getKeyName() : $primary);
-            
+
             if ($primary) {
 
-                $this->config->primaryName = $primary;
                 $this->addDynamicVariable('$PRIMARY_KEY_NAME$', $primary);
                 $this->setOption('primary', $primary);
             }

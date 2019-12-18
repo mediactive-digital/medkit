@@ -62,7 +62,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
         $this->timestamps = $this->commandData->timestamps;
         $this->userStamps = $this->commandData->userStamps;
         $this->lastActivity = $this->commandData->lastActivity;
-        $this->primaryName = $this->commandData->primaryName;
+        $this->primaryName = $this->commandData->dynamicVars['$PRIMARY_KEY_NAME$'];
     }
 
     /** 
