@@ -320,7 +320,7 @@ class CommandData extends InfyOmCommandData {
      */
     public function getNameSpacePrefix(): string {
 
-        $prefix = $this->config->prefixes['ns'];
+        $prefix = $this->config->prefixes['ns'] ?: '';
 
         if (!empty($prefix)) {
 
@@ -337,7 +337,7 @@ class CommandData extends InfyOmCommandData {
      */
     public function getPathPrefix(): string {
 
-        $prefix = $this->config->prefixes['path'];
+        $prefix = $this->config->prefixes['path'] ?: '';
 
         if (!empty($prefix)) {
 
