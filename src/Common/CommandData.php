@@ -86,7 +86,7 @@ class CommandData extends InfyOmCommandData {
             $this->setOption('tableName', $table);
         }
 
-        $this->tableFieldsGenerator = $this->getTableFieldsGenerator();
+        $this->getTableFieldsGenerator();
 
         if (!$this->getOption('primary')) {
 
