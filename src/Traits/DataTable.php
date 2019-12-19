@@ -66,10 +66,23 @@ trait DataTable {
     /**
      * Edit integer column.
      *
-     * @param int|float|null $value
+     * @param int|null $value
      * @return string
      */
     private function editIntegerColumn($value): string {
+
+        return $this->editNumericColumn($value);
+    }
+
+    /**
+     * Edit foreign key integer column.
+     *
+     * @param int|null $value
+     * @return string
+     */
+    private function editFkIntegerColumn($value): string {
+
+        // TODO
 
         return $this->editNumericColumn($value);
     }

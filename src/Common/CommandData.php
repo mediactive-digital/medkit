@@ -86,7 +86,7 @@ class CommandData extends InfyOmCommandData {
             $this->setOption('tableName', $table);
         }
 
-        $this->getTableFieldsGenerator();
+        $this->setTableFieldsGenerator();
 
         if (!$this->getOption('primary')) {
 
@@ -149,7 +149,6 @@ class CommandData extends InfyOmCommandData {
         $schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
         $fileName = $this->modelName . '.json';
         $filePath = $schemaPath . $fileName;
-        $getInput = true;
 
         if (File::exists($filePath)) {
 
@@ -160,26 +159,19 @@ class CommandData extends InfyOmCommandData {
                 $this->setOption('fieldsFile', $fileName);
                 $this->setOption('save', false);
             }
-            else {
-
-                $getInput = false;
-            }
         }
 
-        if ($getInput) {
+        if ($this->getOption('fieldsFile') || $this->getOption('jsonFromGUI')) {
 
-            if ($this->getOption('fieldsFile') || $this->getOption('jsonFromGUI')) {
+            $this->callReflectionMethod('getInputFromFileOrJson');
+        } 
+        elseif ($this->getOption('fromTable')) {
 
-                $this->callReflectionMethod('getInputFromFileOrJson');
-            } 
-            elseif ($this->getOption('fromTable')) {
+            $this->getInputFromTable();
+        } 
+        else {
 
-                $this->getInputFromTable();
-            } 
-            else {
-
-                $this->getInputFromConsole();
-            }
+            $this->getInputFromConsole();
         }
 
         $this->formatInput();
@@ -210,7 +202,12 @@ class CommandData extends InfyOmCommandData {
             }
         }
 
-        $this->formatedFields = $this->fields;
+        $this->formatedFields = [];
+
+        foreach ($this->fields as $key => $field) {
+
+            $this->formatedFields[$key] = clone $field;
+        }
     }
 
     private function getInputFromConsole() {
@@ -384,11 +381,11 @@ class CommandData extends InfyOmCommandData {
     }
 
     /**
-     * Get table fields generator
+     * Set table fields generator
      *
      * @return \MediactiveDigital\MedKit\Utils\TableFieldsGenerator
      */
-    public function getTableFieldsGenerator() {
+    public function setTableFieldsGenerator() {
 
         $ignoredFields = ($ignoredFields = $this->getOption('ignoreFields')) ? explode(',', trim($ignoredFields)) : [];
 

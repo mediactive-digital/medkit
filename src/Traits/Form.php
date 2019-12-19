@@ -53,20 +53,20 @@ trait Form {
     /** 
      * Get select choices.
      *
-     * @param string $relationModel
+     * @param string $table
      * @param string $labelColumn
      * @param int $limit
      * @return array $choices 
      */
-    private function getChoices(string $relationModel, string $labelColumn = '', int $limit = 100): array {
+    private function getChoices(string $table, string $labelColumn = '', int $limit = 100): array {
 
         $choices = [];
-        $table = Schema::hasTable($relationModel) ? $relationModel : (($table = Str::snake(Str::plural($relationModel))) && Schema::hasTable($table) ? $table : '');
+        $table = Schema::hasTable($table) ? $table : (($table = Str::snake(Str::plural($table))) && Schema::hasTable($table) ? $table : '');
 
         if (!$table) {
 
             $classPrefix = '\\' . config('laravel_generator.namespace.model', 'App\Models') . '\\';
-            $class = ($class = $classPrefix . $relationModel) && class_exists($class) ? $class : (($class = $classPrefix . Str::studly(Str::singular($relationModel))) && class_exists($class) ? $class : '');
+            $class = ($class = $classPrefix . $table) && class_exists($class) ? $class : (($class = $classPrefix . Str::studly(Str::singular($table))) && class_exists($class) ? $class : '');
 
             if ($class) {
 
