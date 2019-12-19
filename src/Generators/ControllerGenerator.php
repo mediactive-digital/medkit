@@ -12,8 +12,6 @@ use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Str;
-use DB;
-use File;
 
 class ControllerGenerator extends InfyOmControllerGenerator {
 
@@ -246,86 +244,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
-     * Get select choices for a field that has a relation
-     *
-     * @param \InfyOm\Generator\Common\GeneratorField $field
-     * @return array $choices 
-     */
-    public function getRelationChoices(GeneratorField $field): array {
-
-        $choices = [];
-        $file = $this->schemaPath . $field->relation->inputs[0] . '.json';
-
-        if (File::exists($file)) {
-
-            $relationJson = file_get_contents($file);
-            $relationDatas = json_decode($relationJson, true);
-
-            $colId = $colName = $nom = $name = $libelle = $label = null;
-
-            foreach ($relationDatas as $relationData) {
-
-                if (!isset($relationData['type'])) {
-
-                    $relationData = GeneratorField::parseFieldFromFile($relationData);
-
-                    if ($relationData->isPrimary) {
-
-                        $colId = $relationData->name;
-                    }
-                    else if (!$colName) {
-
-                        switch ($relationData->name) {
-
-                            case 'nom' :
-
-                                $nom = $relationData->name;
-
-                            break;
-
-                            case 'name' :
-
-                                $name = $relationData->name;
-
-                            break;
-
-                            case 'libelle' :
-
-                                $libelle = $relationData->name;
-
-                            break;
-
-                            case 'label' :
-
-                                $label = $relationData->name;
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-            $colName = $nom ?: ($name ?: ($libelle ?: ($label ?: $colName)));
-
-            if ($colId) {
-
-                $class = '\\' . $this->commandData->config->nsModel . '\\' . $field->relation->inputs[0];
-                $table = (new $class)->getTable();
-                $colSelect = $colName ?: DB::raw('CONCAT(\'' . addcslashes($this->getLabel($table), '\'') . ' ' . '\', `' . $colId . '`)  AS `' . $colName . '`');
-
-                $relations = DB::table($table)->select([$colId, $colSelect])->orderBy($colName)->limit(100)->get();
-
-                if ($relations) {
-
-                    $choices = $relations->pluck($colName, $colId)->toArray();
-                }
-            }
-        }
-
-        return $choices;
-    }
-
-    /** 
      * Get a field html attributes
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
@@ -394,12 +312,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             $field->htmlType = 'select';
             $options['empty_value'] = FormatHelper::UNESCAPE . '_i(\'Sélectionnez\')';
-            $choices = $this->getRelationChoices($field);
-
-            if ($choices) {
-
-                $options['choices'] = $choices;
-            }
+            $options['choices'] = FormatHelper::UNESCAPE . '$this->getChoices(' . FormatHelper::writeValueToPhp($field->relation->inputs[0]) . ')';
         }
         else if ($field->htmlType == 'checkbox' || $field->htmlType == 'radio') {
 
