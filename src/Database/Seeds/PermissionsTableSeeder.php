@@ -154,6 +154,64 @@ class PermissionsTableSeeder extends Seeder {
 			'created_at' => $dateNow,
 			'updated_at' => $dateNow
 		]); 
+		
+		DB::table('permissions')->insert([
+			'id'		 => 18,
+			'name'		 => 'mail-templates_create',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+		DB::table('permissions')->insert([
+			'id'		 => 19,
+			'name'		 => 'mail-templates_edit_all',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+		DB::table('permissions')->insert([
+			'id'		 => 20,
+			'name'		 => 'mail-templates_delete_any',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+		DB::table('permissions')->insert([
+			'id'		 => 21,
+			'name'		 => 'mail-templates_view_all',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+		DB::table('permissions')->insert([
+			'id'		 => 22,
+			'name'		 => 'mail-templates_edit_own',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+		DB::table('permissions')->insert([
+			'id'		 => 23,
+			'name'		 => 'mail-templates_delete_own',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+		DB::table('permissions')->insert([
+			'id'		 => 24,
+			'name'		 => 'mail-templates_view_own',
+			'guard_name' => 'web',
+			'created_at' => $dateNow,
+			'updated_at' => $dateNow
+		]);
+
+
 	}
 
 }

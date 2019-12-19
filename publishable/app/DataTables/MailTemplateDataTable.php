@@ -2,14 +2,14 @@
 
 namespace App\DataTables;
 
-use App\Models\User;
+use App\Models\MailTemplate;
 
 use Yajra\DataTables\Services\DataTable as YajraDataTable;
 use Yajra\DataTables\EloquentDataTable;
 
 use App\Traits\DataTable;
 
-class UserDataTable extends YajraDataTable {
+class MailTemplateDataTable extends YajraDataTable {
 
     use DataTable;
 
@@ -23,28 +23,18 @@ class UserDataTable extends YajraDataTable {
 
         $dataTable = new EloquentDataTable($query);
 
-        return $dataTable->addColumn('action', 'users.datatables_actions')
-            ->editColumn('theme', function(User $user) {
-
-                return $this->editBooleanColumn($user->theme);
-            })
-            ->filterColumn('theme', function($query, $keyword) {
-
-                $this->filterBooleanColumn('users.theme', $keyword);
-            });
+        return $dataTable->addColumn('action', 'mail_templates.datatables_actions');
     }
 
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Models\User $model
+     * @param \App\Models\MailTemplate $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(User $model) {
+    public function query(MailTemplate $model) {
 
-        $this->query = $model->newQuery();
-
-        return $this->query;
+        return $model->newQuery();
     }
 
     /**
@@ -53,21 +43,21 @@ class UserDataTable extends YajraDataTable {
      * @return \Yajra\DataTables\Html\Builder
      */
     public function html() {
-
+ 
 		$user	 = \Auth::user();
 		$disabledCreate = "";
-		if ($user->cannot('users_create')) {
+		if ($user->cannot('mail-templates_create')) {
 			$disabledCreate = " disabled";
-		} 
+		}
 			 
 		$aBtn	 = [
-			['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'.$disabledCreate],
+			['extend' => 'create', 'className' => 'btn btn-default btn-sm no-corner'.$disabledCreate],  
 			['extend' => 'export', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'print', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'reset', 'className' => 'btn btn-default btn-sm no-corner'],
 			['extend' => 'reload', 'className' => 'btn btn-default btn-sm no-corner']
 		];
-
+	   
         return $this->builder()
             ->columns($this->getColumns())
             ->minifiedAjax()
@@ -88,25 +78,21 @@ class UserDataTable extends YajraDataTable {
     protected function getColumns() {
 
         return [
-            _i('Nom') => [
-                'name' => 'name',
-                'data' => 'name'
+            _i('Mailable') => [
+                'name' => 'mailable',
+                'data' => 'mailable'
             ],
-            _i('Prénom') => [
-                'name' => 'first_name',
-                'data' => 'first_name'
+            _i('Subject') => [
+                'name' => 'subject',
+                'data' => 'subject'
             ],
-            _i('Adresse email') => [
-                'name' => 'email',
-                'data' => 'email'
+            _i('Html template') => [
+                'name' => 'html_template',
+                'data' => 'html_template'
             ],
-            _i('Login') => [
-                'name' => 'login',
-                'data' => 'login'
-            ],
-            _i('Theme') => [
-                'name' => 'theme',
-                'data' => 'theme'
+            _i('Text template') => [
+                'name' => 'text_template',
+                'data' => 'text_template'
             ]
         ];
     }
@@ -118,6 +104,6 @@ class UserDataTable extends YajraDataTable {
      */
     protected function filename() {
 
-        return 'usersdatatable_' . time();
+        return 'mail_templatesdatatable_' . time();
     }
 }

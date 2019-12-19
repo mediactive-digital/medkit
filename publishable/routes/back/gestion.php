@@ -22,4 +22,12 @@ Route::group(['prefix' => 'back'], function () {
 Route::group(['prefix' => 'back'], function () {
     Route::resource('permissions', 'PermissionController', ["as" => 'back']);
 });
- 
+  
+Route::group(['prefix' => 'back'], function () {
+    Route::resource('mailTemplates', 'MailTemplateController', ["as" => 'back']);
+    
+    Route::get('mailTemplates/{mail_template_id}/test', 'MailTemplateController@test')
+        ->where('mail_template_id', '[0-9]+')
+        ->name('back.mailTemplates.test');
+});
+
