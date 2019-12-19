@@ -55,9 +55,10 @@ trait Form {
      *
      * @param string $relationModel
      * @param string $labelColumn
+     * @param int $limit
      * @return array $choices 
      */
-    private function getChoices(string $relationModel, string $labelColumn = ''): array {
+    private function getChoices(string $relationModel, string $labelColumn = '', int $limit = 100): array {
 
         $choices = [];
         $table = Schema::hasTable($relationModel) ? $relationModel : (($table = Str::snake(Str::plural($relationModel))) && Schema::hasTable($table) ? $table : '');
@@ -126,6 +127,7 @@ trait Form {
                 }
 
                 $colSelect = $labelColumn;
+                $limit = $limit <= 0 ? 100 : $limit;
 
                 if (!$labelColumn) {
 
@@ -133,7 +135,7 @@ trait Form {
                     $colSelect = DB::raw('CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::snake(Str::singular($table)))), '\'') . ' ' . '\', `' . $idColumn . '`)  AS `' . $labelColumn . '`');
                 }
 
-                $relations = DB::table($table)->select([$idColumn, $colSelect])->orderBy($labelColumn)->limit(100)->get();
+                $relations = DB::table($table)->select([$idColumn, $colSelect])->orderBy($labelColumn)->limit($limit)->get();
 
                 if ($relations) {
 
