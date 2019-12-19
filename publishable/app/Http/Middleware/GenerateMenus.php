@@ -98,7 +98,7 @@ class GenerateMenus {
             ])
             ->data('icon', 'mail')
             ->data('order', '20');
-			
+			 
 			$menu->add(_i('Historique'), [
 					'route' => 'back.history.index'
 				])
