@@ -71,7 +71,7 @@ class PermissionController extends AppBaseController {
 
         $permission = $this->permissionRepository->create($input);
 
-        Flash::success('Permission saved successfully.');
+        Flash::success( _i("L'autorisation a bien été enregistrée.") );
 
         return redirect(route('back.permissions.index'));
     }
@@ -90,7 +90,7 @@ class PermissionController extends AppBaseController {
 
         if (empty($permission)) {
 
-            Flash::error('Permission not found');
+            Flash::error( _i("Autorisation introuvable")   );
 
             return redirect(route('back.permissions.index'));
         }
@@ -112,7 +112,7 @@ class PermissionController extends AppBaseController {
 
         if (empty($permission)) {
 
-            Flash::error('Permission not found');
+            Flash::error(_i("Autorisation introuvable") );
 
             return redirect(route('back.permissions.index'));
         }
@@ -143,14 +143,14 @@ class PermissionController extends AppBaseController {
 
         if (empty($permission)) {
 
-            Flash::error('Permission not found');
+            Flash::error(_i("Autorisation introuvable") );
 
             return redirect(route('back.permissions.index'));
         }
 
         $permission = $this->permissionRepository->update($request->all(), $id);
 
-        Flash::success('Permission updated successfully.');
+        Flash::success(_i("L'autorisation a bien été mise à jour."));
 
         return redirect(route('back.permissions.index'));
     }
@@ -169,14 +169,14 @@ class PermissionController extends AppBaseController {
 
         if (empty($permission)) {
 
-            Flash::error('Permission not found');
+            Flash::error(_i("Autorisation introuvable") );
 
             return redirect(route('back.permissions.index'));
         }
 
         $this->permissionRepository->delete($id);
 
-        Flash::success('Permission deleted successfully.');
+        Flash::success(_i("L'autorisation a bien été supprimée.") );
 
         return redirect(route('back.permissions.index'));
     }

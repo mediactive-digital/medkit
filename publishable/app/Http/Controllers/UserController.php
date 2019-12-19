@@ -76,7 +76,7 @@ class UserController extends AppBaseController {
 
         $user = $this->userRepository->create($input);
 
-        Flash::success('User saved successfully.');
+        Flash::success(_i("L'utilisateur a bien enregistré.") );
 
         return redirect(route('back.users.index'));
     }
@@ -95,7 +95,7 @@ class UserController extends AppBaseController {
 
         if (empty($user)) {
 
-            Flash::error('User not found');
+            Flash::error(_i("Utilisateur non trouvé") );
 
             return redirect(route('back.users.index'));
         }
@@ -117,7 +117,7 @@ class UserController extends AppBaseController {
 
         if (empty($user)) {
 
-            Flash::error('User not found');
+            Flash::error(_i("Utilisateur non trouvé"));
 
             return redirect(route('back.users.index'));
         }
@@ -148,14 +148,14 @@ class UserController extends AppBaseController {
 
         if (empty($user)) {
 
-            Flash::error('User not found');
+            Flash::error(_i("Utilisateur non trouvé"));
 
             return redirect(route('back.users.index'));
         }
 
         $user = $this->userRepository->update($request->all(), $id);
 
-        Flash::success('User updated successfully.');
+        Flash::success(_i("L'utilisateur a bien été mis à jour."));
 
         return redirect(route('back.users.index'));
     }
@@ -174,14 +174,14 @@ class UserController extends AppBaseController {
 
         if (empty($user)) {
 
-            Flash::error('User not found');
+            Flash::error(_i("Utilisateur non trouvé"));
 
             return redirect(route('back.users.index'));
         }
 
         $this->userRepository->delete($id);
 
-        Flash::success('User deleted successfully.');
+        Flash::success(_i("L'utilisateur a bien été supprimé."));
 
         return redirect(route('back.users.index'));
     }

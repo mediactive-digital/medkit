@@ -68,7 +68,7 @@ class MailTemplateController extends AppBaseController {
 
 		$mailTemplate = $this->mailTemplateRepository->create($input);
 
-		Flash::success('Mail Template saved successfully.');
+		Flash::success( _i('Le modèle de courrier a été enregistré avec succès.') );
 
 		return redirect(route('back.mailTemplates.index'));
 	}
@@ -88,7 +88,7 @@ class MailTemplateController extends AppBaseController {
 
 		if (empty($mailTemplate)) {
 
-			Flash::error('Mail Template not found');
+			Flash::error( _i('Modèle de courrier introuvable.') );
 
 			return redirect(route('back.mailTemplates.index'));
 		}
@@ -113,7 +113,7 @@ class MailTemplateController extends AppBaseController {
 
 		if (empty($mailTemplate)) {
 
-			Flash::error('Mail Template not found');
+			Flash::error( _i('Modèle de courrier introuvable.') );
 
 			return redirect(route('back.mailTemplates.index'));
 		}
@@ -145,14 +145,14 @@ class MailTemplateController extends AppBaseController {
 
 		if (empty($mailTemplate)) {
 
-			Flash::error('Mail Template not found');
+			Flash::error( _i('Modèle de courrier introuvable.') );
 
 			return redirect(route('back.mailTemplates.index'));
 		}
 
 		$mailTemplate = $this->mailTemplateRepository->update($request->all(), $id);
 
-		Flash::success('Mail Template updated successfully.');
+		Flash::success( _i('Le modèle de courrier a été mis à jour avec succès.') );
 
 		return redirect(route('back.mailTemplates.index'));
 	}
@@ -172,14 +172,14 @@ class MailTemplateController extends AppBaseController {
 
 		if (empty($mailTemplate)) {
 
-			Flash::error('Mail Template not found');
+			Flash::error( _i('Modèle de courrier introuvable.') );
 
 			return redirect(route('back.mailTemplates.index'));
 		}
 
 		$this->mailTemplateRepository->delete($id);
 
-		Flash::success('Mail Template deleted successfully.');
+		Flash::success( _i('Le modèle de courrier a bien été supprimé.') );
 
 		return redirect(route('back.mailTemplates.index'));
 	}
@@ -198,7 +198,7 @@ class MailTemplateController extends AppBaseController {
 
 		if (empty($mailTemplate)) {
 
-			Flash::error('Mail Template not found');
+			Flash::error( _i('Modèle de courrier introuvable.') );
 
 			return redirect(route('back.mailTemplates.index'));
 		}
@@ -207,7 +207,7 @@ class MailTemplateController extends AppBaseController {
 		$user = \Auth::user();
 		Mail::to($user->email)->send(new \App\Mails\WelcomeMail($user));
 
-		Flash::success('Mail Template mailed successfully.');
+		Flash::success( _i('Le test du modèle de courrier envoyé avec succès.') );
 
 		return redirect(route('back.mailTemplates.index'));
 	}

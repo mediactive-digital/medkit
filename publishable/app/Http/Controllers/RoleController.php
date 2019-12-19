@@ -81,7 +81,7 @@ class RoleController extends AppBaseController {
 			$role->permissions()->attach($request->permissions);
 		}
 
-        Flash::success('Role saved successfully.');
+        Flash::success( _i("Rôle enregistré avec succès.") );
 
         return redirect(route('back.roles.index'));
     }
@@ -100,7 +100,7 @@ class RoleController extends AppBaseController {
 
         if (empty($role)) {
 
-            Flash::error('Role not found');
+            Flash::error( _i("Rôle introuvable") );
 
             return redirect(route('back.roles.index'));
         }
@@ -128,7 +128,7 @@ class RoleController extends AppBaseController {
 
         if (empty($role)) {
 
-            Flash::error('Role not found');
+            Flash::error(_i("Rôle introuvable") );
 
             return redirect(route('back.roles.index'));
         }
@@ -159,7 +159,7 @@ class RoleController extends AppBaseController {
 
         if (empty($role)) {
 
-            Flash::error('Role not found');
+            Flash::error(_i("Rôle introuvable") );
 
             return redirect(route('back.roles.index'));
         }
@@ -172,7 +172,7 @@ class RoleController extends AppBaseController {
 			$role->permissions()->sync($request->permissions); 
 		}
         
-        Flash::success('Role updated successfully.');
+        Flash::success(_i("Rôle mis à jour avec succès.") );
 
         return redirect(route('back.roles.index'));
     }
@@ -191,14 +191,14 @@ class RoleController extends AppBaseController {
 
         if (empty($role)) {
 
-            Flash::error('Role not found');
+            Flash::error(_i("Rôle introuvable") );
 
             return redirect(route('back.roles.index'));
         }
 
         $this->roleRepository->delete($id);
 
-        Flash::success('Role deleted successfully.');
+        Flash::success(_i("Rôle supprimé avec succès.") );
 
         return redirect(route('back.roles.index'));
     }
