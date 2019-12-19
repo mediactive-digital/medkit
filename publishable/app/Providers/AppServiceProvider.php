@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\Permission::observe(ModelTrackObserver::class);
         \App\Models\Role::observe(ModelTrackObserver::class);
         \App\Models\User::observe(ModelTrackObserver::class);
+        \App\Models\MailTemplate::observe(ModelTrackObserver::class);
         # fin TracksHistory  
         
     }

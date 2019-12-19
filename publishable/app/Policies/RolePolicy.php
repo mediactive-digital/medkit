@@ -17,9 +17,7 @@ class RolePolicy
      */
     public function viewAny(User $user )
     { 
-		 
 		
- 
         if ( $user->can('roles_view_all') ) { 
             return true;
         } 
@@ -34,8 +32,6 @@ class RolePolicy
      */
     public function view(User $user, Role $role)
     {   
-		
-		
 		
         if ($user->can('roles_view_all')) {
             return true;
@@ -58,8 +54,8 @@ class RolePolicy
         // authors can view their own unpublished permissions
         return $user->id == $role->created_by; 
 		 */
-		
     }
+		
     /**
      * Determine whether the user can create role.
      *
@@ -85,8 +81,6 @@ class RolePolicy
     public function update(User $user, Role $role)
     {  
 		
-		
-		
         if ($user->can('roles_edit_all')) {
             return true;
         }
@@ -101,10 +95,8 @@ class RolePolicy
      */
     public function delete(User $user, Role $role)
     {
-		
-		
-		
-        if ($user->can('roles_delete_any')) {
+
+		if ($user->can('roles_delete_any')) {
             return true;
         }
     }

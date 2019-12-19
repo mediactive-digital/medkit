@@ -92,6 +92,13 @@ class GenerateMenus {
 				->data('icon', 'home')
 				->data('order', '1');
 
+            $menu->add('Mail Templates', [
+                'route' => 'back.mailTemplates.index',
+                'nickname' => 'mailTemplates'
+            ])
+            ->data('icon', 'mail')
+            ->data('order', '20');
+			 
 			$menu->add(_i('Historique'), [
 					'route' => 'back.history.index'
 				])
