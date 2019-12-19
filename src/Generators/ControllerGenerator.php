@@ -137,8 +137,10 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 continue;
             }
 
-            $this->getDataTableType($field);
-            $this->getDataTableAlias($field);
+            $this->setDataTableType($field);
+            $this->setDataTableMethods($field);
+            $this->setDataTableAlias($field);
+            $this->setDataTableFilter($field);
 
             $datas = [
                 'name' => $field->dataTableAlias,
@@ -331,15 +333,15 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             'label' => FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->cleanName)) . ')'
         ];
 
-        if (($field->htmlType == 'number' || $field->htmlType == 'select') && isset($field->relation)) {
+        if (in_array($field->htmlType, ['number', 'select']) && isset($field->relation)) {
 
             $field->htmlType = 'select';
             $options['empty_value'] = FormatHelper::UNESCAPE . '_i(\'Sélectionnez\')';
             $options['choices'] = FormatHelper::UNESCAPE . '$this->getChoices(' . FormatHelper::writeValueToPhp(Str::snake(Str::plural($field->relation->inputs[0]))) . ')';
         }
-        else if ($field->htmlType == 'checkbox' || $field->htmlType == 'radio' || $field->htmlType == 'choice') {
+        elseif (in_array($field->htmlType, ['checkbox', 'radio', 'choice'])) {
 
-            if (($field->htmlType == 'radio' || $field->htmlType == 'choice') && $field->htmlValues) {
+            if (in_array($field->htmlType, ['radio', 'choice']) && $field->htmlValues) {
 
                 $field->htmlType = 'choice';
                 $options['expanded'] = true;
@@ -356,7 +358,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 $options['value'] = 1;
             }
         }
-        else if ($field->htmlType == 'datetime-local') {
+        elseif ($field->htmlType == 'datetime-local') {
 
             $options['value'] = FormatHelper::UNESCAPE . '$this->formatDateTime()';
         }
@@ -404,15 +406,62 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
-     * Get field datatable type from HTML type
+     * Get form fields as a string for the template
+     *
+     * @return string
+     */
+    public function getFormFields(): string {
+
+        $fields = [];
+        $first = false;
+        
+        foreach ($this->commandData->formatedFields as $field) {
+
+            $this->setCleanFieldName($field);
+
+            if ($field->inForm) {
+
+                if (!$first) {
+
+                    $field->autofocus = true;
+                    
+                    $first = true;
+                }
+
+                $field->htmlOptions = $this->getHtmlOptions($field);
+
+                $fields[] = $field;
+            }
+        }
+
+        return $this->prepareFormFields();
+    }
+
+    /** 
+     * Set clean field name
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return void
      */
-    public function getDataTableType(GeneratorField $field) {
+    public function setCleanFieldName(GeneratorField $field) {
 
-        $field->dataTableType = '';
-        $field->dataTableMethods = self::DATATABLE_COLUMN_METHODS;
+        $field->cleanName = $field->name;
+
+        if (in_array($field->htmlType, ['number', 'select']) && isset($field->relation)) {
+
+            $field->cleanName = Str::beforeLast($field->name, '_id');
+        }
+    }
+
+    /** 
+     * Set field datatable type from HTML type
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setDataTableType(GeneratorField $field) {
+
+        $field->dataTableType = null;
 
         switch ($field->htmlType) {
 
@@ -456,13 +505,37 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             case 'select' :
 
                 $field->dataTableType = self::DATATABLE_TYPE_FK_INTEGER;
-                $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
 
             break;
 
             case 'choice' :
 
                 $field->dataTableType = self::DATATABLE_TYPE_ENUM;
+
+            break;
+        }
+    }
+
+    /** 
+     * Set field datatable methods from type
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setDataTableMethods(GeneratorField $field) {
+
+        $field->dataTableMethods = self::DATATABLE_COLUMN_METHODS;
+
+        switch ($field->dataTableType) {
+
+            case self::DATATABLE_TYPE_FK_INTEGER :
+
+                $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
+
+            break;
+
+            case self::DATATABLE_TYPE_ENUM :
+
                 $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
 
             break;
@@ -470,22 +543,20 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
-     * Get field datatable alias from type
+     * Set field datatable alias from type
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return void
      */
-    public function getDataTableAlias(GeneratorField $field) {
+    public function setDataTableAlias(GeneratorField $field) {
 
         $field->dataTableAlias = $field->name;
-        $field->dataTableFilter = $this->commandData->dynamicVars['$TABLE_NAME$'] . '.' . $field->name;
 
         switch ($field->dataTableType) {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
-                $field->dataTableAlias = $field->cleanName . '_label';
-                $field->dataTableFilter = Str::snake(Str::plural($field->cleanName));
+                $field->dataTableAlias = $field->cleanName;
 
             break;
 
@@ -498,50 +569,22 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
-     * Get form fields as a string for the template
-     *
-     * @return string
-     */
-    public function getFormFields(): string {
-
-        $fields = [];
-        $first = false;
-        
-        foreach ($this->commandData->formatedFields as $field) {
-
-            $this->setCleanFieldName($field);
-
-            if ($field->inForm) {
-
-                if (!$first) {
-
-                    $field->autofocus = true;
-                    
-                    $first = true;
-                }
-
-                $field->htmlOptions = $this->getHtmlOptions($field);
-
-                $fields[] = $field;
-            }
-        }
-
-        return $this->prepareFormFields();
-    }
-
-    /** 
-     * Set clean field name
+     * Set field datatable filter from type
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
      * @return void
      */
-    public function setCleanFieldName(GeneratorField $field) {
+    public function setDataTableFilter(GeneratorField $field) {
 
-        $field->cleanName = $field->name;
+        $field->dataTableFilter = $this->commandData->dynamicVars['$TABLE_NAME$'] . '.' . $field->name;
 
-        if (($field->htmlType == 'number' || $field->htmlType == 'select') && isset($field->relation)) {
+        switch ($field->dataTableType) {
 
-            $field->cleanName = Str::beforeLast($field->name, '_id');
+            case self::DATATABLE_TYPE_FK_INTEGER :
+
+                $field->dataTableFilter = Str::snake(Str::plural($field->cleanName));
+
+            break;
         }
     }
 

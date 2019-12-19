@@ -82,9 +82,11 @@ trait DataTable {
      */
     private function editFkIntegerColumn($value): string {
 
-        // TODO
+        /**
+         * @todo
+         */
 
-        return $this->editNumericColumn($value);
+        return (string)$value;
     }
 
     /**
