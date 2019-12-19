@@ -387,7 +387,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      * @param string $dbType
      * @return string $dataTableType
      */
-    public function getDatatableType(string $htmlType, string $dbType): string {
+    public function getDataTableType(string $htmlType, string $dbType): string {
 
         switch ($htmlType) {
 
