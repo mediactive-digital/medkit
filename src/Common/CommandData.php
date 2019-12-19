@@ -159,7 +159,6 @@ class CommandData extends InfyOmCommandData {
 
                 $this->setOption('fieldsFile', $fileName);
                 $this->setOption('save', false);
-                $this->callReflectionMethod('getInputFromFileOrJson');
             }
             else {
 

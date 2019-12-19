@@ -1,6 +1,6 @@
 
-/**
-	 * Set $ATTRIBUTE_NAME$.
+    /**
+     * Set $ATTRIBUTE_NAME$.
      * 
      * @param $ATTRIBUTE_TYPE$ $value
      * @return void

@@ -159,7 +159,7 @@ class ModelGenerator extends InfyOmModelGenerator {
      *
      * @return array $mutators
      */
-    private function generateMutators() {
+    private function generateMutators(): array {
 
         $mutators = [];
         $template = get_template('model.mutator');
@@ -207,8 +207,8 @@ class ModelGenerator extends InfyOmModelGenerator {
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);
         $templateData = str_replace('$FIELDS$', implode(',' . infy_nl_tab(1, 2), $fillables), $templateData);
         $templateData = str_replace('$CAST$', implode(',' . infy_nl_tab(1, 2), $this->generateCasts()), $templateData);
-        $templateData = str_replace('$MUTATORS$', implode(PHP_EOL . infy_nl_tab(1, 1), $this->generateMutators()), $templateData);
-        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL . infy_nl_tab(1, 1), $this->callReflectionMethod('generateRelations'))), $templateData);
+        $templateData = str_replace('$MUTATORS$', implode(PHP_EOL, $this->generateMutators()), $templateData);
+        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL, $this->callReflectionMethod('generateRelations'))), $templateData);
         $templateData = str_replace('$GENERATE_DATE$', date('F j, Y, g:i a T'), $templateData);
 
         return $templateData;
