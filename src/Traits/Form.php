@@ -70,8 +70,7 @@ trait Form {
 
             if ($class) {
 
-                $model = new $class;
-                $table = $model->getTable();
+                $table = (new $class)->getTable();
                 $table = Schema::hasTable($table) ? $table : (($table = Str::snake(Str::plural($table))) && Schema::hasTable($table) ? $table : '');
             }
         }
