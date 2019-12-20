@@ -1,2 +1,4 @@
 
-            ->select(['$TABLE_NAME$.*'$SELECT_FIELDS$])
+            ->select([
+            	'$TABLE_NAME$.*'$SELECT_FIELDS$
+            ])

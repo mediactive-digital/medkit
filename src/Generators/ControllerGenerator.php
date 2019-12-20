@@ -250,27 +250,54 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         foreach ($this->commandData->formatedFields as $field) {
 
-            if ($field->inIndex && $field->dataTableType == self::DATATABLE_TYPE_FK_INTEGER) {
+            if ($field->inIndex) {
 
-                if ($field->dataTableJoinLabelField) {
+                $value = '';
 
-                    $label = '\'' . $field->dataTableJoinTable . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
+                switch ($field->dataTableType) {
+
+                    case self::DATATABLE_TYPE_FK_INTEGER :
+
+                        if ($field->dataTableJoinLabelField) {
+
+                            $value = '\'' . $field->dataTableJoinTable . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
+                        }
+                        else {
+
+                            if ($field->dataTableJoinPrimaryField) {
+
+                                $value = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTable . '`.`' . $field->dataTableJoinPrimaryField . '`)';
+                            }
+                            else {
+
+                                $value = '\'\'';
+                            }
+
+                            $value = 'DB::raw(\'' . $value . ' AS `' . $field->dataTableAlias . '`\')';
+                        }
+
+                    break;
+
+                    case self::DATATABLE_TYPE_ENUM :
+
+                        $when = '';
+
+                        foreach ($field->htmlValues as $htmlValue) {
+
+                            $htmlValue = explode(':', $htmlValue);
+
+                            $label = $htmlValue[0];
+                            $fieldValue = isset($htmlValue[1]) ? $htmlValue[1] : $label;
+
+                            $when .= ($when ? ' ' : '') . 'WHEN `' . $this->commandData->dynamicVars['$TABLE_NAME$'] . '`.`' . $field->name . '` = \\\'' . addcslashes($fieldValue, '\'') . '\\\' THEN \\\'' . addcslashes($label, '\'') . '\\\'';
+                        }
+
+                        $value = $when ? 'DB::raw(\'CASE ' . $when . ' ELSE \\\'\\\' END AS `' . $field->dataTableAlias . '`\')' : $value;
+
+                    break;
                 }
-                else {
 
-                    if ($field->dataTableJoinPrimaryField) {
-
-                        $label = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTable . '`.`' . $field->dataTableJoinPrimaryField . '`)';
-                    }
-                    else {
-
-                        $label = '\'\'';
-                    }
-
-                    $label = 'DB::raw(\'' . $label . ' AS `' . $field->dataTableAlias . '`\')';
-                }
-
-                $selectFields .= ', ' . $label;
+                $selectFields .= $value ? ',' . infy_nl_tab(1, 4) . $value : '';
             }
         }
 
@@ -415,18 +442,23 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $options['empty_value'] = FormatHelper::UNESCAPE . '_i(\'Sélectionnez\')';
             $options['choices'] = FormatHelper::UNESCAPE . '$this->getChoices(' . FormatHelper::writeValueToPhp(Str::snake(Str::plural($field->relation->inputs[0]))) . ')';
         }
-        elseif (in_array($field->htmlType, ['checkbox', 'radio', 'choice'])) {
+        elseif (in_array($field->htmlType, ['checkbox', 'radio'])) {
 
-            if (in_array($field->htmlType, ['radio', 'choice']) && $field->htmlValues) {
+            if ($field->htmlType == 'radio' && $field->htmlValues) {
 
                 $field->htmlType = 'choice';
                 $options['expanded'] = true;
                 $options['multiple'] = false;
                 $options['choices'] = [];
 
-                foreach ($field->htmlValues as $htmlValue => $htmlName) {
+                foreach ($field->htmlValues as $htmlValue) {
 
-                    $options['choices'][$htmlValue] = $htmlName;
+                    $htmlValue = explode(':', $htmlValue);
+
+                    $label = $htmlValue[0];
+                    $value = isset($htmlValue[1]) ? $htmlValue[1] : $label;
+
+                    $options['choices'][$value] = $label;
                 }
             }
             else {
@@ -659,6 +691,12 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             case self::DATATABLE_TYPE_FK_INTEGER :
 
                 $field->dataTableFilter = Helper::getTableName($field->cleanName);
+
+            break;
+
+            case self::DATATABLE_TYPE_ENUM :
+
+                $field->dataTableFilter .= $field->htmlValues ? ',' . implode(',', $field->htmlValues) : '';
 
             break;
         }

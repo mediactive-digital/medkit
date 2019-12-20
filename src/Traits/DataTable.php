@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 use MediactiveDigital\MedKit\Helpers\Helper;
 
+use Str;
+
 trait DataTable {
 
     /**
@@ -284,6 +286,57 @@ trait DataTable {
             else {
 
                 $column = '\'\'';
+                $raw = true;
+            }
+        }
+
+        $column = $this->wrapColumn($query, $column, $raw);
+        $rawQuery = $column . ' LIKE ?';
+        $parameters = ['%' . $keyword . '%'];
+
+        $query->whereRaw($rawQuery, $parameters);
+    }
+
+    /**
+     * Filter enum column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param string $keyword
+     * @param bool $raw
+     * @return void
+     */
+    private function filterEnumColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+
+        if (is_string($column)) {
+
+            $values = Str::after($column, ',');
+
+            if ($values) {
+
+                $column = $this->wrapColumn($query, Str::before($column, ','), false);
+                $values = explode(',', $values);
+                $when = '';
+
+                foreach ($values as $value) {
+
+                    $value = explode(':', $value);
+
+                    $label = $value[0];
+                    $value = isset($value[1]) ? $value[1] : $label;
+
+                    $when .= ($when ? ' ' : '') . 'WHEN ' . $column . ' = \'' . addcslashes($value, '\'') . '\' THEN \'' . addcslashes($label, '\'') . '\'';
+                }
+
+                if ($when) {
+
+                    $column = 'CASE ' . $when . ' ELSE \'\' END';
+                }
+                else {
+
+                    $column = '\'\'';
+                }
+
                 $raw = true;
             }
         }
