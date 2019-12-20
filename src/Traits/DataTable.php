@@ -5,6 +5,7 @@ namespace MediactiveDigital\MedKit\Traits;
 use Illuminate\Database\Eloquent\Builder;
 
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
+use MediactiveDigital\MedKit\Helpers\Helper;
 
 trait DataTable {
 
@@ -72,21 +73,6 @@ trait DataTable {
     private function editIntegerColumn($value): string {
 
         return $this->editNumericColumn($value);
-    }
-
-    /**
-     * Edit foreign key integer column.
-     *
-     * @param int|null $value
-     * @return string
-     */
-    private function editFkIntegerColumn($value): string {
-
-        /**
-         * @todo
-         */
-
-        return (string)$value;
     }
 
     /**
@@ -250,6 +236,61 @@ trait DataTable {
         	$rawQuery .= ' OR LOWER(REPLACE(FORMAT(' . $column . ', 0), \',\', \'' . $thousandsSeparator . '\')) LIKE ?';
         	$parameters[] = $parameters[0];
         }
+
+        $query->whereRaw($rawQuery, $parameters);
+    }
+
+    /**
+     * Filter foreign key integer column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param \Illuminate\Database\Query\Expression|string $table
+     * @param string $keyword
+     * @param string $label
+     * @param bool $raw
+     * @return void
+     */
+    private function filterFkIntegerColumn(Builder $query, $table, string $keyword, string $label = '', bool $raw = false) {
+
+        $column = $table;
+
+        if (is_string($table)) {
+
+            $table = Helper::getTableName($table);
+
+            if ($table) {
+
+                $label = Helper::getTableLabelName($table, $label);
+
+                if ($label) {
+
+                    $column = $table . '.' . $label;
+                    $raw = false;
+                }
+                else {
+
+                    if (($primary = Helper::getTablePrimaryName($table))) {
+
+                        $column = 'CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $table . '`.`' . $primary . '`)';
+                    }
+                    else {
+
+                        $column = '\'\'';
+                    }
+
+                    $raw = true;
+                }
+            }
+            else {
+
+                $column = '\'\'';
+                $raw = true;
+            }
+        }
+
+        $column = $this->wrapColumn($query, $column, $raw);
+        $rawQuery = $column . ' LIKE ?';
+        $parameters = ['%' . $keyword . '%'];
 
         $query->whereRaw($rawQuery, $parameters);
     }

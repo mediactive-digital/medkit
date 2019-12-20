@@ -9,6 +9,8 @@ use Yajra\DataTables\EloquentDataTable;
 
 use App\Traits\DataTable;
 
+use DB;
+
 class $MODEL_NAME$DataTable extends YajraDataTable {
 
     use DataTable;
@@ -34,7 +36,7 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
      */
     public function query($MODEL_NAME$ $model) {
 
-        return $model->newQuery();
+        return $model->newQuery()$QUERY_JOINS$$QUERY_SELECT$;
     }
 
     /**

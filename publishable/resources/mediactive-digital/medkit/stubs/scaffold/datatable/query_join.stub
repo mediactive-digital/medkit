@@ -1,0 +1,2 @@
+
+            ->leftJoin('$JOIN_TABLE_NAME$', '$JOIN_TABLE_NAME$.$JOIN_FIELD_NAME$', '$TABLE_NAME$.$FIELD_NAME$')

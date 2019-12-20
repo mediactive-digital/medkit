@@ -2,6 +2,9 @@
 
 namespace MediactiveDigital\MedKit\Helpers;
 
+use Schema;
+use Str;
+
 class Helper {
 
     /**
@@ -74,5 +77,96 @@ class Helper {
         $path = self::getTemplateFilePath($stubName, $stubType, $stubsDir);
 
         return file_get_contents($path);
+    }
+
+    /**
+     * Get table name from assumed table name
+     *
+     * @param string $table
+     * @return string $table
+     */
+    public static function getTableName(string $table): string {
+
+        $table = Schema::hasTable($table) ? $table : (($table = Str::snake(Str::plural($table))) && Schema::hasTable($table) ? $table : '');
+
+        if (!$table) {
+
+            $classPrefix = '\\' . config('laravel_generator.namespace.model', 'App\Models') . '\\';
+            $class = ($class = $classPrefix . $table) && class_exists($class) ? $class : (($class = $classPrefix . Str::studly(Str::singular($table))) && class_exists($class) ? $class : '');
+
+            if ($class) {
+
+                $table = (new $class)->getTable();
+                $table = Schema::hasTable($table) ? $table : (($table = Str::snake(Str::plural($table))) && Schema::hasTable($table) ? $table : '');
+            }
+        }
+
+        return $table;
+    }
+
+    /**
+     * Get table primary key name
+     *
+     * @param string $table
+     * @return string $primary
+     */
+    public static function getTablePrimaryName(string $table): string {
+
+        $indexes = Schema::getConnection()->getDoctrineSchemaManager()->listTableIndexes($table);
+        $primary = $indexes && isset($indexes['primary']) ? (($primaryColumns = $indexes['primary']->getColumns()) && isset($primaryColumns[0]) ? $primaryColumns[0] : '') : '';
+
+        return $primary;
+    }
+
+    /**
+     * Get table assumed label name
+     *
+     * @param string $table
+     * @param string $label
+     * @return string $label
+     */
+    public static function getTableLabelName(string $table, string $label = ''): string {
+
+        $columns = Schema::getColumnListing($table);
+        $label = $columns ? ($label ? (in_array($label, $columns) ? $label : (($label = Str::snake($label)) && in_array($label, $columns) ? $label : '')) : $label) : '';
+
+        if (!$label) {
+
+            $nom = $name = $libelle = $label = null;
+
+            foreach ($columns as $column) {
+
+                switch (Str::snake($column)) {
+
+                    case 'nom' :
+
+                        $nom = $column;
+
+                    break;
+
+                    case 'name' :
+
+                        $name = $column;
+
+                    break;
+
+                    case 'libelle' :
+
+                        $libelle = $column;
+
+                    break;
+
+                    case 'label' :
+
+                        $label = $column;
+
+                    break;
+                }
+            }
+
+            $label = $nom ?: ($name ?: ($libelle ?: ($label ?: '')));
+        }
+
+        return $label;
     }
 }

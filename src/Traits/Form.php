@@ -4,11 +4,17 @@ namespace MediactiveDigital\MedKit\Traits;
 
 use Carbon\Carbon;
 
+use MediactiveDigital\MedKit\Helpers\Helper;
+
 use DB;
 use Str;
-use Schema;
 
 trait Form {
+
+    /** 
+     * @var int 
+     */
+    private static $defaultChoiceLimit = 100;
 
     /** 
      * Format datetime.
@@ -54,93 +60,28 @@ trait Form {
      * Get select choices.
      *
      * @param string $table
-     * @param string $labelColumn
+     * @param string $label
      * @param int $limit
      * @return array $choices 
      */
-    private function getChoices(string $table, string $labelColumn = '', int $limit = 100): array {
+    private function getChoices(string $table, string $label = '', int $limit = 0): array {
 
         $choices = [];
-        $table = Schema::hasTable($table) ? $table : (($table = Str::snake(Str::plural($table))) && Schema::hasTable($table) ? $table : '');
 
-        if (!$table) {
+        if (($table = Helper::getTableName($table)) && ($primary = Helper::getTablePrimaryName($table))) {
 
-            $classPrefix = '\\' . config('laravel_generator.namespace.model', 'App\Models') . '\\';
-            $class = ($class = $classPrefix . $table) && class_exists($class) ? $class : (($class = $classPrefix . Str::studly(Str::singular($table))) && class_exists($class) ? $class : '');
+            $label = Helper::getTableLabelName($table, $label);
+            $select = $label;
+            $limit = $limit <= 0 ? self::$defaultChoiceLimit : $limit;
 
-            if ($class) {
+            if (!$label) {
 
-                $table = (new $class)->getTable();
-                $table = Schema::hasTable($table) ? $table : (($table = Str::snake(Str::plural($table))) && Schema::hasTable($table) ? $table : '');
+                $label = 'label';
+                $select = DB::raw('CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $primary . '`)  AS `' . $label . '`');
             }
-        }
 
-        if ($table) {
-
-            $indexes = Schema::getConnection()->getDoctrineSchemaManager()->listTableIndexes($table);
-            $idColumn = isset($indexes['primary']) ? (($primaryColumns = $indexes['primary']->getColumns()) && isset($primaryColumns[0]) ? $primaryColumns[0] : '') : '';
-
-            if ($idColumn) {
-
-                $columns = Schema::getColumnListing($table);
-                $labelColumn = $labelColumn ? (in_array($labelColumn, $columns) ? $labelColumn : (($labelColumn = Str::snake($labelColumn)) && in_array($labelColumn, $columns) ? $labelColumn : '')) : $labelColumn;
-
-                if (!$labelColumn) {
-
-                    $nom = $name = $libelle = $label = null;
-
-                    foreach ($columns as $column) {
-
-                        if ($column != $idColumn) {
-
-                            switch (Str::snake($column)) {
-
-                                case 'nom' :
-
-                                    $nom = $column;
-
-                                break;
-
-                                case 'name' :
-
-                                    $name = $column;
-
-                                break;
-
-                                case 'libelle' :
-
-                                    $libelle = $column;
-
-                                break;
-
-                                case 'label' :
-
-                                    $label = $column;
-
-                                break;
-                            }
-                        }
-                    }
-
-                    $labelColumn = $labelColumn ?: ($nom ?: ($name ?: ($libelle ?: ($label ?: $labelColumn))));
-                }
-
-                $colSelect = $labelColumn;
-                $limit = $limit <= 0 ? 100 : $limit;
-
-                if (!$labelColumn) {
-
-                    $labelColumn = 'label';
-                    $colSelect = DB::raw('CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::snake(Str::singular($table)))), '\'') . ' ' . '\', `' . $idColumn . '`)  AS `' . $labelColumn . '`');
-                }
-
-                $relations = DB::table($table)->select([$idColumn, $colSelect])->orderBy($labelColumn)->limit($limit)->get();
-
-                if ($relations) {
-
-                    $choices = $relations->pluck($labelColumn, $idColumn)->toArray();
-                }
-            }
+            $relations = DB::table($table)->select([$primary, $select])->orderBy($label)->limit($limit)->get();
+            $choices = $relations ? $relations->pluck($label, $primary)->toArray() : $choices;
         }
 
         return $choices;

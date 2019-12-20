@@ -10,6 +10,7 @@ use InfyOm\Generator\Common\GeneratorFieldRelation;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
+use MediactiveDigital\MedKit\Helpers\Helper;
 
 use Str;
 
@@ -116,6 +117,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         $templateData = str_replace('$DATATABLE_COLUMNS$', FormatHelper::writeValueToPhp($this->generateDataTableColumns(), 2), $templateData);
         $templateData = str_replace('$EDIT_COLUMNS$', $this->generateDataTableEditColumns(), $templateData);
         $templateData = str_replace('$FILTER_COLUMNS$', $this->generateDataTableFilterColumns(), $templateData);
+        $templateData = str_replace('$QUERY_JOINS$', $this->generateDataTableQueryJoins(), $templateData);
+        $templateData = str_replace('$QUERY_SELECT$', $this->generateDataTableQuerySelect(), $templateData);
 
         $path = $this->commandData->config->pathDataTables;
         $fileName = $this->commandData->modelName . 'DataTable.php';
@@ -141,6 +144,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->setDataTableMethods($field);
             $this->setDataTableAlias($field);
             $this->setDataTableFilter($field);
+            $this->setDataTableJoin($field);
 
             $datas = [
                 'name' => $field->dataTableAlias,
@@ -207,6 +211,78 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         }
 
         return $filterColumns;
+    }
+
+    /** 
+     * Generate datatable query joins
+     *
+     * @return string $queryJoins
+     */
+    private function generateDataTableQueryJoins(): string {
+
+        $queryJoins = '';
+        $template = get_template('scaffold.datatable.query_join');
+
+        foreach ($this->commandData->formatedFields as $field) {
+
+            if ($field->inIndex && $field->dataTableType == self::DATATABLE_TYPE_FK_INTEGER) {
+
+                $join = fill_template($this->commandData->dynamicVars, $template);
+                $join = str_replace('$FIELD_NAME$', $field->name, $join);
+                $join = str_replace('$JOIN_TABLE_NAME$', $field->dataTableJoinTable, $join);
+                $join = str_replace('$JOIN_FIELD_NAME$', $field->dataTableJoinPrimaryField, $join);
+
+                $queryJoins .= $join;
+            }
+        }
+
+        return $queryJoins;
+    }
+
+    /** 
+     * Generate datatable query select
+     *
+     * @return string $querySelect
+     */
+    private function generateDataTableQuerySelect(): string {
+
+        $querySelect = $selectFields = '';
+
+        foreach ($this->commandData->formatedFields as $field) {
+
+            if ($field->inIndex && $field->dataTableType == self::DATATABLE_TYPE_FK_INTEGER) {
+
+                if ($field->dataTableJoinLabelField) {
+
+                    $label = '\'' . $field->dataTableJoinTable . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
+                }
+                else {
+
+                    if ($field->dataTableJoinPrimaryField) {
+
+                        $label = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTable . '`.`' . $field->dataTableJoinPrimaryField . '`)';
+                    }
+                    else {
+
+                        $label = '\'\'';
+                    }
+
+                    $label = 'DB::raw(\'' . $label . ' AS `' . $field->dataTableAlias . '`\')';
+                }
+
+                $selectFields .= ', ' . $label;
+            }
+        }
+
+        if ($selectFields) {
+
+            $template = get_template('scaffold.datatable.query_select');
+
+            $querySelect = fill_template($this->commandData->dynamicVars, $template);
+            $querySelect = str_replace('$SELECT_FIELDS$', $selectFields, $querySelect);
+        }
+
+        return $querySelect;
     }
 
     public function generate() {
@@ -449,7 +525,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         if (in_array($field->htmlType, ['number', 'select']) && isset($field->relation)) {
 
-            $field->cleanName = Str::beforeLast($field->name, '_id');
+            $field->cleanName = Str::substr($field->name, 0, Str::length(Str::beforeLast(Str::lower($field->name), '_id')));
         }
     }
 
@@ -582,7 +658,29 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
-                $field->dataTableFilter = Str::snake(Str::plural($field->cleanName));
+                $field->dataTableFilter = Helper::getTableName($field->cleanName);
+
+            break;
+        }
+    }
+
+    /** 
+     * Set field datatable join from type
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setDataTableJoin(GeneratorField $field) {
+
+        $field->dataTableJoinTable = $field->dataTableJoinPrimaryField = $field->dataTableJoinLabelField = null;
+
+        switch ($field->dataTableType) {
+
+            case self::DATATABLE_TYPE_FK_INTEGER :
+
+                $field->dataTableJoinTable = $field->dataTableFilter;
+                $field->dataTableJoinPrimaryField = Helper::getTablePrimaryName($field->dataTableJoinTable);
+                $field->dataTableJoinLabelField = Helper::getTableLabelName($field->dataTableJoinTable);
 
             break;
         }
