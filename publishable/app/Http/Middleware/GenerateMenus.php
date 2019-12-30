@@ -88,49 +88,63 @@ class GenerateMenus {
 
 		Menu::make('menu', function ($menu) {
 
+			$user = \Auth::user();
+
 			$menu->add(_i('Tableau de bord'))
 				->data('icon', 'home')
 				->data('order', '1');
 
-            $menu->add('Mail Templates', [
-                'route' => 'back.mailTemplates.index',
-                'nickname' => 'mailTemplates'
-            ])
-            ->data('icon', 'mail')
-            ->data('order', '20');
-			 
-			$menu->add(_i('Historique'), [
-					'route' => 'back.history.index'
-				])
-				->data('icon', 'history')
-				->data('order', '1000');
+			if ($user->can('mail-templates_view_all')) {
+				$menu->add('Mail Templates', [
+						'route'		 => 'back.mailTemplates.index',
+						'nickname'	 => 'mailTemplates'
+					])
+					->data('icon', 'mail')
+					->data('order', '20');
+			}
 
-			$menu->add(_i('UI KIT'), [ 
-					'route' => 'back.ui_kit'
-				])
-				->data('icon', 'perm_media') 
-				->data('order', '2000');
+			if ($user->can('histories_view_all')) {
+				$menu->add(_i('Historique'), [
+						'route' => 'back.history.index'
+					])
+					->data('icon', 'history')
+					->data('order', '1000');
+			}
 
-			$menu->add('Permissions', [
-					'route'		 => 'back.permissions.index',
-					'nickname'	 => 'permissions'
-				])
-				->data('icon', 'verified_user')
-				->data('order', '103');
+			if ($user->can('dev-tools_view')) {
+				$menu->add(_i('UI KIT'), [
+						'route' => 'back.ui_kit'
+					])
+					->data('icon', 'perm_media')
+					->data('order', '2000');
+			}
 
-			$menu->add('Roles', [
-					'route'		 => 'back.roles.index',
-					'nickname'	 => 'roles'
-				])
-				->data('icon', 'people')
-				->data('order', '102');
+			if ($user->can('permissions_view_all')) {
+				$menu->add('Permissions', [
+						'route'		 => 'back.permissions.index',
+						'nickname'	 => 'permissions'
+					])
+					->data('icon', 'verified_user')
+					->data('order', '103');
+			}
 
-			$menu->add('Users', [
-					'route'		 => 'back.users.index',
-					'nickname'	 => 'users'
-				])
-				->data('icon', 'person')
-				->data('order', '101');
+			if ($user->can('roles_view_all')) {
+				$menu->add('Roles', [
+						'route'		 => 'back.roles.index',
+						'nickname'	 => 'roles'
+					])
+					->data('icon', 'people')
+					->data('order', '102');
+			}
+
+			if ($user->can('users_view_all')) {
+				$menu->add('Users', [
+						'route'		 => 'back.users.index',
+						'nickname'	 => 'users'
+					])
+					->data('icon', 'person')
+					->data('order', '101');
+			}
 
 			$menu->sortBy('order', 'asc');
 		})->filter(function($item) {
