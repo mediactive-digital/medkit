@@ -31,12 +31,22 @@ class MenuGenerator extends InfyOmMenuGenerator {
      */
     private $menuTemplate;
 
+	/**
+	 * 
+	 * @param CommandData $commandData
+	 */
     public function __construct(CommandData $commandData) {
 
+        $templateName = 'menu';
+
+		if ( config('infyom.laravel_generator.add_on.permissions.enabled', true) && config('infyom.laravel_generator.add_on.permissions.policies', true) ) { 
+				$templateName .= '_policies';
+		}
+		
         $this->commandData = $commandData;
         $this->path = $this->commandData->config->pathMiddlewares . $commandData->getAddOn('menu.menu_file');
         $this->menuContents = file_get_contents($this->path);
-        $this->menuTemplate = get_template('scaffold.menu.menu');
+        $this->menuTemplate = get_template('scaffold.menu.' . $templateName);
         $this->menuTemplate = fill_template($this->commandData->dynamicVars, $this->menuTemplate);
 
         $this->setMenuConfiguration();
@@ -55,6 +65,9 @@ class MenuGenerator extends InfyOmMenuGenerator {
         $this->setReflectionProperty('menuTemplate', $this->menuTemplate);
     }
 
+	/**
+	 * 
+	 */
     public function generate() {
 
         $add = false;
