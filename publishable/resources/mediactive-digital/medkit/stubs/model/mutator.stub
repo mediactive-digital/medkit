@@ -1,0 +1,11 @@
+
+    /**
+     * Set $ATTRIBUTE_NAME$.
+     * 
+     * @param $ATTRIBUTE_TYPE$ $value
+     * @return void
+     **/
+    public function set$ATTRIBUTE_NAME_PASCAL$Attribute($ATTRIBUTE_TYPE_HINT$ $value) {
+    
+        $this->attributes['$ATTRIBUTE_NAME$'] = $MUTATION_FUNCTION$;
+    }

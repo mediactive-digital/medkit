@@ -6,12 +6,15 @@ return [
     'gdpr' => [
     	'users' => [
     		'name',
-    		'firstname',
+    		'first_name',
     		'email',
     		'login'
     	]
     ],
-    'clearDirectory'=> [
-        "storage/logs"=>30
+    'clear_directory' => [
+        'storage/logs' => 30
     ],
+    'path' => [
+        'stubs' => resource_path('mediactive-digital/medkit/stubs/')
+    ]
 ];

@@ -3,9 +3,10 @@
 namespace MediactiveDigital\MedKit\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
-class clearDirectory extends Command {
+use Log;
+
+class ClearDirectoryCommand extends Command {
     /**
      * The name and signature of the console command.
      *
@@ -30,10 +31,10 @@ class clearDirectory extends Command {
      *
      * @return void
      */
-    public function __construct()
-    {
+    public function __construct() {
+
         parent::__construct();
-        $this->dirToDelete = config('medkit.clearDirectory');
+        $this->dirToDelete = config('mediactive-digital.medkit.clear_directory');
     }
 
     /**
@@ -41,9 +42,10 @@ class clearDirectory extends Command {
      *
      * @return mixed
      */
-    public function handle()
-    {
+    public function handle() {
+
         $basePath = base_path();
+        
         foreach ($this->dirToDelete as $dir => $time) {
 
             // Suppression recursive des fichiers n'ayant pas été modifié depuis plus de $time jours

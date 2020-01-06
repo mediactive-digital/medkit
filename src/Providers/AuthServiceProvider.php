@@ -33,7 +33,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('admin', function (\App\Models\User $user) {
-            return $user->hasRole(Role::SUPER_ADMIN);
+            return $user->hasRole([Role::SUPER_ADMIN, Role::ADMIN]);
         });
 
         Auth::extend('session', function($app, $name, array $config) {

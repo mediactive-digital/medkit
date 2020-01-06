@@ -27,7 +27,7 @@ class ResetPassword extends ResetPasswordContract
             return call_user_func(static::$toMailCallback, $notifiable, $token);
         }
 
-        $fullName = $notifiable->firstname . ' ' . $notifiable->name;
+        $fullName = $notifiable->first_name . ' ' . $notifiable->name;
         $email = $notifiable->email;
 
         $date = '';

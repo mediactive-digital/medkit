@@ -2,51 +2,50 @@
 
 namespace MediactiveDigital\MedKit\Helpers;
 
-use \LaravelGettext;
-use MediactiveDigital\MedKit\Translations\MoFileLoader;
+use LaravelGettext;
+use File;
+use Str;
 
 class TranslationHelper {
 
-    public static function get() {
+	/** 
+     * Get datatable translations.
+     *
+     * @param string $locale
+     * @return array $translations
+     */
+    public static function getDataTable(string $locale = ''): array {
 
-        $file = __DIR__ . '/../../resources/lang/i18n/' . LaravelGettext::getLocale() . '/LC_MESSAGES/messages.mo';
-        $file = file_exists($file) ? (new MoFileLoader)->loadResource($file) : [];
-        $file = $file ? json_encode($file) : '{}';
+        $translations = [];
+        $language = ($language = FormatHelper::getLanguage($locale ?: LaravelGettext::getLocale())) ? str_replace(' ', '-', $language) : '';
 
-        return '<script type="text/javascript">
-					(function(root, factory) {
-					    if (typeof define === "function" && define.amd) define([], factory);
-					    else if (typeof exports === "object") module.exports = factory();
-					    else root.Lang = factory()
-					})(this, function() {
-					    var Lang = function() {
-					        this.locale = "' . LaravelGettext::getLocaleLanguage() . '";
-					        this.messages = ' . $file . '
-					    };
-					    Lang.prototype.getLocale = function() {
-					        return this.locale
-					    };
-					    Lang.prototype._i = function(message, parameters) {
-					        parameters = typeof parameters !== "undefined" ? parameters : [];
-					        return this.messages[message] ? vsprintf(this.messages[message], parameters) : vsprintf(message, parameters)
-					    };
-					    Lang.prototype._n = function(singular, plural, n, parameters) {
-					        parameters = typeof parameters !== "undefined" ? parameters : [];
-					        if (n > 1) {
-					            if (this.messages[plural]) {
-					                var replace = "/^" + (this.messages[singular] ? this.messages[singular] : singular) + "|/";
-					                var re = new RegExp(replace, "g");
-					                return this.messages[plural] ? vsprintf(this.messages[plural].replace(re, ""), parameters) : vsprintf(plural, parameters)
-					            }
-					            return vsprintf(plural, parameters)
-					        }
-					        return this.messages[singular] ? vsprintf(this.messages[singular], parameters) : vsprintf(singular, parameters)
-					    };
-					    return Lang
-					});
-					(function() {
-					    Lang = new Lang
-					})();
-				</script>';
+        if ($language) {
+
+            $path = base_path('node_modules/datatables.net-plugins/i18n');
+
+            if (File::isDirectory($path)) {
+
+                $files = File::files($path);
+
+                foreach ($files as $file) {
+
+                    $extension = $file->getExtension();
+                    $name = $file->getBasename('.' . $extension);
+
+                    if (Str::lower($language) == Str::lower($name)) {
+
+                        $json = file_get_contents($path . '/' . $name . '.' . $extension);
+                        $json = substr($json, strpos($json, '{'));
+                        $json = json_decode(substr($json, 0, strrpos($json, '}') + 1), true);
+
+                        $translations = $json ?: $translations;
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $translations;
     }
 }

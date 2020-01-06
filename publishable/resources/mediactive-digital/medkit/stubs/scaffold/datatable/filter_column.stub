@@ -1,0 +1,5 @@
+
+            ->filterColumn('$FIELD_ALIAS$', function($query, $keyword) {
+
+                $this->filter$FIELD_TYPE$Column($query, '$FIELD_FILTER$', $keyword);
+            })

@@ -34,7 +34,7 @@ class AdminObserver {
     }
 
     /**
-     * Capitalize admin name and firstname
+     * Capitalize admin name and first name
      *
      * @param \App\Models\Admin $admin
      * @return void
@@ -42,6 +42,6 @@ class AdminObserver {
     private function capitalizeName(Admin $admin) {
 
         $admin->name = Str::ucfirst($admin->name);
-        $admin->firstname = Str::ucfirst($admin->firstname);
+        $admin->first_name = Str::ucfirst($admin->first_name);
     }
 }

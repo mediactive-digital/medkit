@@ -3,14 +3,16 @@
 namespace MediactiveDigital\MedKit\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Symfony\Component\Process\Process;
 use Illuminate\Filesystem\Filesystem;
-use MediactiveDigital\MedKit\Helpers\ConfigHelper as ConfigHelper;
 
-class InstallCommand extends Command
-{
+use Symfony\Component\Process\Process;
 
+use Composer\Json\JsonFile;
+
+use MediactiveDigital\MedKit\Helpers\ConfigHelper;
+use MediactiveDigital\MedKit\Json\JsonManipulator;
+
+class InstallCommand extends Command {
 
     /**
      * The name and signature of the console command.
@@ -25,15 +27,19 @@ class InstallCommand extends Command
     private $filesystem = null;
 
     private $refActionUser = [
-        0=>"Exit",
-        1=>"Run All",
-        2=>"Add Require Packages",
-        3=>"Copy Source",
-        4=>"Publish packages sources",
-        5=>"Add Route",
-        6=>"Add AdminGuard",
-        7=>"Add Facades",
-        8=>"install Theme",
+        0 => 'Exit',
+        1 => 'Run All',
+        2 => 'Add Require Packages',
+        3 => 'Copy Source',
+        4 => 'Publish packages sources',
+        5 => 'Add Route',
+        6 => 'Add AdminGuard',
+        7 => 'Add Facades',
+        8 => 'Install Theme',
+        9 => 'Add helpers',
+        10 => 'Generate Laravel default translations for Poedit',
+        11 => 'Generate JS translations',
+        12 => 'Generate JS routes'
     ];
 
     /**
@@ -55,11 +61,16 @@ class InstallCommand extends Command
             }
 
             switch ($rep) {
+
                 case 0 :
+
                     return true;
-                    break;
+
+                break;
 
                 case 1 :
+
+                    $this->addHelpers();
                     $this->addRequirePackages();
                     $this->composerDump();
                     $this->copySource();
@@ -68,40 +79,83 @@ class InstallCommand extends Command
                     $this->addAdminGuard();
                     $this->addFacades();
                     $this->installTheme();
+                    $this->generateTranslations();
+                    $this->generateJsTranslations();
+                    $this->generateJsRoutes();
                     $this->composerDump();
 
                     return true;
-                    break;
+
+                break;
 
                 case 2 :
+
                     $this->addRequirePackages();
                     $this->composerDump();
-                    break;
+
+                break;
 
                 case 3 :
+
                     $this->copySource();
-                    break;
+
+                break;
 
                 case 4 :
+
                     $this->publishPackagesSource();
-                    break;
+
+                break;
 
                 case 5 :
+
                     $this->addRoutes();
-                    break;
+
+                break;
 
                 case 6 :
+
                     $this->addAdminGuard();
-                    break;
+
+                break;
 
                 case 7 :
+
                     $this->addFacades();
-                    break;
+
+                break;
 
                 case 8 :
+
                     $this->installTheme();
                     $this->composerDump();
-                    break;
+
+                break;
+
+                case 9 :
+
+                    $this->addHelpers();
+                    $this->composerDump();
+                    
+                break;
+
+                case 10 :
+
+                    $this->generateTranslations();
+                    
+                break;
+
+                case 11 :
+
+                    $this->generateJsTranslations();
+                    
+                break;
+
+                case 12 :
+
+                    $this->generateJsRoutes();
+                    
+                break;
             }
 
         } while($rep !== 0);
@@ -150,7 +204,7 @@ class InstallCommand extends Command
         if (strpos($fileContent, $checkString) === false) {
             $this->filesystem->append($fileToEdit, $stub);
         } else {
-            $this->error(' #ERR1 [SKIP] ' . $fileToEdit . ' already have this stub');
+            $this->error(' #ERR1 [SKIP] ' . $fileToEdit . ' already has this stub');
         }
     }
 
@@ -298,10 +352,8 @@ class InstallCommand extends Command
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $authConfigPasswordBroker);
     }
 
+    public function addFacades() {
 
-
-    public function addFacades()
-    {
         $this->info("Add Facades to config/app.php");
         $fileToEdit = base_path('config') . '/app.php';
         $appConfig = include($fileToEdit);
@@ -315,5 +367,76 @@ class InstallCommand extends Command
         ])];
         $sectionTitle = "Class Aliases";
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $appConfigFacades);
+    }
+
+    /**
+     * Add helpers to composer.json
+     *
+     * @return void
+     */
+    private function addHelpers() {
+
+        $this->info('Adding helpers to composer.json');
+
+        $path = base_path('composer.json');
+        $contents = file_get_contents($path);
+        $manipulator = new JsonManipulator($contents);
+        $jsonContents = $manipulator->getContents();
+        $decoded = JsonFile::parseJson($jsonContents);
+        $datas = isset($decoded['extra']['include_files']) ? $decoded['extra']['include_files'] : [];
+        $value = 'vendor/mediactive-digital/medkit/src/helpers.php';
+
+        foreach ($datas as $key => $entry) {
+
+            if ($entry == $value) {
+
+                $value = '';
+
+                break;
+            }
+        }
+
+        if ($value) {
+
+            $datas[] = $value;
+            $manipulator->addProperty('extra.include_files', $datas);
+            $contents = $manipulator->getContents();
+
+            file_put_contents($path, $contents);
+        }
+        else {
+
+            $this->error(' #ERR1 [SKIP] ' . $path . ' already has helpers');
+        }
+    }
+
+    /**
+     * Generate Laravel default translations for Poedit
+     *
+     * @return void
+     */
+    private function generateTranslations() {
+
+        $this->doCommand('php artisan medkit:generate-translations');
+    }
+
+    /**
+     * Generate JS translations
+     *
+     * @return void
+     */
+    private function generateJsTranslations() {
+
+        $this->doCommand('php artisan medkit:generate-js-translations');
+    }
+
+    /**
+     * Generate JS routes
+     *
+     * @return void
+     */
+    private function generateJsRoutes() {
+
+        $this->doCommand('php artisan medkit:generate-js-routes');
     }
 }

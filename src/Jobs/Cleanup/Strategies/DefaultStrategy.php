@@ -83,7 +83,7 @@ class DefaultStrategy extends SovedDefaultStrategy {
                     'deleted_by' => 1
                 ];
 
-                foreach (config('medkit.gdpr.' . $table) as $field) {
+                foreach (config('mediactive-digital.medkit.gdpr.' . $table) as $field) {
 
                     $datas[$field] = Hash::needsRehash($user->$field) ? Hash::make($user->$field) : $user->$field;
                 }
@@ -102,6 +102,6 @@ class DefaultStrategy extends SovedDefaultStrategy {
      */
     public function isRoot(Authenticatable $user) {
 
-        return $user->hasRole(Role::SUPER_ADMIN) ? $user->email == config('medkit.dev_email') : false;
+        return $user->hasRole(Role::SUPER_ADMIN) ? $user->email == config('mediactive-digital.medkit.dev_email') : false;
     }
 }

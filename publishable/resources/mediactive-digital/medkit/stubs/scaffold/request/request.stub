@@ -1,0 +1,37 @@
+<?php
+
+namespace $NAMESPACE_REQUEST$;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+use App\Traits\Request;
+
+class $MODEL_NAME$Request extends FormRequest {
+
+    use Request;
+
+    public function __construct() {
+
+        $this->tableNameSingular = '$TABLE_NAME_SINGULAR$';
+    }
+
+    /**
+     * Set the validation rules that apply to the request.
+     *
+     * @return void
+     */
+    private function setRules() {
+
+        $this->requestRules = $RULES$;
+    }
+
+    /**
+     * Set custom messages for validator errors.
+     *
+     * @return void
+     */
+    private function setMessages() {
+
+        $this->requestMessages = $MESSAGES$;
+    }
+}
