@@ -314,11 +314,9 @@ trait DataTable {
         if ($values) {
 
             $when = '';
-            $associative = FormatHelper::isAssociativeArray($values);
 
             foreach ($values as $value => $label) {
 
-                $value = $associative ? $value : $label;
                 $when .= ($when ? ' ' : '') . 'WHEN ' . $column . ' = \'' . addcslashes($value, '\'') . '\' THEN \'' . addcslashes($label, '\'') . '\'';
             }
 

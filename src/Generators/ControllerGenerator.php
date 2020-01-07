@@ -730,7 +730,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                     }
                     else {
 
-                        $values[] = $htmlValue[0];
+                        $values[$htmlValue[0]] = $htmlValue[0];
                     }
                 }
 
