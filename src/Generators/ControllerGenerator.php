@@ -143,8 +143,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->setDataTableType($field);
             $this->setDataTableMethods($field);
             $this->setDataTableAlias($field);
-            $this->setDataTableFilter($field);
             $this->setDataTableJoin($field);
+            $this->setDataTableFilter($field);
 
             $datas = [
                 'name' => $field->dataTableAlias,
@@ -684,19 +684,35 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function setDataTableFilter(GeneratorField $field) {
 
-        $field->dataTableFilter = $this->commandData->dynamicVars['$TABLE_NAME$'] . '.' . $field->name;
+        $field->dataTableFilter = FormatHelper::writeValueToPhp($this->commandData->dynamicVars['$TABLE_NAME$'] . '.' . $field->name);
 
         switch ($field->dataTableType) {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
-                $field->dataTableFilter = Helper::getTableName($field->cleanName);
+                $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTable);
 
             break;
 
             case self::DATATABLE_TYPE_ENUM :
 
-                $field->dataTableFilter .= $field->htmlValues ? ',' . implode(',', $field->htmlValues) : '';
+                $values = [];
+
+                foreach ($field->htmlValues as $htmlValue) {
+
+                    $htmlValue = explode(':', $htmlValue);
+
+                    if (isset($htmlValue[1])) {
+
+                        $values[$htmlValue[1]] = $htmlValue[0];
+                    }
+                    else {
+
+                        $values[] = $htmlValue[0];
+                    }
+                }
+
+                $field->dataTableFilter .= ', ' . FormatHelper::writeValueToPhp($values, 0, false, false);
 
             break;
         }
@@ -716,7 +732,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
-                $field->dataTableJoinTable = $field->dataTableFilter;
+                $field->dataTableJoinTable = Helper::getTableName($field->cleanName);
                 $field->dataTableJoinPrimaryField = Helper::getTablePrimaryName($field->dataTableJoinTable);
                 $field->dataTableJoinLabelField = Helper::getTableLabelName($field->dataTableJoinTable);
 

@@ -13,6 +13,7 @@ class FormatHelper {
 
     const UNESCAPE = '##UNESCAPE_PATTERN##';
     const TAB = '    ';
+    const NEW_LINE = "\n";
 
     const PASSWORD_REGEX = '/^.*(?=.{8,120})(?=.*[a-z])(?=.*[A-Z])(?=.*[\d])(?=.*[^a-zA-Z\d\s]).*$/';
 
@@ -413,22 +414,28 @@ class FormatHelper {
      * @param array $array
      * @param int $level 
      * @param bool $doubleQuotes
+     * @param bool $newLines
      * @return string $string
      */
-    public static function writeArrayToPhp(array $array, int $level = 1, bool $doubleQuotes = false): string {
+    public static function writeArrayToPhp(array $array, int $level = 0, bool $doubleQuotes = false, bool $newLines = true): string {
 
-        $string = '';
-        $tab = str_repeat(self::TAB, $level);
+        $newLine = $newLines ? self::NEW_LINE : '';
+        $subLevel = $level + 1;
+        $tab = $newLines ? str_repeat(self::TAB, $subLevel) : ' ';
+        $string = '[' . ($array ? $newLine . ($newLines ? $tab : '') : '');
 
         $i = 0;
         $count = count($array);
+        $associative = self::isAssociativeArray($array);
 
         foreach ($array as $key => $value) {
 
             $i++;
             
-            $string .= $tab . (self::isAssociativeArray($array) ? self::writeValueToPhp($key, 0, $doubleQuotes) . ' => ' : '') . self::writeValueToPhp($value, $level, $doubleQuotes) . ($i == $count ? '' : ',') . "\n";
+            $string .= ($associative ? self::writeValueToPhp($key, 0, $doubleQuotes) . ' => ' : '') . self::writeValueToPhp($value, $subLevel, $doubleQuotes, $newLines) . ($i == $count ? '' : ',' . $newLine . $tab);
         }
+
+        $string .= ($array ? $newLine . ($newLines ? str_repeat(self::TAB, $level) : '') : '')  . ']';
         
         return $string;
     }
@@ -439,9 +446,10 @@ class FormatHelper {
      * @param mixed $value
      * @param int $level
      * @param bool $doubleQuotes
+     * @param bool $newLines
      * @return string
      */
-    public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false): string {
+    public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false, bool $newLines = true): string {
 
         $quote = $doubleQuotes ? '"' : '\'';
 
@@ -466,7 +474,7 @@ class FormatHelper {
         }
         else if (is_array($value)) {
 
-            $value = "[\n" . self::writeArrayToPhp((array)$value, $level + 1) . str_repeat(self::TAB, $level) . ']';
+            $value = self::writeArrayToPhp($value, $level, $doubleQuotes, $newLines);
         }
         else if (is_object($value)) {
 
