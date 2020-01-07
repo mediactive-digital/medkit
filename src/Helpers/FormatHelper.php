@@ -415,9 +415,10 @@ class FormatHelper {
      * @param int $level 
      * @param bool $doubleQuotes
      * @param bool $newLines
+     * @param bool|null $associative
      * @return string $string
      */
-    public static function writeArrayToPhp(array $array, int $level = 0, bool $doubleQuotes = false, bool $newLines = true): string {
+    public static function writeArrayToPhp(array $array, int $level = 0, bool $doubleQuotes = false, bool $newLines = true, bool $associative = null): string {
 
         $newLine = $newLines ? self::NEW_LINE : '';
         $subLevel = $level + 1;
@@ -426,7 +427,7 @@ class FormatHelper {
 
         $i = 0;
         $count = count($array);
-        $associative = self::isAssociativeArray($array);
+        $associative = $associative !== null ? $associative : self::isAssociativeArray($array);
 
         foreach ($array as $key => $value) {
 
@@ -447,9 +448,10 @@ class FormatHelper {
      * @param int $level
      * @param bool $doubleQuotes
      * @param bool $newLines
+     * @param bool|null $associative
      * @return string
      */
-    public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false, bool $newLines = true): string {
+    public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false, bool $newLines = true, bool $associative = null): string {
 
         $quote = $doubleQuotes ? '"' : '\'';
 
@@ -474,7 +476,7 @@ class FormatHelper {
         }
         else if (is_array($value)) {
 
-            $value = self::writeArrayToPhp($value, $level, $doubleQuotes, $newLines);
+            $value = self::writeArrayToPhp($value, $level, $doubleQuotes, $newLines, $associative);
         }
         else if (is_object($value)) {
 
