@@ -677,6 +677,28 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
+     * Set field datatable join from type
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setDataTableJoin(GeneratorField $field) {
+
+        $field->dataTableJoinTable = $field->dataTableJoinPrimaryField = $field->dataTableJoinLabelField = null;
+
+        switch ($field->dataTableType) {
+
+            case self::DATATABLE_TYPE_FK_INTEGER :
+
+                $field->dataTableJoinTable = Helper::getTableName($field->cleanName);
+                $field->dataTableJoinPrimaryField = Helper::getTablePrimaryName($field->dataTableJoinTable);
+                $field->dataTableJoinLabelField = Helper::getTableLabelName($field->dataTableJoinTable);
+
+            break;
+        }
+    }
+
+    /** 
      * Set field datatable filter from type
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
@@ -713,28 +735,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 }
 
                 $field->dataTableFilter .= ', ' . FormatHelper::writeValueToPhp($values, 0, false, false);
-
-            break;
-        }
-    }
-
-    /** 
-     * Set field datatable join from type
-     *
-     * @param \InfyOm\Generator\Common\GeneratorField $field
-     * @return void
-     */
-    public function setDataTableJoin(GeneratorField $field) {
-
-        $field->dataTableJoinTable = $field->dataTableJoinPrimaryField = $field->dataTableJoinLabelField = null;
-
-        switch ($field->dataTableType) {
-
-            case self::DATATABLE_TYPE_FK_INTEGER :
-
-                $field->dataTableJoinTable = Helper::getTableName($field->cleanName);
-                $field->dataTableJoinPrimaryField = Helper::getTablePrimaryName($field->dataTableJoinTable);
-                $field->dataTableJoinLabelField = Helper::getTableLabelName($field->dataTableJoinTable);
 
             break;
         }
