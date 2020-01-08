@@ -92,12 +92,12 @@ trait DataTable {
      * Filter boolean column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterBooleanColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterBooleanColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
     	$column = $this->wrapColumn($query, $column, $raw);
         $true = addcslashes(_i('Vrai'), '\'');
@@ -110,55 +110,55 @@ trait DataTable {
      * Filter datetime column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterDateTimeColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterDateTimeColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
-        $this->filterDateTime($query, $column, $keyword, _i('%d/%m/%Y %H:%i:%s'), $raw);
+        $this->filterDateTime($query, $keyword, $column, _i('%d/%m/%Y %H:%i:%s'), $raw);
     }
 
     /**
      * Filter date column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterDateColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterDateColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
-        $this->filterDateTime($query, $column, $keyword, _i('%d/%m/%Y'), $raw);
+        $this->filterDateTime($query, $keyword, $column, _i('%d/%m/%Y'), $raw);
     }
 
     /**
      * Filter time column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterTimeColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterTimeColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
-        $this->filterDateTime($query, $column, $keyword, _i('%H:%i:%s'), $raw);
+        $this->filterDateTime($query, $keyword, $column, _i('%H:%i:%s'), $raw);
     }
 
     /**
      * Filter datetime / date / time column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $format
      * @param bool $raw
      * @return void
      */
-    private function filterDateTime(Builder $query, $column, string $keyword, string $format, bool $raw = false) {
+    private function filterDateTime(Builder $query, string $keyword, $column, string $format, bool $raw = false) {
 
         $column = $this->wrapColumn($query, $column, $raw);
         $format = addcslashes($format, '\'');
@@ -170,12 +170,12 @@ trait DataTable {
      * Filter float column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterFloatColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterFloatColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
         $column = $this->wrapColumn($query, $column, $raw);
         $separators = FormatHelper::getNumberSeparators();
@@ -219,12 +219,12 @@ trait DataTable {
      * Filter integer column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $column
      * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterIntegerColumn(Builder $query, $column, string $keyword, bool $raw = false) {
+    private function filterIntegerColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
         $column = $this->wrapColumn($query, $column, $raw);
         $separators = FormatHelper::getNumberSeparators();
@@ -246,96 +246,121 @@ trait DataTable {
      * Filter foreign key integer column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param \Illuminate\Database\Query\Expression|string $table
      * @param string $keyword
-     * @param string $label
+     * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
      * @return void
      */
-    private function filterFkIntegerColumn(Builder $query, $table, string $keyword, string $label = '', bool $raw = false) {
+    private function filterFkIntegerColumn(Builder $query, string $keyword, $column, bool $raw = false) {
 
-        $column = $table;
+        if (!$raw && is_string($column)) {
 
-        if (is_string($table)) {
-
-            $table = Helper::getTableName($table);
+            $columnValues = explode('.', $column);
+            $table = Helper::getTableName($columnValues[0]);
+            $column = '';
+            $raw = true;
 
             if ($table) {
 
-                $label = Helper::getTableLabelName($table, $label);
+                $label = Helper::getTableLabelName($table, isset($columnValues[1]) ? $columnValues[1] : '');
 
                 if ($label) {
 
                     $column = $table . '.' . $label;
                     $raw = false;
                 }
-                else {
+                elseif (($primary = Helper::getTablePrimaryName($table))) {
 
-                    if (($primary = Helper::getTablePrimaryName($table))) {
-
-                        $column = 'CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $table . '`.`' . $primary . '`)';
-                    }
-                    else {
-
-                        $column = '\'\'';
-                    }
-
-                    $raw = true;
+                    $column = 'CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $table . '`.`' . $primary . '`)';
                 }
-            }
-            else {
-
-                $column = '\'\'';
-                $raw = true;
             }
         }
 
-        $column = $this->wrapColumn($query, $column, $raw);
-        $rawQuery = $column . ' LIKE ?';
-        $parameters = ['%' . $keyword . '%'];
+        if ($column) {
 
-        $query->whereRaw($rawQuery, $parameters);
+            $column = $this->wrapColumn($query, $column, $raw);
+            $rawQuery = 'LOWER(' . $column . ') LIKE ?';
+            $parameters = ['%' . $keyword . '%'];
+
+            $query->whereRaw($rawQuery, $parameters);
+        }
     }
 
     /**
      * Filter enum column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $keyword
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param array $values
-     * @param string $keyword
      * @param bool $raw
      * @return void
      */
-    private function filterEnumColumn(Builder $query, $column, array $values = [], string $keyword, bool $raw = false) {
+    private function filterEnumColumn(Builder $query, string $keyword, $column, array $values = [], bool $raw = false) {
 
-        $column = $this->wrapColumn($query, $column, $raw);
+        $this->filterEnumOrChoiceColumn($query, $keyword, $column, $values, false, $raw);
+    }
+
+    /**
+     * Filter choice column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param array $values
+     * @param bool $raw
+     * @return void
+     */
+    private function filterChoiceColumn(Builder $query, string $keyword, $column, array $values = [], bool $raw = false) {
+
+        $this->filterEnumOrChoiceColumn($query, $keyword, $column, $values, true, $raw);
+    }
+
+    /**
+     * Filter enum or choice column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param array $values
+     * @param bool $associative
+     * @param bool $raw
+     * @return void
+     */
+    private function filterEnumOrChoiceColumn(Builder $query, string $keyword, $column, array $values = [], bool $associative = false, bool $raw = false) {
 
         if ($values) {
 
-            $when = '';
+            $column = $this->wrapColumn($query, $column, $raw);
 
-            foreach ($values as $value => $label) {
+            if ($associative) {
 
-                $when .= ($when ? ' ' : '') . 'WHEN ' . $column . ' = \'' . addcslashes($value, '\'') . '\' THEN \'' . addcslashes($label, '\'') . '\'';
-            }
+                $when = '';
 
-            if ($when) {
+                foreach ($values as $value => $label) {
 
-                $column = 'CASE ' . $when . ' ELSE \'\' END';
+                    $when .= ($when ? ' ' : '') . 'WHEN ' . $column . ' = \'' . addcslashes($value, '\'') . '\' THEN \'' . addcslashes($label, '\'') . '\'';
+                }
+
+                $rawQuery = 'CASE ' . $when . ' END';
             }
             else {
 
-                $column = '\'\'';
+                $list = '';
+
+                foreach ($values as $label) {
+
+                    $list .= ($list ? ', ' : '') . '\'' . addcslashes($label, '\'') . '\'';
+                }
+
+                $rawQuery = 'IF(' . $column . ' IN(' . $list . '), ' . $column . ', NULL)';
             }
 
-            $raw = true;
+            $rawQuery = 'LOWER(' . $rawQuery . ') LIKE ?';
+            $parameters = ['%' . $keyword . '%'];
+
+            $query->whereRaw($rawQuery, $parameters);
         }
-
-        $rawQuery = $column . ' LIKE ?';
-        $parameters = ['%' . $keyword . '%'];
-
-        $query->whereRaw($rawQuery, $parameters);
     }
 
     /**
