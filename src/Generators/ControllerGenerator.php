@@ -34,6 +34,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     const DATATABLE_TYPE_INTEGER = 'Integer';
     const DATATABLE_TYPE_FK_INTEGER = 'FkInteger';
     const DATATABLE_TYPE_ENUM = 'Enum';
+    const DATATABLE_TYPE_CHOICE = 'Choice';
 
     /** 
      * @var CommandData 
@@ -143,8 +144,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->setDataTableType($field);
             $this->setDataTableMethods($field);
             $this->setDataTableAlias($field);
-            $this->setDataTableFilter($field);
             $this->setDataTableJoin($field);
+            $this->setDataTableFilter($field);
 
             $datas = [
                 'name' => $field->dataTableAlias,
@@ -264,35 +265,57 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                         }
                         else {
 
+                            $rawQuery = 'NULL';
+
                             if ($field->dataTableJoinPrimaryField) {
 
-                                $value = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTable . '`.`' . $field->dataTableJoinPrimaryField . '`)';
-                            }
-                            else {
-
-                                $value = '\'\'';
+                                $rawQuery = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTable . '`.`' . $field->dataTableJoinPrimaryField . '`)';
                             }
 
-                            $value = 'DB::raw(\'' . $value . ' AS `' . $field->dataTableAlias . '`\')';
+                            $value = 'DB::raw(\'' . $rawQuery . ' AS `' . $field->dataTableAlias . '`\')';
                         }
 
                     break;
 
                     case self::DATATABLE_TYPE_ENUM :
+                    case self::DATATABLE_TYPE_CHOICE :
 
-                        $when = '';
+                        $rawQuery = 'NULL';
 
-                        foreach ($field->htmlValues as $htmlValue) {
+                        if ($field->htmlValues) {
 
-                            $htmlValue = explode(':', $htmlValue);
+                            $column = '`' . $this->commandData->dynamicVars['$TABLE_NAME$'] . '`.`' . $field->name . '`';
 
-                            $label = $htmlValue[0];
-                            $fieldValue = isset($htmlValue[1]) ? $htmlValue[1] : $label;
+                            if ($field->dataTableType == self::DATATABLE_TYPE_CHOICE) {
 
-                            $when .= ($when ? ' ' : '') . 'WHEN `' . $this->commandData->dynamicVars['$TABLE_NAME$'] . '`.`' . $field->name . '` = \\\'' . addcslashes($fieldValue, '\'') . '\\\' THEN \\\'' . addcslashes($label, '\'') . '\\\'';
+                                $when = '';
+
+                                foreach ($field->htmlValues as $htmlValue) {
+
+                                    $htmlValue = explode(':', $htmlValue);
+
+                                    $label = $htmlValue[0];
+                                    $value = isset($htmlValue[1]) ? $htmlValue[1] : $label;
+
+                                    $when .= ($when ? ' ' : '') . 'WHEN ' . $column . ' = \\\'' . addcslashes($value, '\'') . '\\\' THEN \\\'' . addcslashes($label, '\'') . '\\\'';
+                                }
+
+                                $rawQuery = 'CASE ' . $when . ' END';
+                            }
+                            else {
+
+                                $list = '';
+
+                                foreach ($field->htmlValues as $label) {
+
+                                    $list .= ($list ? ', ' : '') . '\\\'' . addcslashes($label, '\'') . '\\\'';
+                                }
+
+                                $rawQuery = 'IF(' . $column . ' IN(' . $list . '), ' . $column . ', NULL)';
+                            }
                         }
 
-                        $value = $when ? 'DB::raw(\'CASE ' . $when . ' ELSE \\\'\\\' END AS `' . $field->dataTableAlias . '`\')' : $value;
+                        $value = 'DB::raw(\'' . $rawQuery . ' AS `' . $field->dataTableAlias . '`\')';
 
                     break;
                 }
@@ -618,7 +641,28 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case 'choice' :
 
-                $field->dataTableType = self::DATATABLE_TYPE_ENUM;
+                $associative = false;
+
+                foreach ($field->htmlValues as $htmlValue) {
+
+                    $htmlValue = explode(':', $htmlValue);
+
+                    if (isset($htmlValue[1])) {
+
+                        $associative = true;
+
+                        break;
+                    }
+                }
+
+                if ($associative) {
+
+                    $field->dataTableType = self::DATATABLE_TYPE_CHOICE;
+                }
+                else {
+
+                    $field->dataTableType = self::DATATABLE_TYPE_ENUM;
+                }
 
             break;
         }
@@ -643,6 +687,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             break;
 
             case self::DATATABLE_TYPE_ENUM :
+            case self::DATATABLE_TYPE_CHOICE :
 
                 $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
 
@@ -670,33 +715,13 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case self::DATATABLE_TYPE_ENUM :
 
+                $field->dataTableAlias .= '_enum';
+
+            break;
+
+            case self::DATATABLE_TYPE_CHOICE :
+
                 $field->dataTableAlias .= '_choice';
-
-            break;
-        }
-    }
-
-    /** 
-     * Set field datatable filter from type
-     *
-     * @param \InfyOm\Generator\Common\GeneratorField $field
-     * @return void
-     */
-    public function setDataTableFilter(GeneratorField $field) {
-
-        $field->dataTableFilter = $this->commandData->dynamicVars['$TABLE_NAME$'] . '.' . $field->name;
-
-        switch ($field->dataTableType) {
-
-            case self::DATATABLE_TYPE_FK_INTEGER :
-
-                $field->dataTableFilter = Helper::getTableName($field->cleanName);
-
-            break;
-
-            case self::DATATABLE_TYPE_ENUM :
-
-                $field->dataTableFilter .= $field->htmlValues ? ',' . implode(',', $field->htmlValues) : '';
 
             break;
         }
@@ -716,9 +741,52 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
-                $field->dataTableJoinTable = $field->dataTableFilter;
+                $field->dataTableJoinTable = Helper::getTableName($field->cleanName);
                 $field->dataTableJoinPrimaryField = Helper::getTablePrimaryName($field->dataTableJoinTable);
                 $field->dataTableJoinLabelField = Helper::getTableLabelName($field->dataTableJoinTable);
+
+            break;
+        }
+    }
+
+    /** 
+     * Set field datatable filter from type
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setDataTableFilter(GeneratorField $field) {
+
+        $field->dataTableFilter = FormatHelper::writeValueToPhp($this->commandData->dynamicVars['$TABLE_NAME$'] . '.' . $field->name);
+
+        switch ($field->dataTableType) {
+
+            case self::DATATABLE_TYPE_FK_INTEGER :
+
+                $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTable);
+
+            break;
+
+            case self::DATATABLE_TYPE_ENUM :
+            case self::DATATABLE_TYPE_CHOICE :
+
+                $values = [];
+                $associative = $field->dataTableType == self::DATATABLE_TYPE_CHOICE;
+
+                foreach ($field->htmlValues as $htmlValue) {
+
+                    if ($associative) {
+
+                        $htmlValue = explode(':', $htmlValue);
+                        $values[isset($htmlValue[1]) ? $htmlValue[1] : $htmlValue[0]] = $htmlValue[0];
+                    }
+                    else {
+
+                        $values[] = $htmlValue;
+                    }
+                }
+
+                $field->dataTableFilter .= $values ? ', ' . FormatHelper::writeValueToPhp($values, 0, false, false, $associative) : '';
 
             break;
         }
