@@ -781,7 +781,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                     }
                 }
 
-                $field->dataTableFilter .= ($values ? ', ' . FormatHelper::writeValueToPhp($values, 0, false, false, $associative) : '');
+                $field->dataTableFilter .= $values ? ', ' . FormatHelper::writeValueToPhp($values, 0, false, false, $associative) : '';
 
             break;
         }
