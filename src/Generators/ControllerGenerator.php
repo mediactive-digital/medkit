@@ -714,6 +714,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             break;
 
             case self::DATATABLE_TYPE_ENUM :
+
+                $field->dataTableAlias .= '_enum';
+
+            break;
+
             case self::DATATABLE_TYPE_CHOICE :
 
                 $field->dataTableAlias .= '_choice';
