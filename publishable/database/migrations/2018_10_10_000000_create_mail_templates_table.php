@@ -1,25 +1,26 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
-class CreateMailTemplatesTable extends Migration
-{
-    public function up()
-    {
-        Schema::create('mail_templates', function (Blueprint $table) {
-            $table->increments('id');
+class CreateMailTemplatesTable extends Migration {
+
+    public function up() {
+
+        Schema::create('mail_templates', function(Blueprint $table) {
+
+            $table->bigIncrements('id');
             $table->string('mailable');
             $table->text('subject')->nullable();
             $table->text('html_template');
             $table->text('text_template')->nullable();
+            
             $table->timestamps();  
             $table->softDeletes();
 
-            $table->unsignedInteger('created_by')->nullable()->default(null);
-            $table->unsignedInteger('updated_by')->nullable()->default(null);
-            $table->unsignedInteger('deleted_by')->nullable()->default(null);
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
         });
     }
     
