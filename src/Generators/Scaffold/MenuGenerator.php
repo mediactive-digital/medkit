@@ -72,7 +72,7 @@ class MenuGenerator extends InfyOmMenuGenerator {
 
         $add = false;
 
-        $this->menuContents = preg_replace_callback('/(backoffice[\s\S]+Menu::make[\s\S]+?{)([\s\S]*?)(}[\s\S]*?\)->filter)/', function($matches) use (&$add) {
+        $this->menuContents = preg_replace_callback('/(backoffice[\s\S]+Menu::make[\s\S]+?{)([\s\S]*?)(\$menu->sortBy)/', function($matches) use (&$add) {
 
             if (strpos($matches[2], $this->commandData->config->prefixes['route'] . '.' . $this->commandData->config->mCamelPlural . '.index') !== false) {
 

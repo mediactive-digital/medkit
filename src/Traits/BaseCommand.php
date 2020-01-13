@@ -302,8 +302,8 @@ trait BaseCommand {
      */
     public function generateSeeder() {
 
-        $path = $this->seederGenerator->getReflectionProperty('path');
-        $fileName = $this->seederGenerator->getReflectionProperty('fileName');
+        $path = $this->seederGenerator->getReflectionProperty('path', true);
+        $fileName = $this->seederGenerator->getReflectionProperty('fileName', true);
 
         if (file_exists($path . $fileName) && !$this->confirmOverwrite('Seeder ' . $fileName)) {
 
