@@ -6,8 +6,8 @@ use InfyOm\Generator\Generators\SeederGenerator as InfyOmSeederGenerator;
 use InfyOm\Generator\Utils\FileUtil;
 
 use MediactiveDigital\MedKit\Common\CommandData;
-use MediactiveDigital\MedKit\Helpers\FormatHelper;
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use DB;
 
