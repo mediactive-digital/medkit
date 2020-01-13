@@ -59,6 +59,10 @@ Ajout dans le .env
 SENTRY_LARAVEL_DSN=https://CODE@SENTRY_SERVER
 ```
 
+## Roadmap
+
+* Faire une surcouche pour compléter la génération des migrations
+
 ## Change log
 
 Please see the [changelog](changelog.md) for more information on what has changed recently.

@@ -1,28 +1,33 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateHistoryTable extends Migration
-{
+class CreateHistoryTable extends Migration {
+
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('history', function (Blueprint $table) {
-            $table->increments('id');
+    public function up() {
+
+        Schema::create('history', function(Blueprint $table) {
+
+            $table->bigIncrements('id');
+
             // Which table are we tracking
             $table->string('reference_table');
+
             // Which record from the table are we referencing
-            $table->integer('reference_id')->unsigned();
+            $table->unsignedBigInteger('reference_id');
+
             // Who made the action
-            $table->integer('actor_id')->unsigned();
+            $table->unsignedBigInteger('actor_id');
+
             // What did they do
             $table->string('body');
+
             $table->timestamps();
         });
     }
@@ -32,8 +37,8 @@ class CreateHistoryTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
+    public function down() {
+
         Schema::dropIfExists('history');
     }
 }
