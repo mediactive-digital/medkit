@@ -80,6 +80,9 @@ class RollbackGeneratorCommand extends InfyOmRollbackGeneratorCommand
 
         $this->commandData->config->init($this->commandData, ['tableName', 'prefix', 'plural', 'views']);
 
+        $this->commandData->setDefaults();
+        $this->commandData->setConfiguration();
+
         $views = $this->commandData->getOption('views');
         if (!empty($views)) {
             $views = explode(',', $views);
