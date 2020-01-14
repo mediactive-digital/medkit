@@ -94,7 +94,7 @@ class PolicyGenerator extends PermissionGenerator {
 			. '([\s\S]*?)'
 			. '(# fin policiesGenerator)/', function($matches) use (&$add) {
  
-            if (strpos($matches[2],  ucfirst($this->commandData->config->mCamel) . '::class' ) !== false) {
+            if (strpos($matches[2], '\\' . ucfirst($this->commandData->config->mCamel) . '::class' ) !== false) {
 
                 $return = $matches[1] . $matches[2] . $matches[3];
             }
