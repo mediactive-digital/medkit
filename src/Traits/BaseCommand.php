@@ -3,7 +3,6 @@
 namespace MediactiveDigital\MedKit\Traits;
 
 use InfyOm\Generator\Utils\FileUtil;
-use InfyOm\Generator\Generators\Scaffold\RoutesGenerator;
 
 use MediactiveDigital\MedKit\Generators\MigrationGenerator;
 use MediactiveDigital\MedKit\Generators\ModelGenerator;
@@ -13,12 +12,18 @@ use MediactiveDigital\MedKit\Generators\SeederGenerator;
 use MediactiveDigital\MedKit\Generators\ControllerGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\RequestGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\MenuGenerator;
-use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator; 
+use MediactiveDigital\MedKit\Generators\Scaffold\ViewGenerator;
+use MediactiveDigital\MedKit\Generators\Scaffold\RoutesGenerator;
 use MediactiveDigital\MedKit\Generators\Scaffold\TracksHistoryGenerator; 
 use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator; 
-use MediactiveDigital\MedKit\Generators\Scaffold\PolicyGenerator; 
+use MediactiveDigital\MedKit\Generators\Scaffold\PolicyGenerator;
 
 trait BaseCommand {
+
+    /**
+     * @var \MediactiveDigital\MedKit\Generators\MigrationGenerator
+     */
+    public $migrationGenerator;
 
     /**
      * @var \MediactiveDigital\MedKit\Generators\ModelGenerator
@@ -64,9 +69,9 @@ trait BaseCommand {
 
         if (!$this->commandData->getOption('fromTable') and !$this->isSkip('migration')) {
 
-            $migrationGenerator = new MigrationGenerator($this->commandData);
+            $this->migrationGenerator = new MigrationGenerator($this->commandData);
             
-            $migrationGenerator->generate();
+            $this->generateMigration();
         }
 
         if (!$this->isSkip('model')) {
@@ -239,6 +244,21 @@ trait BaseCommand {
         
         $this->commandData->commandComment("\nSchema File saved: ");
         $this->commandData->commandInfo($fileName);
+    }
+
+    /**
+     * Generate migration
+     *
+     * @return void
+     */
+    public function generateMigration() {
+
+        if (($file = $this->migrationGenerator->getExistingFile()) && !$this->confirmOverwrite('Migration ' . $file)) {
+
+            return;
+        }
+
+        $this->migrationGenerator->generate();
     }
 
     /**

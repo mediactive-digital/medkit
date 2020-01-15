@@ -96,7 +96,7 @@ class GenerateMenus {
 
 			if ($user->can('mail-templates_view_all')) {
 				$menu->add('Mail Templates', [
-						'route'		 => 'back.mailTemplates.index',
+						'route'		 => 'back.mail_templates.index',
 						'nickname'	 => 'mailTemplates'
 					])
 					->data('icon', 'mail')

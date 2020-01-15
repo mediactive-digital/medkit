@@ -3,7 +3,7 @@
 @section('content')
 <ol class="breadcrumb">
 	<li class="breadcrumb-item">
-		<a href="{!! route('back.mailTemplates.index') !!}">{!! _i('Mail Template') !!}</a>
+		<a href="{!! route('back.mail_templates.index') !!}">{!! _i('Mail Template') !!}</a>
 	</li>
 	<li class="breadcrumb-item active">{!! _i('Détail') !!}</li>
 </ol>
@@ -15,7 +15,7 @@
 				<div class="card">
 					<div class="card-header">
 						<strong>{!! _i('Détails') !!}</strong>
-						<a href="{!! route('back.mailTemplates.index') !!}" class="btn btn-light">
+						<a href="{!! route('back.mail_templates.index') !!}" class="btn btn-light">
 							<i class="material-icons">arrow_back</i>
 							{!! _i('Retour') !!}
 						</a>
@@ -30,7 +30,7 @@
 				<div class="card">
 					<div class="card-header">
 						<strong>{!! _i('Variables du template') !!}</strong>
-						<a href="{!! route('back.mailTemplates.index') !!}" class="btn btn-light">
+						<a href="{!! route('back.mail_templates.index') !!}" class="btn btn-light">
 							<i class="material-icons">arrow_back</i>
 							{!! _i('Retour') !!}
 						</a>

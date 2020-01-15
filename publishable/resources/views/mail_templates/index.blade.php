@@ -15,7 +15,7 @@
                              {!! _i('MailTemplates') !!}
 
                             @if(auth()->user()->can('create', App\Models\MailTemplate::class)) 
-                             <a class="pull-right" href="{!! route('back.mailTemplates.create') !!}">
+                             <a class="pull-right" href="{!! route('back.mail_templates.create') !!}">
                                 <i class="material-icons">add_box</i>
                              </a>
                             @endif
