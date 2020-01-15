@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
           <li class="breadcrumb-item">
-             <a href="{!! route('back.mailTemplates.index') !!}">{!! _i('Mail Template') !!}</a>
+             <a href="{!! route('back.mail_templates.index') !!}">{!! _i('Mail Template') !!}</a>
           </li>
           <li class="breadcrumb-item active">{!! _i('Editer') !!}</li>
         </ol>

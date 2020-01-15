@@ -47,7 +47,7 @@ class MailTemplateController extends AppBaseController {
 		$this->authorize('create', \App\Models\MailTemplate::class);
 		$form = $formBuilder->create('App\Forms\MailTemplateForm', [
 			'method' => 'POST',
-			'url'	 => route('back.mailTemplates.index')
+			'url'	 => route('back.mail_templates.index')
 		]);
 
 		return view('mail_templates.create')
@@ -70,7 +70,7 @@ class MailTemplateController extends AppBaseController {
 
 		Flash::success( _i('Le modèle de courrier a été enregistré avec succès.') );
 
-		return redirect(route('back.mailTemplates.index'));
+		return redirect(route('back.mail_templates.index'));
 	}
 
 	/**
@@ -90,7 +90,7 @@ class MailTemplateController extends AppBaseController {
 
 			Flash::error( _i('Modèle de courrier introuvable.') );
 
-			return redirect(route('back.mailTemplates.index'));
+			return redirect(route('back.mail_templates.index'));
 		}
 
 		return view('mail_templates.show')
@@ -115,12 +115,12 @@ class MailTemplateController extends AppBaseController {
 
 			Flash::error( _i('Modèle de courrier introuvable.') );
 
-			return redirect(route('back.mailTemplates.index'));
+			return redirect(route('back.mail_templates.index'));
 		}
 
 		$form = $formBuilder->create('App\Forms\MailTemplateForm', [
 			'method' => 'patch',
-			'url'	 => route('back.mailTemplates.update', $mailTemplate->id),
+			'url'	 => route('back.mail_templates.update', $mailTemplate->id),
 			'model'	 => $mailTemplate
 		]);
 
@@ -147,14 +147,14 @@ class MailTemplateController extends AppBaseController {
 
 			Flash::error( _i('Modèle de courrier introuvable.') );
 
-			return redirect(route('back.mailTemplates.index'));
+			return redirect(route('back.mail_templates.index'));
 		}
 
 		$mailTemplate = $this->mailTemplateRepository->update($request->all(), $id);
 
 		Flash::success( _i('Le modèle de courrier a été mis à jour avec succès.') );
 
-		return redirect(route('back.mailTemplates.index'));
+		return redirect(route('back.mail_templates.index'));
 	}
 
 	/**
@@ -174,14 +174,14 @@ class MailTemplateController extends AppBaseController {
 
 			Flash::error( _i('Modèle de courrier introuvable.') );
 
-			return redirect(route('back.mailTemplates.index'));
+			return redirect(route('back.mail_templates.index'));
 		}
 
 		$this->mailTemplateRepository->delete($id);
 
 		Flash::success( _i('Le modèle de courrier a bien été supprimé.') );
 
-		return redirect(route('back.mailTemplates.index'));
+		return redirect(route('back.mail_templates.index'));
 	}
 
 	/**
@@ -200,7 +200,7 @@ class MailTemplateController extends AppBaseController {
 
 			Flash::error( _i('Modèle de courrier introuvable.') );
 
-			return redirect(route('back.mailTemplates.index'));
+			return redirect(route('back.mail_templates.index'));
 		}
 
 
@@ -209,7 +209,7 @@ class MailTemplateController extends AppBaseController {
 
 		Flash::success( _i('Le test du modèle de courrier envoyé avec succès.') );
 
-		return redirect(route('back.mailTemplates.index'));
+		return redirect(route('back.mail_templates.index'));
 	}
 
 }

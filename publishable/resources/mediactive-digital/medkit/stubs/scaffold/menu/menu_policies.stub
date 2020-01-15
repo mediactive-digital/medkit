@@ -2,7 +2,7 @@
 
 	if ($user->can('$MODEL_NAME_PLURAL_DASHED$_view_all')) {
             $menu->add('$MODEL_NAME_PLURAL_HUMAN$', [
-                'route' => '$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_CAMEL$.index',
+                'route' => '$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index',
                 'nickname' => '$MODEL_NAME_PLURAL_CAMEL$'
             ])
             ->data('icon', 'folder')
