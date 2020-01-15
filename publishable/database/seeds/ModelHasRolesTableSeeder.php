@@ -1,5 +1,6 @@
 <?php
-use \MediactiveDigital\MedKit\Database\Seeds\ModelHasRolesTableSeeder as MedKitModelHasRolesTableSeeder;
+
+use MediactiveDigital\MedKit\Database\Seeds\ModelHasRolesTableSeeder as MedKitModelHasRolesTableSeeder;
 
 class ModelHasRolesTableSeeder extends MedKitModelHasRolesTableSeeder {
 

@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class $MODEL_NAME_PLURAL$TableSeeder extends Seeder {
 
@@ -11,6 +10,8 @@ class $MODEL_NAME_PLURAL$TableSeeder extends Seeder {
      * @return void
      */
     public function run() {
+
+    	DB::table('$TABLE_NAME$')->delete();
 
     	$SEEDS$
     }
