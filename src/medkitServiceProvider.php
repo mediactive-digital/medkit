@@ -27,6 +27,7 @@ use MediactiveDigital\MedKit\Commands\Scaffold\ViewsGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Common\MigrationGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Common\ModelGeneratorCommand;
 use MediactiveDigital\MedKit\Commands\Common\RepositoryGeneratorCommand;
+use MediactiveDigital\MedKit\Commands\Common\SeederGeneratorCommand;
 
 use MediactiveDigital\MedKit\Helpers\AssetHelper;
 
@@ -73,7 +74,6 @@ class MedKitServiceProvider extends ServiceProvider {
         });
 
         $this->app->register(EventServiceProvider::class);
-       // $this->app->register(AppServiceProvider::class);
         $this->app->register(TranslationServiceProvider::class);
         $this->app->register(MacroServiceProvider::class);
 
@@ -118,6 +118,7 @@ class MedKitServiceProvider extends ServiceProvider {
             MigrationGeneratorCommand::class,
             ModelGeneratorCommand::class,
             RepositoryGeneratorCommand::class,
+            SeederGeneratorCommand::class,
             RollbackGeneratorCommand::class,
             GenerateTranslationsCommand::class,
             GenerateJsTranslationsCommand::class,
