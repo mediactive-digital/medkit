@@ -216,20 +216,16 @@ class ModelGenerator extends InfyOmModelGenerator {
 
     private function fillTimestamps($templateData) {
 
-        $replace = '';
+        $hasTimestamps = $this->hasTimestamps();
 
-        if (empty($this->timestamps)) {
-
-            $replace = infy_nl_tab() . "public \$timestamps = false;";
-        }
-        else if ($this->commandData->getOption('fromTable')) {
+        if ($hasTimestamps) {
 
             list($created_at, $updated_at, $deleted_at) = collect($this->timestamps)->map(function($field) {
 
                 return !empty($field) ? "'$field'" : 'null';
             });
 
-            $replace .= infy_nl_tab() . "const CREATED_AT = $created_at;";
+            $replace = infy_nl_tab() . "const CREATED_AT = $created_at;";
             $replace .= infy_nl_tab() . "const UPDATED_AT = $updated_at;";
 
             $hasSoftDelete = $this->hasSoftDelete();
@@ -239,8 +235,12 @@ class ModelGenerator extends InfyOmModelGenerator {
                 $replace .= infy_nl_tab() . "const DELETED_AT = $deleted_at;";
             }
         }
+        else {
 
-        $replace .= $replace ? "\n" : "";
+            $replace = infy_nl_tab() . 'public $timestamps = false;';
+        }
+
+        $replace .= "\n";
 
         return str_replace('$TIMESTAMPS$', $replace, $templateData);
     }
@@ -248,20 +248,20 @@ class ModelGenerator extends InfyOmModelGenerator {
     private function fillSoftDeletes($templateData) {
 
         $softDeleteImport = $softDelete = $softDeleteDates = '';
-        $timestamps = $this->timestamps;
+        $hasTimestamps = $this->hasTimestamps();
+        $timestamps = [];
 
-        if ($timestamps) {
+        if ($hasTimestamps) {
 
+            $timestamps = [$this->timestamps[0], $this->timestamps[1]];
             $hasSoftDelete = $this->hasSoftDelete();
 
             if ($hasSoftDelete) {
 
-                $softDeleteImport = "use Illuminate\\Database\\Eloquent\\SoftDeletes;\n";
-                $softDelete = infy_tab() . "use SoftDeletes;";
-            }
-            else {
+                $timestamps = $this->timestamps;
 
-                unset($timestamps[2]);
+                $softDeleteImport = "use Illuminate\\Database\\Eloquent\\SoftDeletes;\n";
+                $softDelete = infy_tab() . 'use SoftDeletes;';
             }
         }
 
@@ -269,13 +269,13 @@ class ModelGenerator extends InfyOmModelGenerator {
 
             if (!in_array($field->name, $timestamps) && strpos($field->htmlType, 'date') !== false) {
 
-                $timestamps[] = $field->name;
+                array_unshift($timestamps , $field->name);
             }
         }
 
         if ($timestamps) {
 
-            $softDeleteDates = infy_nl_tab() . "protected \$dates = " . FormatHelper::writeValueToPhp($timestamps, 1) . ";";
+            $softDeleteDates = infy_nl_tab() . 'protected $dates = ' . FormatHelper::writeValueToPhp($timestamps, 1) . ';';
         }
 
         $templateData = str_replace('$SOFT_DELETE_IMPORT$', $softDeleteImport, $templateData);
@@ -315,6 +315,31 @@ class ModelGenerator extends InfyOmModelGenerator {
         $templateData = str_replace('$USER_STAMPS_CONSTANTS$', $userStampsConstants, $templateData);
 
         return $templateData;
+    }
+
+    /**
+     * Check if model has timestamps
+     *
+     * @return bool $timestamps
+     */
+    private function hasTimestamps() {
+
+        $timestamps = false;
+
+        if ($this->timestamps) {
+
+            foreach ($this->commandData->fields as $field) {
+
+                if ($field->name == $this->timestamps[0]) {
+
+                    $timestamps = true;
+
+                    break;
+                }
+            }
+        }
+
+        return $timestamps;
     }
 
     /**

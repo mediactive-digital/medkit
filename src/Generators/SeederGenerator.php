@@ -117,7 +117,7 @@ class SeederGenerator extends InfyOmSeederGenerator {
 
             if (!in_array($classConstant, array_merge(...$values))) {
 
-                $values = array_unique(end($values));
+                $values = array_values(array_unique(end($values)));
                 $values[] = $classConstant;
                 $values = preg_filter('/^/', FormatHelper::UNESCAPE, $values);
                 $lastMatch = end($matches[2]);
