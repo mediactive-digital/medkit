@@ -13,6 +13,7 @@ yarn-error.log
 .editorconfig
 .idea
 composer.lock
+package-lock.json
 yarn.lock
 docker_data/mysql/db/*
 
