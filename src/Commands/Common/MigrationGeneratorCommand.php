@@ -39,9 +39,9 @@ class MigrationGeneratorCommand extends InfyOmMigrationGeneratorCommand {
 
         InfyOmBaseCommand::handle();
 
-        $migrationGenerator = new MigrationGenerator($this->commandData);
+        $this->migrationGenerator = new MigrationGenerator($this->commandData);
 
-        $migrationGenerator->generate();
+        $this->generateMigration();
         $this->performPostActionsWithMigration();
     }
 }
