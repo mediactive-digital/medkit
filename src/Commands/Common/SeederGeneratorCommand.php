@@ -41,6 +41,7 @@ class SeederGeneratorCommand extends InfyOmBaseCommand {
         $this->seederGenerator = new SeederGenerator($this->commandData);
 
         $this->generateSeeder();
+        $this->seederGenerator->updateMainSeeder();
         $this->performPostActions();
     }
 }
