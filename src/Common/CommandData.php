@@ -120,7 +120,7 @@ class CommandData extends InfyOmCommandData {
         $this->addDynamicVariable('$NAMESPACE_FORMS$', config('infyom.laravel_generator.namespace.forms', 'App\Forms') . $nameSpacePrefix);
         $this->addDynamicVariable('$BD_FIELD_CREATED_BY_NAME$', config('infyom.laravel_generator.user_stamps.created_by', 'created_by'));
         $this->addDynamicVariable('$NAMESPACE_POLICIES$', config('infyom.laravel_generator.namespace.policies', 'App\Policies') . $nameSpacePrefix);
-        $this->addDynamicVariable('$TABLE_NAME_SINGULAR$', Str::singular($this->dynamicVars['$TABLE_NAME$']));
+        $this->addDynamicVariable('$TABLE_NAME_SINGULAR$', Str::endsWith($this->modelName, 's') ? $this->dynamicVars['$TABLE_NAME$'] : Str::singular($this->dynamicVars['$TABLE_NAME$']));
 
         // Add ons
         $this->config->addOns['forms'] = config('infyom.laravel_generator.add_on.forms', true);
