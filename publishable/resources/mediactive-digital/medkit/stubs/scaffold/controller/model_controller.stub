@@ -68,7 +68,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL ) {
+    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL) {
 		
 		$id = $$MODEL_NAME_CAMEL->id;
         $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::find($id);

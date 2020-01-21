@@ -83,7 +83,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL$ ) {
+    public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL$) {
 		
 		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
@@ -162,7 +162,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$ ) {
+    public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$) {
 		
 		$id = $$MODEL_NAME_CAMEL$->id;
         $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->find($id);
