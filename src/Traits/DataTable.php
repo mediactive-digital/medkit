@@ -8,6 +8,7 @@ use MediactiveDigital\MedKit\Helpers\FormatHelper;
 use MediactiveDigital\MedKit\Helpers\Helper;
 
 use Str;
+use LaravelGettext;
 
 trait DataTable {
 
