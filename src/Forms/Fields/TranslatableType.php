@@ -36,7 +36,7 @@ class TranslatableType extends FormField {
         $template = $this->template;
 
         $this->type = $this->options['subtype'];
-        $this->template = config('laravel-form-builder.' . $this->type);
+        $this->template = config('laravel-form-builder.' . ($this->type == 'textarea' ? 'default_translatable_textarea' : $this->type));
 
         unset($this->options['subtype']);
 
