@@ -39,13 +39,19 @@ return [
     'collection'    => 'laravel-form-builder::collection',
     'static'        => 'laravel-form-builder::static',
     'select2'       => 'medKitTheme::forms.fields.select2',
+    'translatable'  => 'medKitTheme::forms.fields.translatable',
+    'ck_editor'     => 'medKitTheme::forms.fields.ck_editor',
 
     // Remove the laravel-form-builder:: prefix above when using template_prefix
     'template_prefix'   => '',
 
     'default_namespace' => '',
 
+    // Default translatable textarea template
+    'default_translatable_textarea' => 'textarea',
+
     'custom_fields' => [
-        'select2' =>'\MediactiveDigital\MedKit\Forms\Fields\Select2Type'
+        'select2' =>'\MediactiveDigital\MedKit\Forms\Fields\Select2Type',
+        'translatable' =>'\MediactiveDigital\MedKit\Forms\Fields\TranslatableType'
     ]
 ];
