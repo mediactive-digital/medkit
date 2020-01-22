@@ -39,6 +39,25 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
         $this->schemaManager = $this->getReflectionProperty('schemaManager');
         $this->columns = $this->getReflectionProperty('columns');
+
+        $platform = $this->schemaManager->getDatabasePlatform();
+        $platform->registerDoctrineTypeMapping('json', 'json');
+
+        $columns = $this->schemaManager->listTableColumns($tableName);
+
+        $this->columns = [];
+
+        foreach ($columns as $column) {
+
+            if (!in_array($column->getName(), $ignoredFields)) {
+
+                $this->columns[] = $column;
+            }
+        }
+
+        $this->setReflectionProperty('schemaManager', $this->schemaManager);
+        $this->setReflectionProperty('columns', $this->columns);
+
         $this->userStamps = static::getUserStampsFieldNames();
         $this->lastActivity = static::getLastActivityFieldName();
     }
@@ -129,6 +148,12 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
                 break;
 
+                case 'json' :
+
+                    $field = $this->callReflectionMethod('generateField', $column, 'json', 'textarea');
+
+                break;
+
                 default :
 
                     $field = $this->callReflectionMethod('generateField', $column, 'string', 'text');
@@ -207,6 +232,11 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
                     else if (strpos($lower, 'phone') !== false) {
 
                         $field->htmlType = 'tel';
+                    }
+
+                    if ($type == 'json') {
+
+                        $validations[] = 'array';
                     }
 
                     $indexes = $this->schemaManager->listTableDetails($this->tableName)->getIndexes();

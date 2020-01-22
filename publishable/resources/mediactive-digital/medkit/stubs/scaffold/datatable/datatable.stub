@@ -10,6 +10,7 @@ use Yajra\DataTables\EloquentDataTable;
 use App\Traits\DataTable;
 
 use DB;
+use LaravelGettext;
 
 class $MODEL_NAME$DataTable extends YajraDataTable {
 

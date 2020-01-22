@@ -35,6 +35,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     const DATATABLE_TYPE_FK_INTEGER = 'FkInteger';
     const DATATABLE_TYPE_ENUM = 'Enum';
     const DATATABLE_TYPE_CHOICE = 'Choice';
+    const DATATABLE_TYPE_TRANSLATABLE = 'Translatable';
 
     /** 
      * @var CommandData 
@@ -76,6 +77,8 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         $this->fileName = $this->getReflectionProperty('fileName');
         $this->formFileName = $this->commandData->modelName . 'Form.php';
         $this->schemaPath = $this->commandData->config->pathSchema;
+
+        $this->setDefaults();
     }
 
     /** 
@@ -141,14 +144,13 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 continue;
             }
 
-            $this->setDataTableType($field);
             $this->setDataTableMethods($field);
             $this->setDataTableAlias($field);
             $this->setDataTableJoin($field);
             $this->setDataTableFilter($field);
 
             $datas = [
-                'name' => $field->dataTableAlias,
+                'name' => $field->dataTableTranslatableAlias,
                 'data' => $field->dataTableAlias
             ];
 
@@ -171,9 +173,10 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     private function generateDataTableEditColumns(): string {
 
         $editColumns = '';
-        $template = get_template('scaffold.datatable.edit_column');
 
         foreach ($this->commandData->formatedFields as $field) {
+
+            $template = get_template('scaffold.datatable.edit_column' . ($field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE ? '_translatable' : ''));
 
             if ($field->inIndex && $field->dataTableType && in_array(self::DATATABLE_COLUMN_EDIT, $field->dataTableMethods)) {
 
@@ -459,35 +462,30 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             'label' => FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->cleanName)) . ')'
         ];
 
-        if (in_array($field->htmlType, ['number', 'select']) && isset($field->relation)) {
+        if ($field->htmlType == 'select' && isset($field->relation)) {
 
-            $field->htmlType = 'select';
             $options['empty_value'] = FormatHelper::UNESCAPE . '_i(\'Sélectionnez\')';
             $options['choices'] = FormatHelper::UNESCAPE . '$this->getChoices(' . FormatHelper::writeValueToPhp(Str::snake(Str::plural($field->relation->inputs[0]))) . ')';
         }
-        elseif (in_array($field->htmlType, ['checkbox', 'radio'])) {
+        elseif ($field->htmlType == 'choice' && $field->htmlValues) {
 
-            if ($field->htmlType == 'radio' && $field->htmlValues) {
+            $options['expanded'] = true;
+            $options['multiple'] = false;
+            $options['choices'] = [];
 
-                $field->htmlType = 'choice';
-                $options['expanded'] = true;
-                $options['multiple'] = false;
-                $options['choices'] = [];
+            foreach ($field->htmlValues as $htmlValue) {
 
-                foreach ($field->htmlValues as $htmlValue) {
+                $htmlValue = explode(':', $htmlValue);
 
-                    $htmlValue = explode(':', $htmlValue);
+                $label = $htmlValue[0];
+                $value = isset($htmlValue[1]) ? $htmlValue[1] : $label;
 
-                    $label = $htmlValue[0];
-                    $value = isset($htmlValue[1]) ? $htmlValue[1] : $label;
-
-                    $options['choices'][$value] = $label;
-                }
+                $options['choices'][$value] = $label;
             }
-            else {
+        }
+        elseif ($field->htmlType == 'checkbox') {
 
-                $options['value'] = 1;
-            }
+            $options['value'] = 1;
         }
         elseif ($field->htmlType == 'datetime-local') {
 
@@ -548,8 +546,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         
         foreach ($this->commandData->formatedFields as $field) {
 
-            $this->setCleanFieldName($field);
-
             if ($field->inForm) {
 
                 if (!$first) {
@@ -566,6 +562,39 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         }
 
         return $this->prepareFormFields();
+    }
+
+    /** 
+     * Set fields defaults
+     *
+     * @return void
+     */
+    public function setDefaults() {
+
+        foreach ($this->commandData->formatedFields as $field) {
+
+            $this->setRealHtmlType($field);
+            $this->setCleanFieldName($field);
+            $this->setDataTableType($field);
+        }
+    }
+
+    /** 
+     * Set real HTML type defaults
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setRealHtmlType(GeneratorField $field) {
+
+        if ($field->htmlType == 'select' && isset($field->relation)) {
+
+            $field->htmlType = 'select';
+        }
+        elseif ($field->htmlType == 'radio' && $field->htmlValues) {
+
+            $field->htmlType = 'choice';
+        }
     }
 
     /** 
@@ -666,6 +695,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             break;
         }
+
+        if (in_array($field->htmlType, ['textarea', 'text']) && Str::startsWith($field->dbInput, 'json') && in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label'])) {
+
+            $field->dataTableType = self::DATATABLE_TYPE_TRANSLATABLE;
+        }
     }
 
     /** 
@@ -692,6 +726,12 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
 
             break;
+
+            case self::DATATABLE_TYPE_TRANSLATABLE :
+
+                $field->dataTableMethods = [self::DATATABLE_COLUMN_EDIT];
+
+            break;
         }
     }
 
@@ -703,7 +743,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function setDataTableAlias(GeneratorField $field) {
 
-        $field->dataTableAlias = $field->name;
+        $field->dataTableAlias = $field->dataTableTranslatableAlias = $field->name;
 
         switch ($field->dataTableType) {
 
@@ -722,6 +762,12 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             case self::DATATABLE_TYPE_CHOICE :
 
                 $field->dataTableAlias .= '_choice';
+
+            break;
+
+            case self::DATATABLE_TYPE_TRANSLATABLE :
+
+                $field->dataTableTranslatableAlias = FormatHelper::UNESCAPE . FormatHelper::writeValueToPhp($field->dataTableTranslatableAlias . '->') . ' . LaravelGettext::getLocale()';
 
             break;
         }
@@ -806,8 +852,9 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             if ($field->inForm) {
 
                 $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
+                $fn = $field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE ? 'Translatable' : '';
 
-                $formFields[] = '$this->add(\'' . $field->name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
+                $formFields[] = '$this->add' . $fn . '(\'' . $field->name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
             }
         }
 

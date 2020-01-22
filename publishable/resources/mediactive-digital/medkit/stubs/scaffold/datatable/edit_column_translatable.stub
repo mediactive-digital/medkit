@@ -1,0 +1,5 @@
+
+            ->editColumn('$FIELD_ALIAS$', function($MODEL_NAME$ $$MODEL_NAME_CAMEL$) {
+
+                return $$MODEL_NAME_CAMEL$->$FIELD_ALIAS$;
+            })

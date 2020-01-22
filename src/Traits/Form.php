@@ -86,4 +86,20 @@ trait Form {
 
         return $choices;
     }
+
+    /**
+     * Create translatable fields and add them to the form.
+     *
+     * @param string $name
+     * @param string $type
+     * @param array $options
+     * @param bool $modify
+     * @return void
+     */
+    private function addTranslatable(string $name, string $type = 'text', array $options = [], bool $modify = false) {
+
+        $options['subtype'] = $type;
+
+        $this->add($name, 'translatable', $options, $modify);
+    }
 }
