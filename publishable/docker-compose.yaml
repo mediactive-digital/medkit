@@ -9,6 +9,7 @@ services:
         volumes:
             - "./:/var/www/"
             - "./public/:/var/www/html/"
+            - "./docker_data/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
         networks:
             - backend
     mysql:
@@ -28,6 +29,8 @@ services:
         image: phpmyadmin/phpmyadmin
         ports:
             - 8081:80
+        volumes:
+            - "./docker_data/php/php.ini:/usr/local/etc/php/conf.d/php.ini"
         environment:
             - "PMA_HOST=db_mysql_${DB_DATABASE}"
             - "MYSQL_DATABASE=${DB_DATABASE}"
