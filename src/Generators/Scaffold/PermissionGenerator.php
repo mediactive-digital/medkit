@@ -4,6 +4,7 @@ namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\Helper;
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -20,11 +21,6 @@ class PermissionGenerator extends BaseGenerator {
 	 * @var CommandData
 	 */
 	private $commandData;
-
-	/** 
-     * @var array
-     */
-    private $userStamps;
 
 	public $permissionsAbilityCrudOwn = [
 		'edit_own',
@@ -44,62 +40,16 @@ class PermissionGenerator extends BaseGenerator {
 	/** @var int */
 	private $idRoleSuperAdmin;
 
-	/** @var boolean */
-	private $optionUserStamps;
+	/** 
+     * @var bool 
+     */
+    protected $hasUserStamps;
 
 	public function __construct(CommandData $commandData) {
 
 		$this->commandData = $commandData;
 		$this->idRoleSuperAdmin	= $this->commandData->config->addOns['permissions.superadmin_role_id'];
-		$this->userStamps = $this->commandData->userStamps;
-		$this->optionUserStamps	= $this->commandData->config->addOns['user_stamps.enabled'];
-		// $this->table = $this->commandData->dynamicVars['$TABLE_NAME$'];
-	}
-
-	/**
-	 * Check if createdBy is in Bd
-	 *
-	 * @deprecated use hasUserStamps()
-	 * @return boolean
-	 */
-	public function isCreateByExist() {
-
-		$isExist	 = false;
-		$tableName	 = $this->table; // $this->commandData->dynamicVars['$TABLE_NAME$'];
-		$champName	 = config('infyom.laravel_generator.add_on.user_stamps.created_by', 1);
-		$columns	 = DB::select("SHOW COLUMNS FROM " . $tableName . " LIKE '" . $champName . "'");
-
-		if (is_array($columns) && count($columns) > 0) {
-
-			$isExist = true;
-		}
-
-		return $isExist;
-	}
-
-	/**
-	 * Check if model has user stamps
-	 *
-	 * @return bool $userStamps
-	 */
-	protected function hasUserStamps() {
-
-		$userStamps = false;
-
-		if ($this->optionUserStamps && $this->userStamps) {
-
-			foreach ($this->commandData->fields as $field) {
-
-				if ($field->name == $this->userStamps[0]) {
-
-					$userStamps = true;
-
-					break;
-				}
-			}
-		}
-
-		return $userStamps;
+		$this->hasUserStamps = Helper::modelHasUserStamps($this->commandData);
 	}
 
 	/**
@@ -107,11 +57,13 @@ class PermissionGenerator extends BaseGenerator {
 	 * @return array
 	 */
 	public function getPermissionsAbility() {
-		$aAbility	 = array();
-		$aAbility	 += $this->permissionsAbilityCrudDefault;
+
+		$aAbility = array();
+		$aAbility += $this->permissionsAbilityCrudDefault;
 
 		// on met les own
-		if ($this->hasUserStamps()) {
+		if ($this->hasUserStamps) {
+
 			$aAbility = array_merge($aAbility, $this->permissionsAbilityCrudOwn);
 		}
 

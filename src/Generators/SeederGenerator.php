@@ -56,6 +56,7 @@ class SeederGenerator extends InfyOmSeederGenerator {
         $templateData = get_template('seeds.model_seeder');
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$SEEDS$', $this->generateSeeds(), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, $this->fileName, $templateData);
 

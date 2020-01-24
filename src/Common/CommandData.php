@@ -113,8 +113,10 @@ class CommandData extends InfyOmCommandData {
         $pathPrefix = $this->getPathPrefix();
 
         // Options
-        $this->config->options['userStamps'] = config('infyom.laravel_generator.options.userStamps', false);
-        $this->config->options['flashValidationErrors'] = config('infyom.laravel_generator.options.flashValidationErrors', false);
+        $this->setOption('timestamps', config('infyom.laravel_generator.timestamps.enabled', true));
+        $this->setOption('userStamps', config('infyom.laravel_generator.user_stamps.enabled', true));
+        $this->setOption('translatable', config('infyom.laravel_generator.options.translatable', false));
+        $this->setOption('flashValidationErrors', config('infyom.laravel_generator.options.flashValidationErrors', false));
 
         // Dynamic variables
         $this->addDynamicVariable('$NAMESPACE_FORMS$', config('infyom.laravel_generator.namespace.forms', 'App\Forms') . $nameSpacePrefix);
@@ -125,7 +127,6 @@ class CommandData extends InfyOmCommandData {
         // Add ons
         $this->config->addOns['forms'] = config('infyom.laravel_generator.add_on.forms', true);
         $this->config->addOns['permissions.superadmin_role_id'] = config('infyom.laravel_generator.add_on.permissions.superadmin_role_id', 1);
-        $this->config->addOns['user_stamps.enabled'] = config('infyom.laravel_generator.add_on.user_stamps.enabled', true);
         $this->config->addOns['tracks_history.provider_file'] = config('infyom.laravel_generator.add_on.tracks_history.provider_file', 'AppServiceProvider.php');
 
         // Paths
@@ -146,9 +147,8 @@ class CommandData extends InfyOmCommandData {
 
         $this->fields = [];
 
-        $schemaPath = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
         $fileName = $this->modelName . '.json';
-        $filePath = $schemaPath . $fileName;
+        $filePath = $this->config->pathSchema . $fileName;
 
         if (File::exists($filePath)) {
 
@@ -254,12 +254,12 @@ class CommandData extends InfyOmCommandData {
             }
         }
 
-        if (config('infyom.laravel_generator.timestamps.enabled', true)) {
+        if ($this->getOption('timestamps')) {
 
             $this->addTimestamps();
         }
 
-        if (config('infyom.laravel_generator.user_stamps.enabled', true)) {
+        if ($this->getOption('userStamps')) {
 
             $this->addUserStamps();
         }

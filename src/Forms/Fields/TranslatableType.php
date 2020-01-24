@@ -34,13 +34,27 @@ class TranslatableType extends FormField {
         $name = $this->name;
         $type = $this->type;
         $template = $this->template;
+        $wrapper = $this->options['wrapper'];
+        $label = $this->options['label'];
+        $class = $this->options['attr']['class'];
 
-        $this->type = $this->options['subtype'];
-        $this->template = config('laravel-form-builder.' . ($this->type == 'textarea' ? 'default_translatable_textarea' : $this->type));
+        $buttonType = 'button';
+        $buttonTemplate = config('laravel-form-builder.button');
 
-        unset($this->options['subtype']);
+        $fieldTemplate = config('laravel-form-builder.' . ($this->options['subtype'] == 'textarea' ? config('laravel-form-builder.default_translatable_textarea') : $this->options['subtype']));
+
+        $this->options['wrapper'] = false;
 
         foreach ($locales as $locale) {
+
+            $fields[$locale] = [];
+
+            $this->type = $buttonType;
+            $this->template = $buttonTemplate;
+            $this->options['label'] = $locale;
+            unset($this->options['attr']['class']);
+
+            $fields[$locale]['button'] = trim(parent::render([], false, true, false));
 
             $this->name = $name . '[' . $locale . ']';
 
@@ -49,13 +63,19 @@ class TranslatableType extends FormField {
                 $this->options['value'] = $model->getTranslation($name, $locale);
             }
 
-            $fields[$locale] = trim(parent::render([], false, true, false));
+            $this->type = $this->options['subtype'];
+            $this->template = $fieldTemplate;
+            $this->options['attr']['class'] = $class;
+
+            $fields[$locale]['field'] = trim(parent::render([], false, true, false));
         }
 
         $this->name = $name;
         $this->type = $type;
         $this->template = $template;
 
+        $this->options['wrapper'] = $wrapper;
+        $this->options['label'] = $label;
         $this->options['value'] = $fields;
 
         return parent::render($options, $showLabel, $showField, $showError);

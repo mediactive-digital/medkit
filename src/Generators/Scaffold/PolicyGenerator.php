@@ -7,6 +7,7 @@ use InfyOm\Generator\Utils\FileUtil;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Generators\Scaffold\PermissionGenerator;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Str;
 
@@ -17,11 +18,6 @@ class PolicyGenerator extends PermissionGenerator {
 	/** @var CommandData */
 	private $commandData;
 
-	/**
-	 * @var array
-	 */
-	private $userStamps;
-
 	/** @var string */
 	private $path;
 	private $templateType;
@@ -31,16 +27,9 @@ class PolicyGenerator extends PermissionGenerator {
 	private $providerContents; 
     private $providerTemplate;
 	
-	/** @var boolean */
-	private $optionUserStamps;
-
-	
 	public function __construct(CommandData $commandData) {
 
 		parent::__construct($commandData);
-
-		$this->optionUserStamps	 = $this->getReflectionProperty('optionUserStamps');
-		$this->userStamps		 = $this->getReflectionProperty('userStamps');
 
 		$this->commandData = $commandData;
 
@@ -56,7 +45,6 @@ class PolicyGenerator extends PermissionGenerator {
         $this->providerContents = file_get_contents($this->providerPath); 
         $this->providerTemplate = get_template('scaffold.policy.provider');
         $this->providerTemplate = fill_template($this->commandData->dynamicVars, $this->providerTemplate);
-		 
 	}
 
 	/**
@@ -128,10 +116,11 @@ class PolicyGenerator extends PermissionGenerator {
 
 		$templateData = get_template('scaffold.policy.policy');
 
-		$templateData	 = str_replace('$RULE_VIEW_ANY_FOR_OWN$', $this->generateViewAnyforOwn(), $templateData);
-		$templateData	 = str_replace('$RULE_VIEW_FOR_OWN$', $this->generateViewForOwn(), $templateData);
-		$templateData	 = str_replace('$RULE_UPDATE_FOR_OWN$', $this->generateUpdateForOwn(), $templateData);
-		$templateData	 = str_replace('$RULE_DELETE_FOR_OWN$', $this->generateDeleteForOwn(), $templateData);
+		$templateData = str_replace('$RULE_VIEW_ANY_FOR_OWN$', $this->generateViewAnyforOwn(), $templateData);
+		$templateData = str_replace('$RULE_VIEW_FOR_OWN$', $this->generateViewForOwn(), $templateData);
+		$templateData = str_replace('$RULE_UPDATE_FOR_OWN$', $this->generateUpdateForOwn(), $templateData);
+		$templateData = str_replace('$RULE_DELETE_FOR_OWN$', $this->generateDeleteForOwn(), $templateData);
+		$templateData = FormatHelper::cleanTemplate($templateData);
 
 		$templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
@@ -146,7 +135,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateViewAnyForOwn() {
 
-		if ($this->hasUserStamps()) {
+		if ($this->hasUserStamps) {
 
 			$templateData = get_template('scaffold.policy.view_any_for_own', $this->templateType);
 
@@ -161,7 +150,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateViewForOwn() {
 
-		if ($this->hasUserStamps()) {
+		if ($this->hasUserStamps) {
 
 			$templateData = get_template('scaffold.policy.view_for_own', $this->templateType);
 
@@ -176,7 +165,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateUpdateForOwn() {
 
-		if ($this->hasUserStamps()) {
+		if ($this->hasUserStamps) {
 
 			$templateData = get_template('scaffold.policy.update_for_own', $this->templateType);
 
@@ -191,7 +180,7 @@ class PolicyGenerator extends PermissionGenerator {
 	 */
 	public function generateDeleteForOwn() {
 
-		if ($this->hasUserStamps()) {
+		if ($this->hasUserStamps) {
 
 			$templateData = get_template('scaffold.policy.delete_for_own', $this->templateType);
 
@@ -201,9 +190,6 @@ class PolicyGenerator extends PermissionGenerator {
 		}
 	}
 
-	/**
-	 *
-	 */
 	public function rollbackPolicy() {
 
 		if ($this->rollbackFile($this->path, $this->fileName)) {
@@ -211,25 +197,22 @@ class PolicyGenerator extends PermissionGenerator {
 			$this->commandData->commandComment('Policy file deleted: ' . $this->fileName);
 		}
 	}
-
 	
-    public function rollbackProvider( )
-    {   
-        if (Str::contains($this->providerTemplate, $this->providerTemplate)) {
-            file_put_contents($this->providerPath, str_replace($this->providerTemplate, '', $this->providerTemplate));
+    public function rollbackProvider() {
+
+    	$pattern = preg_replace('/\s+/', '\s*', preg_quote($this->providerTemplate, '/'));
+        $providerContents = preg_replace('/' . $pattern . '/', FormatHelper::NEW_LINE . FormatHelper::NEW_LINE, $this->providerContents, -1, $count);
+
+        if ($count) {
+
+            file_put_contents($this->providerPath, $providerContents);
             $this->commandData->commandComment('Provider deleted');
-        } 
+        }
     }
 	
-	
-	
-	/**
-	 *
-	 */
 	public function rollback() {
 
-		$this->rollbackPolicy( );
-		$this->rollbackProvider( );
+		$this->rollbackPolicy();
+		$this->rollbackProvider();
 	}
-
 }

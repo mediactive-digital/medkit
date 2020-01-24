@@ -12,6 +12,7 @@ use InfyOm\Generator\Utils\HTMLFieldGenerator;
 use InfyOm\Generator\Generators\Scaffold\ViewGenerator  as InfyOmViewGenerator;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 class ViewGenerator extends InfyOmViewGenerator    
 {
@@ -112,6 +113,8 @@ class ViewGenerator extends InfyOmViewGenerator
             $templateData = $this->generateBladeTableBody();
         }
 
+        $templateData = FormatHelper::cleanTemplate($templateData);
+
         FileUtil::createFile($this->path, self::TABLE_GENERATE_BLADE_FILE , $templateData);
 
         $this->commandData->commandInfo( self::TABLE_GENERATE_BLADE_FILE  . ' created');
@@ -140,6 +143,7 @@ class ViewGenerator extends InfyOmViewGenerator
         $templateData = get_template('scaffold.views.'.$templateName, $this->templateType);
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, self::DATATABLES_ACTIONS_GENERATE_BLADE_FILE , $templateData);
 
@@ -178,6 +182,8 @@ class ViewGenerator extends InfyOmViewGenerator
                 $templateData = str_replace('$PAGINATE$', '', $templateData);
             }
         }
+
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, self::INDEX_GENERATE_BLADE_FILE , $templateData);
 
@@ -253,6 +259,7 @@ class ViewGenerator extends InfyOmViewGenerator
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
 
         $templateData = str_replace('$FIELDS$', implode("\n\n", $this->htmlFields), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, self::FIELDS_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo( self::FIELDS_GENERATE_BLADE_FILE . ' created');
@@ -271,6 +278,7 @@ class ViewGenerator extends InfyOmViewGenerator
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, self::CREATE_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo( self::CREATE_GENERATE_BLADE_FILE . ' created');
@@ -288,6 +296,7 @@ class ViewGenerator extends InfyOmViewGenerator
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path,  self::EDIT_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo( self::EDIT_GENERATE_BLADE_FILE  . ' created');
@@ -315,6 +324,8 @@ class ViewGenerator extends InfyOmViewGenerator
             $fieldsStr .= $singleFieldStr."\n\n";
         }
 
+        $fieldsStr = FormatHelper::cleanTemplate($fieldsStr);
+
         FileUtil::createFile($this->path, self::SHOW_FIELDS_GENERATE_BLADE_FILE, $fieldsStr);
         $this->commandData->commandInfo(  self::SHOW_FIELDS_GENERATE_BLADE_FILE . ' created');
     }
@@ -331,6 +342,7 @@ class ViewGenerator extends InfyOmViewGenerator
 
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FLASH_VALIDATION_ERRORS$', $this->generateFlashValidationErrors(), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, self::SHOW_GENERATE_BLADE_FILE , $templateData);
         $this->commandData->commandInfo(  self::SHOW_GENERATE_BLADE_FILE . ' created');

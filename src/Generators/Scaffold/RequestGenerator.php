@@ -76,6 +76,7 @@ class RequestGenerator extends InfyOmRequestGenerator {
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$RULES$', FormatHelper::writeValueToPhp($this->generateRules(), 2), $templateData);
         $templateData = str_replace('$MESSAGES$', FormatHelper::writeValueToPhp($this->generateMessages(), 2), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, $this->fileName, $templateData);
 

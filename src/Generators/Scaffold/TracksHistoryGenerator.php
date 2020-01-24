@@ -6,6 +6,8 @@ namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
 use Str;
 
 class TracksHistoryGenerator {
@@ -65,16 +67,15 @@ class TracksHistoryGenerator {
 		}
 	}
 
-	/**
-	 *
-	 */
 	public function rollback() {
-		
-		if (Str::contains($this->providerTemplate, $this->providerTemplate)) {
 
-			file_put_contents($this->path, str_replace($this->providerTemplate, '', $this->providerContents));
-			$this->commandData->commandComment('Tracker history  deleted');
-		}
+		$pattern = preg_replace('/\s+/', '\s*', preg_quote($this->providerTemplate, '/'));
+        $providerContents = preg_replace('/' . $pattern . '/', FormatHelper::NEW_LINE . FormatHelper::NEW_LINE, $this->providerContents, -1, $count);
+
+        if ($count) {
+
+            file_put_contents($this->path, $providerContents);
+            $this->commandData->commandComment('Tracker history deleted');
+        }
 	}
-
 }

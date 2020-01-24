@@ -3,11 +3,14 @@
 namespace MediactiveDigital\MedKit\Generators;
 
 use InfyOm\Generator\Generators\ModelGenerator as InfyOmModelGenerator;
+use InfyOm\Generator\Generators\SwaggerGenerator;
 use InfyOm\Generator\Utils\FileUtil;
+use InfyOm\Generator\Common\GeneratorField;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
+use MediactiveDigital\MedKit\Helpers\Helper;
 
 use Str;
 
@@ -45,6 +48,26 @@ class ModelGenerator extends InfyOmModelGenerator {
      */
     private $lastActivity;
 
+    /** 
+     * @var bool 
+     */
+    private $hasTimestamps;
+
+    /** 
+     * @var bool 
+     */
+    private $hasSoftDelete;
+
+    /** 
+     * @var bool 
+     */
+    private $hasUserStamps;
+
+    /** 
+     * @var bool 
+     */
+    private $hasTranslatable;
+
     /**
      * ModelGenerator constructor.
      *
@@ -60,6 +83,10 @@ class ModelGenerator extends InfyOmModelGenerator {
         $this->timestamps = $this->commandData->timestamps;
         $this->userStamps = $this->commandData->userStamps;
         $this->lastActivity = $this->commandData->lastActivity;
+        $this->hasTimestamps = Helper::modelHasTimestamps($this->commandData);
+        $this->hasSoftDelete = Helper::modelHasSoftDelete($this->commandData);
+        $this->hasUserStamps = Helper::modelHasUserStamps($this->commandData);
+        $this->hasTranslatable = Helper::modelHasTranslatable($this->commandData);
     }
 
     public function generate() {
@@ -139,9 +166,23 @@ class ModelGenerator extends InfyOmModelGenerator {
 
                 break;
 
+                case 'json' :
+
+                    if ($this->hasTranslatable && Helper::isTranslatableField($field)) {
+
+                        $rule = '';
+                    }
+                    else {
+
+                        $rule .= "'array'";
+                    }
+
+                break;
+
                 default:
                     
                     $rule = '';
+
                 break;
             }
 
@@ -187,6 +228,7 @@ class ModelGenerator extends InfyOmModelGenerator {
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = $this->fillSoftDeletes($templateData);
         $templateData = $this->fillUserStamps($templateData);
+        $templateData = $this->fillTranslatables($templateData);
 
         $fillables = [];
 
@@ -207,18 +249,17 @@ class ModelGenerator extends InfyOmModelGenerator {
         $templateData = str_replace('$PRIMARY$', $primary, $templateData);
         $templateData = str_replace('$FIELDS$', implode(',' . infy_nl_tab(1, 2), $fillables), $templateData);
         $templateData = str_replace('$CAST$', implode(',' . infy_nl_tab(1, 2), $this->generateCasts()), $templateData);
-        $templateData = str_replace('$MUTATORS$', implode(PHP_EOL, $this->generateMutators()), $templateData);
-        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(PHP_EOL, $this->callReflectionMethod('generateRelations'))), $templateData);
+        $templateData = str_replace('$MUTATORS$', implode(FormatHelper::NEW_LINE, $this->generateMutators()), $templateData);
+        $templateData = str_replace('$RELATIONS$', fill_template($this->commandData->dynamicVars, implode(FormatHelper::NEW_LINE, $this->callReflectionMethod('generateRelations'))), $templateData);
         $templateData = str_replace('$GENERATE_DATE$', date('F j, Y, g:i a T'), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         return $templateData;
     }
 
     private function fillTimestamps($templateData) {
 
-        $hasTimestamps = $this->hasTimestamps();
-
-        if ($hasTimestamps) {
+        if ($this->hasTimestamps) {
 
             list($created_at, $updated_at, $deleted_at) = collect($this->timestamps)->map(function($field) {
 
@@ -228,9 +269,7 @@ class ModelGenerator extends InfyOmModelGenerator {
             $replace = infy_nl_tab() . "const CREATED_AT = $created_at;";
             $replace .= infy_nl_tab() . "const UPDATED_AT = $updated_at;";
 
-            $hasSoftDelete = $this->hasSoftDelete();
-
-            if ($hasSoftDelete) {
+            if ($this->hasSoftDelete) {
 
                 $replace .= infy_nl_tab() . "const DELETED_AT = $deleted_at;";
             }
@@ -248,15 +287,13 @@ class ModelGenerator extends InfyOmModelGenerator {
     private function fillSoftDeletes($templateData) {
 
         $softDeleteImport = $softDelete = $softDeleteDates = '';
-        $hasTimestamps = $this->hasTimestamps();
         $timestamps = [];
 
-        if ($hasTimestamps) {
+        if ($this->hasTimestamps) {
 
             $timestamps = [$this->timestamps[0], $this->timestamps[1]];
-            $hasSoftDelete = $this->hasSoftDelete();
 
-            if ($hasSoftDelete) {
+            if ($this->hasSoftDelete) {
 
                 $timestamps = $this->timestamps;
 
@@ -288,23 +325,20 @@ class ModelGenerator extends InfyOmModelGenerator {
     private function fillUserStamps($templateData) {
 
         $userStampsImport = $userStamps = $userStampsConstants = '';
-        $hasUserStamps = $this->hasUserStamps();
 
-        if ($hasUserStamps) {
+        if ($this->hasUserStamps) {
 
             $userStampsImport = "use Wildside\\Userstamps\\Userstamps;\n";
-            $userStamps = infy_tab() . "use Userstamps;";
+            $userStamps = infy_tab() . 'use Userstamps;';
 
             $userStampsConstants = [
-                "const CREATED_BY = '" . $this->userStamps[0] . "';",
-                "const UPDATED_BY = '" . $this->userStamps[1] . "';"
+                'const CREATED_BY = \'' . $this->userStamps[0] . '\';',
+                'const UPDATED_BY = \'' . $this->userStamps[1] . '\';'
             ];
 
-            $hasSoftDelete = $this->hasSoftDelete();
+            if ($this->hasSoftDelete) {
 
-            if ($hasSoftDelete) {
-
-                $userStampsConstants[] = "const DELETED_BY = '" . $this->userStamps[2] . "';";
+                $userStampsConstants[] = 'const DELETED_BY = \'' . $this->userStamps[2] . '\';';
             }
 
             $userStampsConstants = implode(infy_nl_tab(1, 1), $userStampsConstants);
@@ -318,77 +352,137 @@ class ModelGenerator extends InfyOmModelGenerator {
     }
 
     /**
-     * Check if model has timestamps
+     * Fill translatables
      *
-     * @return bool $timestamps
+     * @param string $templateData
+     * @return string $templateData
      */
-    private function hasTimestamps() {
+    private function fillTranslatables(string $templateData): string {
 
-        $timestamps = false;
+        $translatableImport = $translatable = $translatableFields = '';
 
-        if ($this->timestamps) {
+        if ($this->hasTranslatable) {
+
+            $translatableImport = "use Spatie\\Translatable\\HasTranslations;\n";
+            $translatable = infy_tab() . 'use HasTranslations;';
+            $translatableFields = [];
 
             foreach ($this->commandData->fields as $field) {
 
-                if ($field->name == $this->timestamps[0]) {
+                if (Helper::isTranslatableField($field)) {
 
-                    $timestamps = true;
-
-                    break;
+                    $translatableFields[] = $field->name;
                 }
+            }
+
+            $translatableFields = infy_nl_tab() . 'public $translatable = ' . FormatHelper::writeValueToPhp($translatableFields, 1) . ';' . infy_nl_tab();
+        }
+
+        $templateData = str_replace('$TRANSLATABLE_IMPORT$', $translatableImport, $templateData);
+        $templateData = str_replace('$TRANSLATABLE$', $translatable, $templateData);
+        $templateData = str_replace('$TRANSLATABLE_FIELDS$', $translatableFields, $templateData);
+
+        return $templateData;
+    }
+
+    private function fillDocs($templateData) {
+
+        if ($this->commandData->getAddOn('swagger')) {
+
+            $templateData = $this->generateSwagger($templateData);
+        }
+
+        $docsTemplate = get_template('docs.model');
+        $docsTemplate = fill_template($this->commandData->dynamicVars, $docsTemplate);
+
+        $fillables = '';
+        $fieldsArr = [];
+        $count = 1;
+
+        foreach ($this->commandData->relations as $relation) {
+
+            $field = $relationText = (isset($relation->inputs[0])) ? $relation->inputs[0] : null;
+
+            if (in_array($field, $fieldsArr)) {
+
+                $relationText = $relationText . '_' . $count;
+
+                $count++;
+            }
+
+            $fillables .= ' * @property ' . $this->getPHPDocType($relation->type, $relation, $relationText) . FormatHelper::NEW_LINE;
+            $fieldsArr[] = $field;
+        }
+
+        foreach ($this->commandData->fields as $field) {
+
+            if ($field->isFillable) {
+
+                $fillables .= ' * @property ' . $this->getPHPDocType($field->fieldType) . ' ' . $field->name . FormatHelper::NEW_LINE;
             }
         }
 
-        return $timestamps;
+        $docsTemplate = str_replace('$GENERATE_DATE$', date('F j, Y, g:i a T'), $docsTemplate);
+        $docsTemplate = str_replace('$PHPDOC$', $fillables, $docsTemplate);
+        $templateData = str_replace('$DOCS$', $docsTemplate, $templateData);
+
+        return $templateData;
     }
 
     /**
-     * Check if model has soft delete
+     * @param $db_type
+     * @param GeneratorFieldRelation|null $relation
+     * @param string|null $relationText
      *
-     * @return bool $softDelete
+     * @return string
      */
-    private function hasSoftDelete() {
+    private function getPHPDocType($db_type, $relation = null, $relationText = null) {
 
-        $softDelete = false;
+        $relationText = (!empty($relationText)) ? $relationText : null;
 
-        if ($this->commandData->getOption('softDelete') && $this->timestamps) {
+        switch ($db_type) {
 
-            foreach ($this->commandData->fields as $field) {
+            case 'datetime' :
 
-                if ($field->name == $this->timestamps[2]) {
+                return 'string|\Carbon\Carbon';
 
-                    $softDelete = true;
+            case 'json' :
 
-                    break;
+                return 'string|array';
+
+            case '1t1' :
+
+                return '\\' . $this->commandData->config->nsModel . '\\' . $relation->inputs[0] . ' ' . Str::camel($relationText);
+
+            case 'mt1' :
+
+                if (isset($relation->inputs[1])) {
+
+                    $relationName = str_replace('_id', '', strtolower($relation->inputs[1]));
+                } 
+                else {
+
+                    $relationName = $relationText;
                 }
-            }
-        }
 
-        return $softDelete;
-    }
+                return '\\' . $this->commandData->config->nsModel . '\\' . $relation->inputs[0] . ' ' . Str::camel($relationName);
 
-    /**
-     * Check if model has user stamps
-     *
-     * @return bool $userStamps
-     */
-    private function hasUserStamps() {
+            case '1tm' :
+            case 'mtm' :
+            case 'hmt' :
 
-        $userStamps = false;
+                return '\Illuminate\Database\Eloquent\Collection ' . Str::camel(Str::plural($relationText));
 
-        if ($this->commandData->getOption('userStamps') && $this->userStamps) {
+            default :
 
-            foreach ($this->commandData->fields as $field) {
+                $fieldData = SwaggerGenerator::getFieldType($db_type);
 
-                if ($field->name == $this->userStamps[0]) {
+                if (!empty($fieldData['fieldType'])) {
 
-                    $userStamps = true;
-
-                    break;
+                    return $fieldData['fieldType'];
                 }
-            }
-        }
 
-        return $userStamps;
+                return $db_type;
+        }
     }
 }

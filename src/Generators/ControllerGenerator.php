@@ -94,6 +94,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             $templateData = get_template('scaffold.form.form');
             $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+            $templateData = FormatHelper::cleanTemplate($templateData);
 
             FileUtil::createFile($this->formPath, $this->formFileName, $templateData);
 
@@ -123,6 +124,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         $templateData = str_replace('$FILTER_COLUMNS$', $this->generateDataTableFilterColumns(), $templateData);
         $templateData = str_replace('$QUERY_JOINS$', $this->generateDataTableQueryJoins(), $templateData);
         $templateData = str_replace('$QUERY_SELECT$', $this->generateDataTableQuerySelect(), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         $path = $this->commandData->config->pathDataTables;
         $fileName = $this->commandData->modelName . 'DataTable.php';
@@ -390,6 +392,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 		}
 		
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         FileUtil::createFile($this->path, $this->fileName, $templateData);
 
@@ -696,7 +699,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             break;
         }
 
-        if (in_array($field->htmlType, ['textarea', 'text']) && Str::startsWith($field->dbInput, 'json') && in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label'])) {
+        if (Helper::isTranslatableField($field, $this->commandData)) {
 
             $field->dataTableType = self::DATATABLE_TYPE_TRANSLATABLE;
         }
