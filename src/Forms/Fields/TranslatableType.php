@@ -31,52 +31,41 @@ class TranslatableType extends FormField {
         $model = $this->parent->getModel();
         $fields = [];
 
-        $name = $this->name;
-        $type = $this->type;
-        $template = $this->template;
-        $wrapper = $this->options['wrapper'];
-        $label = $this->options['label'];
-        $class = $this->options['attr']['class'];
-
-        $buttonType = 'button';
-        $buttonTemplate = config('laravel-form-builder.button');
-
-        $fieldTemplate = config('laravel-form-builder.' . ($this->options['subtype'] == 'textarea' ? config('laravel-form-builder.default_translatable_textarea') : $this->options['subtype']));
-
-        $this->options['wrapper'] = false;
-
         foreach ($locales as $locale) {
 
             $fields[$locale] = [];
+            $value = $model ? $model->getTranslation($this->name, $locale) : null;
 
-            $this->type = $buttonType;
-            $this->template = $buttonTemplate;
-            $this->options['label'] = $locale;
-            unset($this->options['attr']['class']);
+            $fields[$locale]['button'] = [
+                'type' => 'button',
+                'attributes' => [
+                    'type' => 'button'
+                ],
+                'value' => $locale
+            ];
 
-            $fields[$locale]['button'] = trim(parent::render([], false, true, false));
+            $fields[$locale]['field'] = [
+                'type' => $this->options['subtype'] == 'textarea' ? $this->options['subtype'] : 'input',
+                'attributes' => [
+                    'class' => 'form-control',
+                    'name' => $this->name . '[' . $locale . ']'
+                ]
+            ];
 
-            $this->name = $name . '[' . $locale . ']';
+            if ($this->options['subtype'] == 'textarea') {
 
-            if ($model) {
-
-                $this->options['value'] = $model->getTranslation($name, $locale);
+                $fields[$locale]['field']['value'] = $value;
+                $fields[$locale]['field']['attributes']['cols'] = 50;
+                $fields[$locale]['field']['attributes']['rows'] = 10;
             }
+            else {
 
-            $this->type = $this->options['subtype'];
-            $this->template = $fieldTemplate;
-            $this->options['attr']['class'] = $class;
-
-            $fields[$locale]['field'] = trim(parent::render([], false, true, false));
+                $fields[$locale]['field']['attributes']['type'] = 'text';
+                $fields[$locale]['field']['attributes']['value'] = $value;
+            }
         }
 
-        $this->name = $name;
-        $this->type = $type;
-        $this->template = $template;
-
-        $this->options['wrapper'] = $wrapper;
-        $this->options['label'] = $label;
-        $this->options['value'] = $fields;
+        unset($this->options['subtype']);
 
         return parent::render($options, $showLabel, $showField, $showError);
     }

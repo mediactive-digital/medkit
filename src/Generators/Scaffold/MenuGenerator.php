@@ -72,7 +72,7 @@ class MenuGenerator extends InfyOmMenuGenerator {
 
         $this->menuContents = preg_replace_callback('/(backoffice[\s\S]+Menu::make[\s\S]+?{)([\s\S]*?)(\$menu->sortBy)/', function($matches) use (&$add) {
 
-            if (strpos($matches[2], $this->commandData->config->prefixes['route'] . '.' . $this->commandData->config->mCamelPlural . '.index') !== false) {
+            if (strpos($matches[2], $this->commandData->config->prefixes['route'] . '.' . $this->commandData->config->mSnakePlural . '.index') !== false) {
 
                 $return = $matches[1] . $matches[2] . $matches[3];
             }
@@ -89,7 +89,7 @@ class MenuGenerator extends InfyOmMenuGenerator {
 
         if ($add) {
 
-            $this->commandData->commandComment("\n" . $this->commandData->config->mCamelPlural . ' menu added.');
+            $this->commandData->commandComment("\n" . $this->commandData->config->mSnakePlural . ' menu added.');
 
             file_put_contents($this->path, $this->menuContents);
         }

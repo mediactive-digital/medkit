@@ -21,4 +21,3 @@
     {!! Form::label('text_template', 'Text Template:') !!}
     <p>{!! $mailTemplate->text_template !!}</p>
 </div>
-

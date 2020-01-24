@@ -186,7 +186,7 @@ class Helper {
         return ($commandData ? $commandData->getOption('translatable') : true) && 
             in_array($field->htmlType, ['textarea', 'text']) && 
             Str::startsWith($field->dbInput, 'json') && 
-            in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label']);
+            in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label', 'sujet', 'subject', 'template_html', 'html_template', 'template_texte', 'text_template']);
     }
 
     /**

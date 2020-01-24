@@ -590,7 +590,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function setRealHtmlType(GeneratorField $field) {
 
-        if ($field->htmlType == 'select' && isset($field->relation)) {
+        if ($field->htmlType == 'number' && isset($field->relation)) {
 
             $field->htmlType = 'select';
         }
@@ -610,7 +610,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         $field->cleanName = $field->name;
 
-        if (in_array($field->htmlType, ['number', 'select']) && isset($field->relation)) {
+        if ($field->htmlType == 'select' && isset($field->relation)) {
 
             $field->cleanName = Str::substr($field->name, 0, Str::length(Str::beforeLast(Str::lower($field->name), '_id')));
         }

@@ -3,213 +3,181 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\AppBaseController;
+
 use App\Http\Requests\MailTemplateRequest;
+
 use App\Models\MailTemplate;
+
 use App\Repositories\MailTemplateRepository;
+
 use App\DataTables\MailTemplateDataTable;
+
 use Kris\LaravelFormBuilder\FormBuilder;
-use Illuminate\Support\Facades\Mail;
+
 use Flash;
 
 class MailTemplateController extends AppBaseController {
 
-	/**
-	 * @var \App\Repositories\MailTemplateRepository $mailTemplateRepository
-	 */
-	private $mailTemplateRepository;
+    /**
+     * @var \App\Repositories\MailTemplateRepository $mailTemplateRepository
+     */
+    private $mailTemplateRepository;
 
-	public function __construct(MailTemplateRepository $mailTemplateRepo) {
+    public function __construct(MailTemplateRepository $mailTemplateRepo) {
 
-		// $this->authorizeResource( \App\Models\MailTemplate::class );
+        $this->authorizeResource(\App\Models\MailTemplate::class);
 
-		$this->mailTemplateRepository = $mailTemplateRepo;
-	}
+        $this->mailTemplateRepository = $mailTemplateRepo;
+    }
 
-	/**
-	 * Display a listing of the MailTemplate.
-	 *
-	 * @param \App\DataTables\MailTemplateDataTable $mailTemplateDataTable
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function index(MailTemplateDataTable $mailTemplateDataTable) {
+    /**
+     * Display a listing of the MailTemplate.
+     *
+     * @param \App\DataTables\MailTemplateDataTable $mailTemplateDataTable
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(MailTemplateDataTable $mailTemplateDataTable) {
 
-		return $mailTemplateDataTable->render('mail_templates.index');
-	}
+        return $mailTemplateDataTable->render('mail_templates.index');
+    }
 
-	/**
-	 * Show the form for creating a new MailTemplate.
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function create(MailTemplate $mailTemplate, FormBuilder $formBuilder) {
-		
-		$this->authorize('create', \App\Models\MailTemplate::class);
-		$form = $formBuilder->create('App\Forms\MailTemplateForm', [
-			'method' => 'POST',
-			'url'	 => route('back.mail_templates.index')
-		]);
+    /**
+     * Show the form for creating a new MailTemplate.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(MailTemplate $mailTemplate, FormBuilder $formBuilder) {
 
-		return view('mail_templates.create')
-				->with('form', $form);
-	}
+        $form = $formBuilder->create('App\Forms\MailTemplateForm', [
+            'method' => 'POST',
+            'url' => route('back.mail_templates.index')
+        ]);
 
-	/**
-	 * Store a newly created MailTemplate in storage.
-	 *
-	 * @param \App\Http\Requests\MailTemplateRequest $request
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function store(MailTemplateRequest $request) {
-		
-		$this->authorize('create', \App\Models\MailTemplate::class);
-		$input = $request->all();
+        return view('mail_templates.create')
+            ->with('form', $form);
+    }
 
-		$mailTemplate = $this->mailTemplateRepository->create($input);
+    /**
+     * Store a newly created MailTemplate in storage.
+     *
+     * @param \App\Http\Requests\MailTemplateRequest $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store(MailTemplateRequest $request) {
 
-		Flash::success( _i('Le modèle de courrier a été enregistré avec succès.') );
+        $input = $request->all();
 
-		return redirect(route('back.mail_templates.index'));
-	}
+        $mailTemplate = $this->mailTemplateRepository->create($input);
 
-	/**
-	 * Display the specified MailTemplate.
-	 *
-	 * @param \App\Models\MailTemplate $mailTemplate
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function show(MailTemplate $mailTemplate) {
-		
-		$this->authorize('view', $mailTemplate);
-		$id				 = $mailTemplate->id;
-		$mailTemplate	 = $this->mailTemplateRepository->find($id);
+        Flash::success('Mail Template saved successfully.');
 
-		if (empty($mailTemplate)) {
+        return redirect(route('back.mail_templates.index'));
+    }
 
-			Flash::error( _i('Modèle de courrier introuvable.') );
+    /**
+     * Display the specified MailTemplate.
+     *
+     * @param \App\Models\MailTemplate $mailTemplate
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function show(MailTemplate $mailTemplate) {
 
-			return redirect(route('back.mail_templates.index'));
-		}
+        $id = $mailTemplate->id;
+        $mailTemplate = $this->mailTemplateRepository->find($id);
 
-		return view('mail_templates.show')
-				->with('mailTemplate', $mailTemplate)
-				->with('templateVars', $mailTemplate->getVariables());
-	}
+        if (empty($mailTemplate)) {
 
-	/**
-	 * Show the form for editing the specified MailTemplate.
-	 *
-	 * @param \App\Models\MailTemplate $mailTemplate
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function edit(MailTemplate $mailTemplate, FormBuilder $formBuilder) {
-		
-		$this->authorize('update', $mailTemplate);
-		$id				 = $mailTemplate->id;
-		$mailTemplate	 = $this->mailTemplateRepository->find($id);
+            Flash::error('Mail Template not found');
 
-		if (empty($mailTemplate)) {
+            return redirect(route('back.mail_templates.index'));
+        }
 
-			Flash::error( _i('Modèle de courrier introuvable.') );
+        return view('mail_templates.show')->with('mailTemplate', $mailTemplate);
+    }
 
-			return redirect(route('back.mail_templates.index'));
-		}
+    /**
+     * Show the form for editing the specified MailTemplate.
+     *
+     * @param \App\Models\MailTemplate $mailTemplate
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(MailTemplate $mailTemplate, FormBuilder $formBuilder) {
 
-		$form = $formBuilder->create('App\Forms\MailTemplateForm', [
-			'method' => 'patch',
-			'url'	 => route('back.mail_templates.update', $mailTemplate->id),
-			'model'	 => $mailTemplate
-		]);
+        $id = $mailTemplate->id;
+        $mailTemplate = $this->mailTemplateRepository->find($id);
 
-		return view('mail_templates.edit')
-				->with('form', $form)
-				->with('mailTemplate', $mailTemplate);
-	}
+        if (empty($mailTemplate)) {
 
-	/**
-	 * Update the specified MailTemplate in storage.
-	 *
-	 * @param \App\Models\MailTemplate $mailTemplate
-	 * @param \App\Http\Requests\MailTemplateRequest $request
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update(MailTemplate $mailTemplate, MailTemplateRequest $request) {
-		
-		$this->authorize('update', $mailTemplate);
-		$id				 = $mailTemplate->id;
-		$mailTemplate	 = $this->mailTemplateRepository->find($id);
+            Flash::error('Mail Template not found');
 
-		if (empty($mailTemplate)) {
+            return redirect(route('back.mail_templates.index'));
+        }
 
-			Flash::error( _i('Modèle de courrier introuvable.') );
+        $form = $formBuilder->create('App\Forms\MailTemplateForm', [
+            'method' => 'patch',
+            'url' => route('back.mail_templates.update', $mailTemplate->id),
+            'model' => $mailTemplate
+        ]);
 
-			return redirect(route('back.mail_templates.index'));
-		}
+        return view('mail_templates.edit')
+            ->with('form', $form)
+            ->with('mailTemplate', $mailTemplate);
+    }
 
-		$mailTemplate = $this->mailTemplateRepository->update($request->all(), $id);
+    /**
+     * Update the specified MailTemplate in storage.
+     *
+     * @param \App\Models\MailTemplate $mailTemplate
+     * @param \App\Http\Requests\MailTemplateRequest $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function update(MailTemplate $mailTemplate, MailTemplateRequest $request) {
 
-		Flash::success( _i('Le modèle de courrier a été mis à jour avec succès.') );
+        $id = $mailTemplate->id;
+        $mailTemplate = $this->mailTemplateRepository->find($id);
 
-		return redirect(route('back.mail_templates.index'));
-	}
+        if (empty($mailTemplate)) {
 
-	/**
-	 * Remove the specified MailTemplate from storage.
-	 *
-	 * @param \App\Models\MailTemplate $mailTemplate
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function destroy(MailTemplate $mailTemplate) {
-		
-		$this->authorize('delete', \App\Models\MailTemplate::class);
-		$id				 = $mailTemplate->id;
-		$mailTemplate	 = $this->mailTemplateRepository->find($id);
+            Flash::error('Mail Template not found');
 
-		if (empty($mailTemplate)) {
+            return redirect(route('back.mail_templates.index'));
+        }
 
-			Flash::error( _i('Modèle de courrier introuvable.') );
+        $mailTemplate = $this->mailTemplateRepository->update($request->all(), $id);
 
-			return redirect(route('back.mail_templates.index'));
-		}
+        Flash::success('Mail Template updated successfully.');
 
-		$this->mailTemplateRepository->delete($id);
+        return redirect(route('back.mail_templates.index'));
+    }
 
-		Flash::success( _i('Le modèle de courrier a bien été supprimé.') );
+    /**
+     * Remove the specified MailTemplate from storage.
+     *
+     * @param \App\Models\MailTemplate $mailTemplate
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(MailTemplate $mailTemplate) {
 
-		return redirect(route('back.mail_templates.index'));
-	}
+        $id = $mailTemplate->id;
+        $mailTemplate = $this->mailTemplateRepository->find($id);
 
-	/**
-	 * Show the form for editing the specified MailTemplate.
-	 *
-	 * @param \App\Models\MailTemplate $mailTemplate
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function test(int $id) {
+        if (empty($mailTemplate)) {
 
-		//$id = $mailTemplate->id;
-		$mailTemplate = $this->mailTemplateRepository->find($id);
+            Flash::error('Mail Template not found');
 
-		if (empty($mailTemplate)) {
+            return redirect(route('back.mail_templates.index'));
+        }
 
-			Flash::error( _i('Modèle de courrier introuvable.') );
+        $this->mailTemplateRepository->delete($id);
 
-			return redirect(route('back.mail_templates.index'));
-		}
+        Flash::success('Mail Template deleted successfully.');
 
-
-		$user = \Auth::user();
-		Mail::to($user->email)->send(new \App\Mails\WelcomeMail($user));
-
-		Flash::success( _i('Le test du modèle de courrier envoyé avec succès.') );
-
-		return redirect(route('back.mail_templates.index'));
-	}
-
+        return redirect(route('back.mail_templates.index'));
+    }
 }

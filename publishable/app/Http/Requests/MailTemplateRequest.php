@@ -27,8 +27,15 @@ class MailTemplateRequest extends FormRequest {
                 'required',
                 'max:255'
             ],
+            'subject' => [
+                'array'
+            ],
             'html_template' => [
-                'required'
+                'required',
+                'array'
+            ],
+            'text_template' => [
+                'array'
             ]
         ];
     }
@@ -40,7 +47,6 @@ class MailTemplateRequest extends FormRequest {
      */
     private function setMessages() {
 
-        $this->requestMessages = [
-        ];
+        $this->requestMessages = [];
     }
 }
