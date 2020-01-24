@@ -589,6 +589,7 @@ class FormatHelper {
      */
     public static function cleanTemplate(string $template): string {
 
+        $template = preg_replace('/(?:' . self::NEW_LINE . '[^\S' . self::NEW_LINE . ']*?([^\S]*)){2,}/', self::NEW_LINE . self::NEW_LINE . "$1", $template);
         $template = preg_replace('/[\s]*?' . self::NEW_LINE . '[\s]*?' . self::NEW_LINE . '([\s]*?[})\];]+[\s]*)/', self::NEW_LINE . "$1", $template);
         $template = preg_replace('/[\s]*?' . self::NEW_LINE . '[\s]*?' . self::NEW_LINE . '([\s]*?[})\];]+[\s]*)/', self::NEW_LINE . "$1", $template);
         $template = rtrim($template) . self::NEW_LINE;
