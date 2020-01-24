@@ -593,8 +593,9 @@ class FormatHelper {
         $template = preg_replace('/(\S) +(\S)/', "$1 $2", $template);
         $template = preg_replace('/[^\S' . self::NEW_LINE . ']+' . self::NEW_LINE . '/', self::NEW_LINE, $template);
         $template = preg_replace('/(?:' . self::NEW_LINE . '([^\S]*)){2,}/', self::NEW_LINE . self::NEW_LINE . "$1", $template);
-        $template = preg_replace('/[\s]*?' . self::NEW_LINE . '[\s]*?' . self::NEW_LINE . '([\s]*?[})\];]+[\s]*)/', self::NEW_LINE . "$1", $template);
-        $template = preg_replace('/[\s]*?' . self::NEW_LINE . '[\s]*?' . self::NEW_LINE . '([\s]*?[})\];]+[\s]*)/', self::NEW_LINE . "$1", $template);
+        $template = preg_replace('/(\(|\[)\s*?' . self::NEW_LINE . '\s*?' . self::NEW_LINE . '(\s*)/', "$1" . self::NEW_LINE . "$2", $template);
+        $template = preg_replace('/\s*?' . self::NEW_LINE . '\s*?' . self::NEW_LINE . '(\s*?[})\];]+\s*)/', self::NEW_LINE . "$1", $template);
+        $template = preg_replace('/\s*?' . self::NEW_LINE . '\s*?' . self::NEW_LINE . '(\s*?[})\];]+\s*)/', self::NEW_LINE . "$1", $template);
         $template = trim($template) . self::NEW_LINE;
 
         return $template;
