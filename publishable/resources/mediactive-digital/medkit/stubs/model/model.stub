@@ -8,11 +8,13 @@ use Carbon\Carbon;
 
 $SOFT_DELETE_IMPORT$
 $USER_STAMPS_IMPORT$
+$TRANSLATABLE_IMPORT$
 $DOCS$
 class $MODEL_NAME$ extends Model {
     
 $SOFT_DELETE$
 $USER_STAMPS$
+$TRANSLATABLE$
 
     public $table = '$TABLE_NAME$';
     $TIMESTAMPS$
@@ -23,7 +25,7 @@ $PRIMARY$
     public $fillable = [
         $FIELDS$
     ];
-
+$TRANSLATABLE_FIELDS$
     /**
      * The attributes that should be casted to native types.
      *

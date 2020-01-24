@@ -2,6 +2,10 @@
 
 namespace MediactiveDigital\MedKit\Helpers;
 
+use InfyOm\Generator\Common\GeneratorField;
+
+use MediactiveDigital\MedKit\Common\CommandData;
+
 use Schema;
 use Str;
 
@@ -168,5 +172,124 @@ class Helper {
         }
 
         return $label;
+    }
+
+    /** 
+     * Check if field is translatable
+     *
+     * @param \MediactiveDigital\MedKit\Common\CommandData $commandData
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return bool
+     */
+    public static function isTranslatableField(GeneratorField $field, CommandData $commandData = null) {
+
+        return ($commandData ? $commandData->getOption('translatable') : true) && 
+            in_array($field->htmlType, ['textarea', 'text']) && 
+            Str::startsWith($field->dbInput, 'json') && 
+            in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label']);
+    }
+
+    /**
+     * Check if model has timestamps
+     *
+     * @param \MediactiveDigital\MedKit\Common\CommandData $commandData
+     * @return bool $timestamps
+     */
+    public static function modelHasTimestamps(CommandData $commandData) {
+
+        $timestamps = false;
+
+        if ($commandData->timestamps) {
+
+            foreach ($commandData->fields as $field) {
+
+                if ($field->name == $commandData->timestamps[0]) {
+
+                    $timestamps = true;
+
+                    break;
+                }
+            }
+        }
+
+        return $timestamps;
+    }
+
+    /**
+     * Check if model has soft delete
+     *
+     * @param \MediactiveDigital\MedKit\Common\CommandData $commandData
+     * @return bool $softDelete
+     */
+    public static function modelHasSoftDelete(CommandData $commandData) {
+
+        $softDelete = false;
+
+        if ($commandData->getOption('softDelete') && $commandData->timestamps) {
+
+            foreach ($commandData->fields as $field) {
+
+                if ($field->name == $commandData->timestamps[2]) {
+
+                    $softDelete = true;
+
+                    break;
+                }
+            }
+        }
+
+        return $softDelete;
+    }
+
+    /**
+     * Check if model has user stamps
+     *
+     * @param \MediactiveDigital\MedKit\Common\CommandData $commandData
+     * @return bool $userStamps
+     */
+    public static function modelHasUserStamps(CommandData $commandData) {
+
+        $userStamps = false;
+
+        if ($commandData->getOption('userStamps') && $commandData->userStamps) {
+
+            foreach ($commandData->fields as $field) {
+
+                if ($field->name == $commandData->userStamps[0]) {
+
+                    $userStamps = true;
+
+                    break;
+                }
+            }
+        }
+
+        return $userStamps;
+    }
+
+    /** 
+     * Check if model has translatable fields
+     *
+     * @param \MediactiveDigital\MedKit\Common\CommandData $commandData
+     * @return bool $translatable
+     */
+    public static function modelHasTranslatable(CommandData $commandData) {
+
+        $translatable = false;
+
+        if ($commandData->getOption('translatable')) {
+
+            foreach ($commandData->fields as $field) {
+
+                if (self::isTranslatableField($field)) {
+
+                    $translatable = true;
+
+                    break;
+                }
+            }
+        }
+
+        return $translatable;
     }
 }

@@ -580,4 +580,19 @@ class FormatHelper {
 
         return $separators;
     }
+
+    /**
+     * Nettoye un template Laravel Generator
+     *
+     * @param string $template
+     * @return string $template
+     */
+    public static function cleanTemplate(string $template): string {
+
+        $template = preg_replace('/[\s]*?' . self::NEW_LINE . '[\s]*?' . self::NEW_LINE . '([\s]*?[})\];]+[\s]*)/', self::NEW_LINE . "$1", $template);
+        $template = preg_replace('/[\s]*?' . self::NEW_LINE . '[\s]*?' . self::NEW_LINE . '([\s]*?[})\];]+[\s]*)/', self::NEW_LINE . "$1", $template);
+        $template = rtrim($template) . self::NEW_LINE;
+
+        return $template;
+    }
 }

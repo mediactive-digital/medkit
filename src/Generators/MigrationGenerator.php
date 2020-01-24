@@ -7,6 +7,7 @@ use InfyOm\Generator\Utils\FileUtil;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use File;
 use Str;
@@ -44,6 +45,7 @@ class MigrationGenerator extends InfyOmMigrationGenerator {
         $templateData = get_template('migration');
         $templateData = fill_template($this->commandData->dynamicVars, $templateData);
         $templateData = str_replace('$FIELDS$', $this->callReflectionMethod('generateFields'), $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
 
         $fileName = $this->getExistingFile() ?: date('Y_m_d_His') . '_' . $this->fileName;
         FileUtil::createFile($this->path, $fileName, $templateData);

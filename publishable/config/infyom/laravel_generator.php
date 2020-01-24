@@ -142,7 +142,7 @@ return [
 
         'softDelete' => true,
 
-        'userStamps' => true,
+        'translatable' => true,
 
         'flashValidationErrors' => false,
 

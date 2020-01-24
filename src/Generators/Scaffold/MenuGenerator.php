@@ -6,6 +6,7 @@ use InfyOm\Generator\Generators\Scaffold\MenuGenerator as InfyOmMenuGenerator;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 class MenuGenerator extends InfyOmMenuGenerator {
 
@@ -65,9 +66,6 @@ class MenuGenerator extends InfyOmMenuGenerator {
         $this->setReflectionProperty('menuTemplate', $this->menuTemplate);
     }
 
-	/**
-	 * 
-	 */
     public function generate() {
 
         $add = false;
@@ -98,6 +96,18 @@ class MenuGenerator extends InfyOmMenuGenerator {
         else {
 
             $this->commandData->commandObj->info('Menu ' . $this->commandData->config->mHumanPlural . ' already exists, Skipping Adjustment.');
+        }
+    }
+
+    public function rollback() {
+
+        $pattern = preg_replace('/\s+/', '\s*', preg_quote($this->menuTemplate, '/'));
+        $menuContents = preg_replace('/' . $pattern . '/', FormatHelper::NEW_LINE . FormatHelper::NEW_LINE, $this->menuContents, -1, $count);
+
+        if ($count) {
+
+            file_put_contents($this->path, $menuContents);
+            $this->commandData->commandComment('menu deleted');
         }
     }
 }
