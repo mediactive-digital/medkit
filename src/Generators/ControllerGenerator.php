@@ -35,6 +35,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     const DATATABLE_TYPE_FK_INTEGER = 'FkInteger';
     const DATATABLE_TYPE_ENUM = 'Enum';
     const DATATABLE_TYPE_CHOICE = 'Choice';
+    const DATATABLE_TYPE_JSON = 'Json';
     const DATATABLE_TYPE_TRANSLATABLE = 'Translatable';
 
     /** 
@@ -654,7 +655,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case 'number' :
 
-                if (Str::startsWith($field->dbInput, 'decimal') || Str::startsWith($field->dbInput, 'float')) {
+                if (in_array($field->fieldType, ['decimal', 'float'])) {
 
                     $field->dataTableType = self::DATATABLE_TYPE_FLOAT;
                 }
@@ -697,11 +698,21 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 }
 
             break;
-        }
 
-        if (Helper::isTranslatableField($field, $this->commandData)) {
+            case 'text' :
+            case 'textarea' :
 
-            $field->dataTableType = self::DATATABLE_TYPE_TRANSLATABLE;
+                if (Helper::isJsonField($field)) {
+
+                    $field->dataTableType = self::DATATABLE_TYPE_JSON;
+
+                    if (Helper::isTranslatableField($field, $this->commandData)) {
+
+                        $field->dataTableType = self::DATATABLE_TYPE_TRANSLATABLE;
+                    }
+                }
+
+            break;
         }
     }
 
@@ -717,22 +728,18 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         switch ($field->dataTableType) {
 
-            case self::DATATABLE_TYPE_FK_INTEGER :
+            case self::DATATABLE_TYPE_JSON :
+            case self::DATATABLE_TYPE_TRANSLATABLE :
 
-                $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
+                $field->dataTableMethods = [self::DATATABLE_COLUMN_EDIT];
 
             break;
 
+            case self::DATATABLE_TYPE_FK_INTEGER :
             case self::DATATABLE_TYPE_ENUM :
             case self::DATATABLE_TYPE_CHOICE :
 
                 $field->dataTableMethods = [self::DATATABLE_COLUMN_FILTER];
-
-            break;
-
-            case self::DATATABLE_TYPE_TRANSLATABLE :
-
-                $field->dataTableMethods = [self::DATATABLE_COLUMN_EDIT];
 
             break;
         }

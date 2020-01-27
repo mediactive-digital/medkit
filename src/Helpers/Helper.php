@@ -175,6 +175,17 @@ class Helper {
     }
 
     /** 
+     * Check if field is JSON
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return bool
+     */
+    public static function isJsonField(GeneratorField $field) {
+
+        return in_array($field->htmlType, ['textarea', 'text']) && $field->fieldType == 'json';
+    }
+
+    /** 
      * Check if field is translatable
      *
      * @param \MediactiveDigital\MedKit\Common\CommandData $commandData
@@ -184,8 +195,7 @@ class Helper {
     public static function isTranslatableField(GeneratorField $field, CommandData $commandData = null) {
 
         return ($commandData ? $commandData->getOption('translatable') : true) && 
-            in_array($field->htmlType, ['textarea', 'text']) && 
-            Str::startsWith($field->dbInput, 'json') && 
+            self::isJsonField($field) && 
             in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label', 'sujet', 'subject', 'template_html', 'html_template', 'template_texte', 'text_template']);
     }
 

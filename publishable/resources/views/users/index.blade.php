@@ -2,7 +2,7 @@
 
 @section('content')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">{!! _i('Users') !!}</li>
+        <li class="breadcrumb-item">{{ _i('Users') }}</li>
     </ol>
     <div class="container-fluid">
         <div class="animated fadeIn">
@@ -12,10 +12,10 @@
                      <div class="card">
                          <div class="card-header">
                              <i class="material-icons">format_align_justify</i>
-                             {!! _i('Users') !!}
+                             {{ _i('Users') }}
 							 
 							@if(auth()->user()->can('create', App\Models\User::class)) 
-                             <a class="pull-right" href="{!! route('back.users.create') !!}">
+                             <a class="pull-right" href="{{ route('back.users.create') }}">
                                 <i class="material-icons">add_box</i>
                              </a>
 							@endif

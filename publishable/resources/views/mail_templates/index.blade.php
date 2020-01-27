@@ -2,7 +2,7 @@
 
 @section('content')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">{!! _i('Mail Templates') !!}</li>
+        <li class="breadcrumb-item">{{ _i('Mail Templates') }}</li>
     </ol>
     <div class="container-fluid">
         <div class="animated fadeIn">
@@ -12,10 +12,10 @@
                      <div class="card">
                          <div class="card-header">
                              <i class="material-icons">format_align_justify</i>
-                             {!! _i('MailTemplates') !!}
+                             {{ _i('MailTemplates') }}
 
                             @if(auth()->user()->can('create', App\Models\MailTemplate::class))
-                             <a class="pull-right" href="{!! route('back.mail_templates.create') !!}">
+                             <a class="pull-right" href="{{ route('back.mail_templates.create') }}">
                                 <i class="material-icons">add_box</i>
                              </a>
                             @endif

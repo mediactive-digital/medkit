@@ -168,13 +168,14 @@ class ModelGenerator extends InfyOmModelGenerator {
 
                 case 'json' :
 
-                    if ($this->hasTranslatable && Helper::isTranslatableField($field)) {
-
-                        $rule = '';
-                    }
-                    else {
+                    if (Helper::isJsonField($field)) {
 
                         $rule .= "'array'";
+
+                        if ($this->hasTranslatable && Helper::isTranslatableField($field)) {
+
+                            $rule = '';
+                        }
                     }
 
                 break;

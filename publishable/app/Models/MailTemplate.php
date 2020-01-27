@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Eloquent as Model;
-
 use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,17 +10,21 @@ use Wildside\Userstamps\Userstamps;
 
 use Spatie\Translatable\HasTranslations;
 
+use Spatie\MailTemplates\Models\MailTemplate as SpatieMailTemplate;
+
+use Spatie\MailTemplates\Interfaces\MailTemplateInterface;
+
 /**
  * Class MailTemplate
  * @package App\Models
- * @version January 24, 2020, 3:38 pm CET
+ * @version January 27, 2020, 10:45 am CET
  *
  * @property string mailable
  * @property string|array subject
  * @property string|array html_template
  * @property string|array text_template
  */
-class MailTemplate extends Model {
+class MailTemplate extends SpatieMailTemplate implements MailTemplateInterface {
 
     use SoftDeletes;
     use Userstamps;
