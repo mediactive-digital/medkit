@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Soved\Laravel\Gdpr\Retentionable;
 
-
+use MediactiveDigital\MedKit\Notifications\ResetPassword;
 
 abstract class User extends Authenticatable implements PortableContract {
 
@@ -59,5 +59,16 @@ abstract class User extends Authenticatable implements PortableContract {
         // Customize array...
 
         return $array;
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param string $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token) {
+
+        return $this->notify(new ResetPassword($token));
     }
 }
