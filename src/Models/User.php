@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Soved\Laravel\Gdpr\Retentionable;
 
-use App\Notifications\ResetPassword;
+use MediactiveDigital\MedKit\Notifications\ResetPassword;
 
 abstract class User extends Authenticatable implements PortableContract {
 
