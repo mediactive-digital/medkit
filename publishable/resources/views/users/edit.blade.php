@@ -3,9 +3,9 @@
 @section('content')
     <ol class="breadcrumb">
           <li class="breadcrumb-item">
-             <a href="{!! route('back.users.index') !!}">{!! _i('User') !!}</a>
+             <a href="{{ route('back.users.index') }}">{{ _i('User') }}</a>
           </li>
-          <li class="breadcrumb-item active">{!! _i('Editer') !!}</li>
+          <li class="breadcrumb-item active">{{ _i('Editer') }}</li>
         </ol>
     <div class="container-fluid">
          <div class="animated fadeIn">
@@ -15,7 +15,7 @@
                       <div class="card">
                           <div class="card-header">
                               <i class="material-icons">edit</i>
-                              <strong>{!! _i('Editer') !!} {!! _i('User') !!}</strong>
+                              <strong>{{ _i('Editer') . ' ' . _i('User') }}</strong>
                           </div>
                           <div class="card-body"> 
                                 {!! form($form) !!}

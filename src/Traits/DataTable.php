@@ -90,6 +90,17 @@ trait DataTable {
     }
 
     /**
+     * Edit json column.
+     *
+     * @param string|array|null $value
+     * @return string
+     */
+    private function editJsonColumn($value): string {
+
+        return is_array($value) ? FormatHelper::formatArraytoJson($value) : (is_string($value) ? $value : '');
+    }
+
+    /**
      * Filter boolean column.
      *
      * @param \Illuminate\Database\Eloquent\Builder $query

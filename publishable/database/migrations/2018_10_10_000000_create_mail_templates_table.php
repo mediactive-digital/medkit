@@ -11,9 +11,9 @@ class CreateMailTemplatesTable extends Migration {
 
             $table->bigIncrements('id');
             $table->string('mailable');
-            $table->text('subject')->nullable();
-            $table->text('html_template');
-            $table->text('text_template')->nullable();
+            $table->json('subject')->nullable();
+            $table->json('html_template');
+            $table->json('text_template')->nullable();
             
             $table->timestamps();  
             $table->softDeletes();

@@ -9,7 +9,7 @@ use App\Traits\Form;
 
 class MailTemplateForm extends KrisForm {
 
-	use Form;
+    use Form;
 
     public function buildForm() {
 
@@ -22,18 +22,18 @@ class MailTemplateForm extends KrisForm {
                 ]
             ]);
 
-        $this->add('subject', Field::TEXTAREA, [
+        $this->addTranslatable('subject', Field::TEXT, [
                 'label' => _i('Subject')
             ]);
 
-        $this->add('html_template', Field::TEXTAREA, [
+        $this->addTranslatable('html_template', Field::TEXTAREA, [
                 'label' => _i('Html template'),
                 'attr' => [
                     'required' => 'required'
                 ]
             ]);
 
-        $this->add('text_template', Field::TEXTAREA, [
+        $this->addTranslatable('text_template', Field::TEXTAREA, [
                 'label' => _i('Text template')
             ]);
 

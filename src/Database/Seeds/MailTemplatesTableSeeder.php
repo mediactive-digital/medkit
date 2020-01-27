@@ -25,11 +25,13 @@ class MailTemplatesTableSeeder extends Seeder {
 
 		MailTemplate::insert([
 			'mailable' => WelcomeMail::class,
-			'subject' => 'Welcome, {{ name }}',
-			'html_template' => '<h1>Hello, {{ name }}!</h1>',
-			'text_template' => 'Hello, {{ name }}!',
+			'subject' => '{"fr": "Bienvenue, {{ name }}", "en": "Welcome, {{ name }}"}',
+			'html_template' => '{"fr": "<h1>Bonjour, {{ name }}</h1>", "en": "<h1>Hello, {{ name }}</h1>"}',
+			'text_template' => '{"fr": "Bonjour, {{ name }}", "en": "Hello, {{ name }}"}',
 			'created_at' => $dateNow,
-			'updated_at' => $dateNow
+			'updated_at' => $dateNow,
+			'created_by' => 1,
+			'updated_by' => 1
 		]);
 	}
 }

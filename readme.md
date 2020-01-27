@@ -62,6 +62,7 @@ SENTRY_LARAVEL_DSN=https://CODE@SENTRY_SERVER
 ## Roadmap
 
 * Faire une surcouche pour compléter la génération des migrations
+* Faire une surcouche pour compléter la génération des factories
 
 ## Change log
 
