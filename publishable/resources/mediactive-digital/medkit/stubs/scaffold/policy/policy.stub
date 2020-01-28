@@ -17,12 +17,12 @@ class $MODEL_NAME$Policy
      */
     public function viewAny(User $user )
     { 
-		 
-		$RULE_VIEW_ANY_FOR_OWN$
  
         if ( $user->can('$VIEW_ALL$') ) { 
             return true;
         } 
+		 
+		$RULE_VIEW_ANY_FOR_OWN$
     }
 	
     /**
@@ -35,11 +35,11 @@ class $MODEL_NAME$Policy
     public function view(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
     {   
 		
-		$RULE_VIEW_FOR_OWN$
-		
         if ($user->can('$VIEW_ALL$')) {
             return true;
         }
+		
+		$RULE_VIEW_FOR_OWN$
 		
 		/**
 		 * Exemple Si il y a une methode published ?
@@ -85,11 +85,11 @@ class $MODEL_NAME$Policy
     public function update(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
     {  
 		
-		$RULE_UPDATE_FOR_OWN$
-		
         if ($user->can('$EDIT_ALL$')) {
             return true;
         }
+		
+		$RULE_UPDATE_FOR_OWN$
     }
 	
     /**
@@ -102,11 +102,11 @@ class $MODEL_NAME$Policy
     public function delete(User $user, $MODEL_NAME$ $$MODEL_NAME_CAMEL$)
     {
 		
-		$RULE_DELETE_FOR_OWN$
-		
         if ($user->can('$DELETE_ANY$')) {
             return true;
         }
+		
+		$RULE_DELETE_FOR_OWN$
     }
 	
     /**
