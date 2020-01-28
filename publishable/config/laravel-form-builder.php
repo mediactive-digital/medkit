@@ -47,8 +47,8 @@ return [
 
     'default_namespace' => '',
 
-    // Default translatable textarea template
-    'default_translatable_textarea' => 'textarea',
+    // Set CKEditor as default for translatable textareas
+    'translatable_textarea_ck_editor' => false,
 
     'custom_fields' => [
         'select2' =>'\MediactiveDigital\MedKit\Forms\Fields\Select2Type',

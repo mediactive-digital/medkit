@@ -29,6 +29,8 @@ class TranslatableType extends FormField {
 
         $locales = config('laravel-gettext.supported-locales');
         $model = $this->parent->getModel();
+        $type = $this->options['subtype'] == 'textarea' ? $this->options['subtype'] : 'input';
+        $ckEditor = $type == 'textarea' ? config('laravel-form-builder.translatable_textarea_ck_editor') : null;
         $fields = [];
 
         foreach ($locales as $locale) {
@@ -45,7 +47,7 @@ class TranslatableType extends FormField {
             ];
 
             $fields[$locale]['field'] = [
-                'type' => $this->options['subtype'] == 'textarea' ? $this->options['subtype'] : 'input',
+                'type' => $type,
                 'attributes' => [
                     'class' => 'form-control',
                     'name' => $this->name . '[' . $locale . ']'
@@ -57,6 +59,7 @@ class TranslatableType extends FormField {
                 $fields[$locale]['field']['value'] = $value;
                 $fields[$locale]['field']['attributes']['cols'] = 50;
                 $fields[$locale]['field']['attributes']['rows'] = 10;
+                $fields[$locale]['field']['ck_editor'] = $ckEditor;
             }
             else {
 
@@ -65,9 +68,8 @@ class TranslatableType extends FormField {
             }
         }
 
-        unset($this->options['subtype']);
-
         $this->options['value'] = $fields;
+        unset($this->options['subtype']);
 
         return parent::render($options, $showLabel, $showField, $showError);
     }
