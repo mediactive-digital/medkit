@@ -22,6 +22,30 @@ class Helper {
     const PACKAGE = 'medkit';
 
     /**
+     * @var array
+     */
+    const TRANSLATABLE_FIELDS = [
+        'nom', 
+        'name', 
+        'libelle', 
+        'label', 
+        'nom_court', 
+        'short_name', 
+        'libelle_court', 
+        'label_court', 
+        'short_label', 
+        'sujet', 
+        'subject', 
+        'template_html', 
+        'html_template', 
+        'template_texte', 
+        'text_template', 
+        'commentaire', 
+        'comment', 
+        'description'
+    ];
+
+    /**
      * get path for stub file.
      *
      * @param string $stubName
@@ -196,7 +220,7 @@ class Helper {
 
         return ($commandData ? $commandData->getOption('translatable') : true) && 
             self::isJsonField($field) && 
-            in_array(Str::snake($field->name), ['nom', 'name', 'libelle', 'label', 'nom_court', 'short_name', 'libelle_court', 'label_court', 'short_label', 'sujet', 'subject', 'template_html', 'html_template', 'template_texte', 'text_template']);
+            in_array(Str::snake($field->name), self::TRANSLATABLE_FIELDS);
     }
 
     /**
