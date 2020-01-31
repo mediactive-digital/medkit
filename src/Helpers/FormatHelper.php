@@ -582,6 +582,21 @@ class FormatHelper {
     }
 
     /**
+     * Formate un tableau en JSON
+     *
+     * @param array $array
+     * @param bool $prettyPrint
+     * @param bool $unescapedUnicode
+     * @param bool $unescapedSlashes
+     * @param bool $forceObject
+     * @return string
+     */
+    public static function formatArraytoJson(array $array, $prettyPrint = true, $unescapedUnicode = true, $unescapedSlashes = true, $forceObject = true): string {
+
+        return json_encode($array, ($prettyPrint ? JSON_PRETTY_PRINT : null) | ($unescapedUnicode ? JSON_UNESCAPED_UNICODE : null) | ($unescapedSlashes ? JSON_UNESCAPED_SLASHES : null) | ($forceObject ? JSON_FORCE_OBJECT : null));
+    }
+
+    /**
      * Nettoye un template Laravel Generator
      *
      * @param string $template

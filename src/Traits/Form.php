@@ -31,6 +31,24 @@ trait Form {
     }
 
     /** 
+     * Format JSON.
+     *
+     * @param string $key
+     * @param mixed $array
+     * @return \Closure
+     */
+    private function formatJson(string $key = 'value') {
+
+        return function($array) use ($key) {
+
+            $value = is_array($array) && $array ? (isset($array[$key]) ? $array[$key] : reset($array)) : $array;
+            $value = is_string($value) ? $value : '';
+
+            return $value;
+        };
+    }
+
+    /** 
      * Format null.
      *
      * @param mixed $value
