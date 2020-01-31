@@ -3,6 +3,7 @@
 namespace MediactiveDigital\MedKit\Utils;
 
 use InfyOm\Generator\Utils\TableFieldsGenerator as InfyOmTableFieldsGenerator;
+use InfyOm\Generator\Common\GeneratorFieldRelation;
 
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
@@ -314,5 +315,85 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
         $lastActivityName = config('infyom.laravel_generator.gdpr.last_activity', 'last_activity');
 
         return $lastActivityName;
+    }
+
+    /**
+     * Prepares relations (GeneratorFieldRelation) array from table foreign keys.
+     */
+    public function prepareRelations() {
+
+        $foreignKeys = $this->callReflectionMethod('prepareForeignKeys');
+        $this->checkForRelations($foreignKeys);
+    }
+
+    /**
+     * Prepares relations array from table foreign keys.
+     *
+     * @param GeneratorTable[] $tables
+     */
+    private function checkForRelations($tables) {
+
+        // get Model table name and table details from tables list
+        $modelTableName = $this->tableName;
+        $modelTable = $tables[$modelTableName];
+
+        $this->relations = [];
+
+        // detects many to one rules for model table
+        $manyToOneRelations = $this->callReflectionMethod('detectManyToOne', $tables, $modelTable);
+
+        if ($manyToOneRelations) {
+
+            $this->relations = array_merge($this->relations, $manyToOneRelations);
+        }
+
+        foreach ($tables as $tableName => $table) {
+
+            $foreignKeys = $table->foreignKeys;
+            $primary = $table->primaryKey;
+
+            // if foreign key count is 2 then check if many to many relationship is there
+            if (count($foreignKeys) == 2) {
+
+                $manyToManyRelation = $this->callReflectionMethod('isManyToMany', $tables, $tableName, $modelTable, $modelTableName);
+
+                if ($manyToManyRelation) {
+
+                    $this->relations[] = $manyToManyRelation;
+
+                    continue;
+                }
+            }
+
+            // iterate each foreign key and check for relationship
+            foreach ($foreignKeys as $foreignKey) {
+
+                // check if foreign key is on the model table for which we are using generator command
+                if ($foreignKey->foreignTable == $modelTableName) {
+
+                    // detect if one to one relationship is there
+                    $isOneToOne = $this->callReflectionMethod('isOneToOne', $primary, $foreignKey, $modelTable->primaryKey);
+
+                    if ($isOneToOne) {
+
+                        $modelName = model_name_from_table_name($tableName);
+                        $this->relations[] = GeneratorFieldRelation::parseRelation('1t1,' . $modelName);
+
+                        continue;
+                    }
+
+                    // detect if one to many relationship is there
+                    $isOneToMany = $this->callReflectionMethod('isOneToMany', $primary, $foreignKey, $modelTable->primaryKey);
+
+                    if ($isOneToMany) {
+
+                        $modelName = model_name_from_table_name($tableName);
+                        $this->relations[] = GeneratorFieldRelation::parseRelation('1tm,' . $modelName . ',' . $foreignKey->localField);
+
+                        continue;
+                    }
+                }
+            }
+        }
     }
 }
