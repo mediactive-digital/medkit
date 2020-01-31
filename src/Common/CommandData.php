@@ -186,17 +186,20 @@ class CommandData extends InfyOmCommandData {
 
         foreach ($this->relations as $relation) {
 
-            $column = isset($relation->inputs[1]) ? $relation->inputs[1] : '';
+            if ($relation->type == 'mt1') {
 
-            if ($column) {
+                $column = isset($relation->inputs[1]) ? $relation->inputs[1] : '';
 
-                foreach ($this->fields as $field) {
+                if ($column) {
 
-                    if ($field->name == $column) {
+                    foreach ($this->fields as $field) {
 
-                        $field->relation = $relation;
+                        if ($field->name == $column) {
 
-                        break;
+                            $field->relation = $relation;
+
+                            break;
+                        }
                     }
                 }
             }
