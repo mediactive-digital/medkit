@@ -152,14 +152,15 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->setDataTableJoin($field);
             $this->setDataTableFilter($field);
 
-            $datas = [
-                'name' => $field->dataTableTranslatableAlias,
-                'data' => $field->dataTableAlias
-            ];
+            $datas = $field->dataTableAlias;
 
             if (!$field->isSearchable) {
 
-                $datas['searchable'] = false;
+                $datas = [
+                    'name' => $field->dataTableAlias,
+                    'data' => $field->dataTableAlias,
+                    'searchable' => false
+                ];
             }
 
             $dataTableColumns[FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->cleanName)) . ')'] = $datas;
@@ -235,9 +236,10 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             if ($field->inIndex && $field->dataTableType == self::DATATABLE_TYPE_FK_INTEGER) {
 
                 $join = fill_template($this->commandData->dynamicVars, $template);
-                $join = str_replace('$FIELD_NAME$', $field->name, $join);
-                $join = str_replace('$JOIN_TABLE_NAME$', $field->dataTableJoinTable, $join);
+                $join = str_replace('$JOIN_TABLE_FULL_ALIAS$', $field->dataTableJoinTable == $field->dataTableJoinTableAlias ? $field->dataTableJoinTable : $field->dataTableJoinTable . ' AS ' . $field->dataTableJoinTableAlias, $join);
+                $join = str_replace('$JOIN_TABLE_ALIAS$', $field->dataTableJoinTableAlias, $join);
                 $join = str_replace('$JOIN_FIELD_NAME$', $field->dataTableJoinPrimaryField, $join);
+                $join = str_replace('$FIELD_NAME$', $field->name, $join);
 
                 $queryJoins .= $join;
             }
@@ -267,7 +269,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
                         if ($field->dataTableJoinLabelField) {
 
-                            $value = '\'' . $field->dataTableJoinTable . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
+                            $value = '\'' . $field->dataTableJoinTableAlias . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
                         }
                         else {
 
@@ -275,7 +277,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
                             if ($field->dataTableJoinPrimaryField) {
 
-                                $rawQuery = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTable . '`.`' . $field->dataTableJoinPrimaryField . '`)';
+                                $rawQuery = 'CONCAT(\\\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($field->dataTableJoinTable)))), '\'') . ' ' . '\\\', `' . $field->dataTableJoinTableAlias . '`.`' . $field->dataTableJoinPrimaryField . '`)';
                             }
 
                             $value = 'DB::raw(\'' . $rawQuery . ' AS `' . $field->dataTableAlias . '`\')';
@@ -451,6 +453,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $attributes['step'] = 1;
         }
 
+        if ($field->dataTableType == self::DATATABLE_TYPE_JSON) {
+
+            $attributes['name'] = $attributes['id'] = $field->name . '[value]';
+        }
+
         return $attributes;
     }
 
@@ -518,6 +525,11 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $options['second_options'] = $options['first_options'] = $optionsArray;
             $options['first_options']['value'] = FormatHelper::UNESCAPE . '$this->formatNull()';
             $options['second_options']['label'] = FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($options['second_name'])) . ')';
+        }
+
+        if ($field->dataTableType == self::DATATABLE_TYPE_JSON) {
+
+            $options['value'] = FormatHelper::UNESCAPE . '$this->formatJson()';
         }
 
         return $options;
@@ -753,7 +765,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function setDataTableAlias(GeneratorField $field) {
 
-        $field->dataTableAlias = $field->dataTableTranslatableAlias = $field->name;
+        $field->dataTableAlias = $field->name;
 
         switch ($field->dataTableType) {
 
@@ -774,12 +786,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 $field->dataTableAlias .= '_choice';
 
             break;
-
-            case self::DATATABLE_TYPE_TRANSLATABLE :
-
-                $field->dataTableTranslatableAlias = FormatHelper::UNESCAPE . FormatHelper::writeValueToPhp($field->dataTableTranslatableAlias . '->') . ' . LaravelGettext::getLocale()';
-
-            break;
         }
     }
 
@@ -791,13 +797,14 @@ class ControllerGenerator extends InfyOmControllerGenerator {
      */
     public function setDataTableJoin(GeneratorField $field) {
 
-        $field->dataTableJoinTable = $field->dataTableJoinPrimaryField = $field->dataTableJoinLabelField = null;
+        $field->dataTableJoinTable = $field->dataTableJoinTableAlias = $field->dataTableJoinPrimaryField = $field->dataTableJoinLabelField = null;
 
         switch ($field->dataTableType) {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
                 $field->dataTableJoinTable = Helper::getTableName($field->cleanName);
+                $field->dataTableJoinTableAlias = $field->dataTableJoinTable . ($field->dataTableJoinTable == $this->commandData->dynamicVars['$TABLE_NAME$'] ? '_join' : '');
                 $field->dataTableJoinPrimaryField = Helper::getTablePrimaryName($field->dataTableJoinTable);
                 $field->dataTableJoinLabelField = Helper::getTableLabelName($field->dataTableJoinTable);
 
@@ -819,7 +826,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
 
-                $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTable);
+                $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTableAlias);
 
             break;
 

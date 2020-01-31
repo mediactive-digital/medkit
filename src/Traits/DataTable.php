@@ -268,9 +268,15 @@ trait DataTable {
         if (!$raw && is_string($column)) {
 
             $columnValues = explode('.', $column);
-            $table = Helper::getTableName($columnValues[0]);
+            $table = $tableAlias = Helper::getTableName($columnValues[0]);
             $column = '';
             $raw = true;
+
+            if (!$table && Str::endsWith($columnValues[0], '_join')) {
+
+                $table = Helper::getTableName(Str::replaceLast('_join', '', $columnValues[0]));
+                $tableAlias = $columnValues[0];
+            }
 
             if ($table) {
 
@@ -278,12 +284,12 @@ trait DataTable {
 
                 if ($label) {
 
-                    $column = $table . '.' . $label;
+                    $column = $tableAlias . '.' . $label;
                     $raw = false;
                 }
                 elseif (($primary = Helper::getTablePrimaryName($table))) {
 
-                    $column = 'CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $table . '`.`' . $primary . '`)';
+                    $column = 'CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $tableAlias . '`.`' . $primary . '`)';
                 }
             }
         }

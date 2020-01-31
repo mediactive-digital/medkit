@@ -212,10 +212,10 @@ class ModelGenerator extends InfyOmModelGenerator {
             if ($field->htmlType == 'datetime-local' && !in_array($field->name, $ignore)) {
 
                 $mutator = str_replace('$ATTRIBUTE_NAME$', $field->name, $template);
-                $mutator = str_replace('$ATTRIBUTE_TYPE$', 'string', $mutator);
-                $mutator = str_replace('$ATTRIBUTE_TYPE_HINT$', 'string', $mutator);
+                $mutator = str_replace('$ATTRIBUTE_TYPE$', 'string|null', $mutator);
+                $mutator = str_replace('$ATTRIBUTE_TYPE_HINT$', '', $mutator);
                 $mutator = str_replace('$ATTRIBUTE_NAME_PASCAL$', Str::ucfirst(Str::camel($field->name)), $mutator);
-                $mutator = str_replace('$MUTATION_FUNCTION$', 'Carbon::parse($value)->format(\'Y-m-d H:i:s\')', $mutator);
+                $mutator = str_replace('$MUTATION_FUNCTION$', '$value ? Carbon::parse($value)->format(\'Y-m-d H:i:s\') : $value', $mutator);
 
                 $mutators[] = $mutator;
             }
