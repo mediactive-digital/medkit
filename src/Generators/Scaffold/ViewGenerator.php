@@ -13,6 +13,7 @@ use InfyOm\Generator\Generators\Scaffold\ViewGenerator  as InfyOmViewGenerator;
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
+use MediactiveDigital\MedKit\Helpers\Helper;
 
 class ViewGenerator extends InfyOmViewGenerator    
 {
@@ -313,11 +314,17 @@ class ViewGenerator extends InfyOmViewGenerator
         $fieldsStr = '';
 
         foreach ($this->commandData->fields as $field) {
+
             if (!$field->inView) {
+
                 continue;
             }
-            $singleFieldStr = str_replace('$FIELD_NAME_TITLE$', Str::title(str_replace('_', ' ', $field->name)),
-                $fieldTemplate);
+
+            $fieldValue = '$' . $this->commandData->dynamicVars['$MODEL_NAME_CAMEL$'] . '->' . $field->name;
+            $fieldValue = Helper::isJsonField($field) && !Helper::isTranslatableField($field, $this->commandData) ? 'Format::formatArraytoJson(' . $fieldValue . ')' : $fieldValue;
+
+            $singleFieldStr = str_replace('$FIELD_NAME_TITLE$', Str::title(str_replace('_', ' ', $field->name)), $fieldTemplate);
+            $singleFieldStr = str_replace('$FIELD_VALUE$', $fieldValue, $singleFieldStr);
             $singleFieldStr = str_replace('$FIELD_NAME$', $field->name, $singleFieldStr);
             $singleFieldStr = fill_template($this->commandData->dynamicVars, $singleFieldStr);
 
