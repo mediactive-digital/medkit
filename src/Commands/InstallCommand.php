@@ -364,6 +364,7 @@ class InstallCommand extends Command {
         $appConfigFacades = ['aliases' => array_merge($appConfig['aliases'], [
             'Debugbar' => \Barryvdh\Debugbar\Facade::class,
             'Translation' => \App\Helpers\TranslationHelper::class,
+            'Format' => \App\Helpers\FormatHelper::class
         ])];
         $sectionTitle = "Class Aliases";
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $appConfigFacades);
