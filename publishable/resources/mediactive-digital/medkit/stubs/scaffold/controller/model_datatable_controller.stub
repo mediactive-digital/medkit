@@ -10,6 +10,8 @@ use $NAMESPACE_MODEL$\$MODEL_NAME$;
 
 use $NAMESPACE_DATATABLES$\$MODEL_NAME$DataTable;
 
+use $NAMESPACE_FORMS$\$MODEL_NAME$Form;
+
 use Kris\LaravelFormBuilder\FormBuilder;
 
 use Flash;
@@ -21,7 +23,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @param \$NAMESPACE_DATATABLES$\$MODEL_NAME$DataTable $$MODEL_NAME_CAMEL$DataTable
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function index($MODEL_NAME$DataTable $$MODEL_NAME_CAMEL$DataTable) {
 
@@ -31,11 +33,13 @@ class $MODEL_NAME$Controller extends AppBaseController {
     /**
      * Show the form for creating a new $MODEL_NAME$.
      *
-     * @return \Illuminate\Http\Response
+     * @param \Kris\LaravelFormBuilder\FormBuilder $formBuilder
+     *
+     * @return \Illuminate\View\View
      */
-    public function create($MODEL_NAME$ $$MODEL_NAME_CAMEL$, FormBuilder $formBuilder) {
+    public function create(FormBuilder $formBuilder) {
 
-        $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
+        $form = $formBuilder->create($MODEL_NAME$Form::class, [
             'method' => 'POST',
             'url' => route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index')
         ]);
@@ -49,7 +53,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @param \$NAMESPACE_REQUEST$\$MODEL_NAME$Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store($MODEL_NAME$Request $request) {
 
@@ -67,19 +71,9 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function show($MODEL_NAME$ $$MODEL_NAME_CAMEL$) {
-		
-		$id = $$MODEL_NAME_CAMEL$->id;
-        $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::find($id);
-
-        if (empty($$MODEL_NAME_CAMEL$)) {
-
-            Flash::error(_i('$MODEL_NAME_HUMAN$ introuvable'));
-
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
-        }
 
         return view('$VIEW_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.show')
             ->with('$MODEL_NAME_CAMEL$', $$MODEL_NAME_CAMEL$);
@@ -89,22 +83,13 @@ class $MODEL_NAME$Controller extends AppBaseController {
      * Show the form for editing the specified $MODEL_NAME$.
      *
      * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
+     * @param \Kris\LaravelFormBuilder\FormBuilder $formBuilder
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\View\View
      */
     public function edit($MODEL_NAME$ $$MODEL_NAME_CAMEL$, FormBuilder $formBuilder) {
-		
-		$id = $$MODEL_NAME_CAMEL$->id;
-        $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::find($id);
 
-        if (empty($$MODEL_NAME_CAMEL$)) {
-
-            Flash::error(_i('$MODEL_NAME_HUMAN$ introuvable'));
-
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
-        }
-
-        $form = $formBuilder->create('$NAMESPACE_APP$\Forms\$MODEL_NAME$Form', [
+        $form = $formBuilder->create($MODEL_NAME$Form::class, [
             'method' => 'patch$FILES$',
             'url' => route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.update', $$MODEL_NAME_CAMEL$->$PRIMARY_KEY_NAME$),
             'model' => $$MODEL_NAME_CAMEL$
@@ -121,19 +106,9 @@ class $MODEL_NAME$Controller extends AppBaseController {
      * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      * @param \$NAMESPACE_REQUEST$\$MODEL_NAME$Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update($MODEL_NAME$ $$MODEL_NAME_CAMEL$, $MODEL_NAME$Request $request) {
-		
-		$id = $$MODEL_NAME_CAMEL$->id;
-        $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::find($id);
-
-        if (empty($$MODEL_NAME_CAMEL$)) {
-
-            Flash::error(_i('$MODEL_NAME_HUMAN$ introuvable'));
-
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
-        }
 
         $$MODEL_NAME_CAMEL$->fill($request->all());
         $$MODEL_NAME_CAMEL$->save();
@@ -148,19 +123,9 @@ class $MODEL_NAME$Controller extends AppBaseController {
      *
      * @param \$NAMESPACE_MODEL$\$MODEL_NAME$ $$MODEL_NAME_CAMEL$
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$, int $id) {
-		
-		$id = $$MODEL_NAME_CAMEL$->id;
-        $$MODEL_NAME_CAMEL$ = $MODEL_NAME$::find($id);
-
-        if (empty($$MODEL_NAME_CAMEL$)) {
-
-            Flash::error(_i('$MODEL_NAME_HUMAN$ introuvable'));
-
-            return redirect(route('$ROUTE_NAMED_PREFIX$$MODEL_NAME_PLURAL_SNAKE$.index'));
-        }
 
         $$MODEL_NAME_CAMEL$->delete();
 

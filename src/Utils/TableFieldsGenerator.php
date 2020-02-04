@@ -188,22 +188,31 @@ class TableFieldsGenerator extends InfyOmTableFieldsGenerator {
 
                         $validations[] = 'required';
                     }
+                    elseif (!$field->isNotNull) {
 
-                    if ($field->htmlType == 'number' && $column->getUnsigned()) {
+                        $validations[] = 'nullable';
+                    }
 
-                        $min = 0;
+                    if ($field->htmlType == 'number') {
 
-                        foreach ($this->relations as $relation) {
+                        $validations[] = 'numeric';
 
-                            if ($relation->type == 'mt1' && $relation->inputs[1] == $field->name) {
+                        if ($column->getUnsigned()) {
 
-                                $min = 1;
+                            $min = 0;
 
-                                break;
+                            foreach ($this->relations as $relation) {
+
+                                if ($relation->type == 'mt1' && $relation->inputs[1] == $field->name) {
+
+                                    $min = 1;
+
+                                    break;
+                                }
                             }
-                        }
 
-                        $validations[] = 'min:' . ($min);
+                            $validations[] = 'min:' . ($min);
+                        }
                     }
                     else if (!$isPassword && $field->htmlType == 'text' && ($max = $column->getLength())) {
 

@@ -386,7 +386,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 			
 			if (config('infyom.laravel_generator.add_on.permissions.policies', true)) {
 				
-				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource(\$NAMESPACE_MODEL$\$MODEL_NAME$::class);', $templateData);
+				$templateData = str_replace('$AUTHORIZE_RESOURCE$', '$this->authorizeResource($MODEL_NAME$::class);', $templateData);
 			} 
             else {
 				
@@ -431,15 +431,21 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
                 $validationText = substr($validation, 0, 3);
                 $sizeInNumber = substr($validation, 4);
+                $sizeText = '';
 
-                $sizeText = $validationText == 'min' ? 'minlength' : 'maxlength';
+                if (in_array($field->fieldType, ['enum', 'string', 'char', 'text', 'json'])) {
 
-                if ($field->htmlType == 'number') {
+                    $sizeText = $validationText == 'min' ? 'minlength' : 'maxlength';
+                }
+                elseif ($field->htmlType == 'number') {
 
                     $sizeText = $validationText;
                 }
 
-                $attributes[$sizeText] = $sizeInNumber;
+                if ($sizeText) {
+
+                    $attributes[$sizeText] = $sizeInNumber;
+                }
             }
         }
 

@@ -20,6 +20,7 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
      * Build DataTable class.
      *
      * @param mixed $query Results from query() method.
+     *
      * @return \Yajra\DataTables\DataTableAbstract
      */
     public function dataTable($query) {
@@ -33,6 +34,7 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
      * Get query source of dataTable.
      *
      * @param \App\Models\$MODEL_NAME$ $model
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function query($MODEL_NAME$ $model) {
