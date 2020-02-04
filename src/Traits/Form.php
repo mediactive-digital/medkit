@@ -113,6 +113,25 @@ trait Form {
     }
 
     /**
+     * Get Bootstrap 4 badges select choices.
+     *
+     * @return array
+     */
+    private function getBadgesChoices() {
+
+        return [ 
+            'primary' => 'Primary',  
+            'secondary' => 'Secondary',  
+            'success' => 'Success',  
+            'danger' => 'Danger',  
+            'warning' => 'Warning',  
+            'info' => 'Info',  
+            'light' => 'Light',  
+            'dark' => 'Dark'
+        ];
+    }
+
+    /**
      * Create translatable fields and add them to the form.
      *
      * @param string $name
