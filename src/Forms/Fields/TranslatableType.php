@@ -49,7 +49,7 @@ class TranslatableType extends FormField {
 
             $fields[$locale] = [];
             $value = $model ? $model->getTranslation($this->name, $locale) : null;
-            $localeAttributes = $localesAttributes ? (isset($this->options['attr'][$locale]) ? $this->options['attr'][$locale] : []) : $attributes;
+            $localeAttributes = $localesAttributes ? (isset($this->options['attr'][$locale]) && is_array($this->options['attr'][$locale]) ? $this->options['attr'][$locale] : []) : $attributes;
 
             $fields[$locale]['button'] = [
                 'type' => 'button',
