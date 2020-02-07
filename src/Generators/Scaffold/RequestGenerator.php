@@ -4,10 +4,12 @@ namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
 use InfyOm\Generator\Generators\Scaffold\RequestGenerator as InfyOmRequestGenerator;
 use InfyOm\Generator\Utils\FileUtil;
+use InfyOm\Generator\Common\GeneratorField;
 
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
+use MediactiveDigital\MedKit\Helpers\Helper;
 
 use Illuminate\Validation\ValidationRuleParser;
 
@@ -104,41 +106,100 @@ class RequestGenerator extends InfyOmRequestGenerator {
                 $field->validations = ['required'];
             }
 
-            if ($field->validations) {
+            if (Helper::isJsonField($field)) {
 
-                // Move unique rule to last
+                $isTranslatable = Helper::isTranslatableField($field, $this->commandData);
 
-                usort($field->validations, function($rule) {
+                if (!array_filter($field->validations, function(string $value) {
 
-                    return Str::startsWith($rule, 'unique:') ? 1 : 0;
-                });
+                    return Str::startsWith($value, 'size:');
 
-                $lastKey = count($field->validations) - 1;
+                })) {
 
-                if ($lastKey >= 0 && Str::startsWith($field->validations[$lastKey], 'unique:')) {
-
-                    $field->validations[$lastKey] = FormatHelper::writeValueToPhp($field->validations[$lastKey]);
-
-                    $field->validations[$lastKey] = preg_replace_callback('/\$this->([a-zA-Z0-9_]+)/', function($matches) {
-
-                        return $matches[1] == $this->primaryName ? '\' . $this->modelId . \'' : '\' . $this->' . $matches[1] . ' . \'';
-
-                    }, $field->validations[$lastKey]);
-
-                    $field->validations[$lastKey] = preg_replace('/\. \'\'$/', '', FormatHelper::UNESCAPE . $field->validations[$lastKey]);
+                    $field->validations[] = 'size:' . ($isTranslatable ? count(config('laravel-gettext.supported-locales')) : 1);
                 }
 
-                $rules[$field->name] = $field->validations;
+                if (in_array('required', $field->validations)) {
 
-                if (($key = array_search('required',  $field->validations)) !== false) {
+                    $field->subValidations = [
+                        new GeneratorField
+                    ];
 
-                    if (Str::contains(Str::lower($field->name), 'password')) {
+                    $field->subValidations[0]->name = $field->name . '.' . ($isTranslatable ? config('laravel-gettext.locale') : 'value');
 
-                        if (!in_array('nullable',  $field->validations)) {
+                    $field->subValidations[0]->validations = [
+                        'required'
+                    ];
+                }
+            }
+        }
 
-                            $field->validations[] = 'nullable';
-                            $rules[$field->name][$key] = FormatHelper::UNESCAPE . '$this->setRule(\'required\', \'nullable\')';
-                        }
+        foreach ($this->commandData->formatedFields as $field) {
+
+            if (($fieldRules = $this->getRules($field))) {
+
+                $rules[$field->name] = $this->getRules($field); 
+            }
+
+            if (isset($field->subValidations)) {
+
+                foreach ($field->subValidations as $subValidation) {
+
+                    if (($subValidationRules = $this->getRules($subValidation))) {
+
+                        $rules[$subValidation->name] = $this->getRules($subValidation);
+                    }
+                }
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get field validation rules.
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return array $rules
+     */
+    private function getRules(GeneratorField $field) {
+
+        $rules = [];
+
+        if ($field->validations) {
+
+            // Move unique rule to last
+
+            usort($field->validations, function($rule) {
+
+                return Str::startsWith($rule, 'unique:') ? 1 : 0;
+            });
+
+            $lastKey = count($field->validations) - 1;
+
+            if ($lastKey >= 0 && Str::startsWith($field->validations[$lastKey], 'unique:')) {
+
+                $field->validations[$lastKey] = FormatHelper::writeValueToPhp($field->validations[$lastKey]);
+
+                $field->validations[$lastKey] = preg_replace_callback('/\$this->([a-zA-Z0-9_]+)/', function($matches) {
+
+                    return $matches[1] == $this->primaryName ? '\' . $this->modelId . \'' : '\' . $this->' . $matches[1] . ' . \'';
+
+                }, $field->validations[$lastKey]);
+
+                $field->validations[$lastKey] = preg_replace('/\. \'\'$/', '', FormatHelper::UNESCAPE . $field->validations[$lastKey]);
+            }
+
+            $rules = $field->validations;
+
+            if (($key = array_search('required',  $field->validations)) !== false) {
+
+                if (Str::contains(Str::lower($field->name), 'password')) {
+
+                    if (!in_array('nullable',  $field->validations)) {
+
+                        $field->validations[] = 'nullable';
+                        $rules[$key] = FormatHelper::UNESCAPE . '$this->setRule(\'required\', \'nullable\')';
                     }
                 }
             }

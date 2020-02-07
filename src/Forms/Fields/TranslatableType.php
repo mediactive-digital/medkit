@@ -31,12 +31,25 @@ class TranslatableType extends FormField {
         $model = $this->parent->getModel();
         $type = $this->options['subtype'] == 'textarea' ? $this->options['subtype'] : 'input';
         $ckEditor = $type == 'textarea' ? config('laravel-form-builder.translatable_textarea_ck_editor') : null;
+        $attributes = isset($this->options['attr']) ? $this->options['attr'] : [];
+        $localesAttributes = false;
         $fields = [];
+
+        foreach ($attributes as $key => $attribute) {
+
+            if (in_array($key, $locales) && is_array($attribute)) {
+
+                $localesAttributes = true;
+
+                break;
+            }
+        }
 
         foreach ($locales as $locale) {
 
             $fields[$locale] = [];
             $value = $model ? $model->getTranslation($this->name, $locale) : null;
+            $localeAttributes = $localesAttributes ? (isset($this->options['attr'][$locale]) ? $this->options['attr'][$locale] : []) : $attributes;
 
             $fields[$locale]['button'] = [
                 'type' => 'button',
@@ -48,10 +61,10 @@ class TranslatableType extends FormField {
 
             $fields[$locale]['field'] = [
                 'type' => $type,
-                'attributes' => [
+                'attributes' => array_merge($localeAttributes, [
                     'class' => 'form-control',
                     'name' => $this->name . '[' . $locale . ']'
-                ]
+                ])
             ];
 
             if ($this->options['subtype'] == 'textarea') {
