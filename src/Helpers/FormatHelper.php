@@ -46,7 +46,7 @@ class FormatHelper {
         'co' => 'Corsican',
         'cr' => 'Cree',
         'cs' => 'Czech',
-        'cu' => 'Church Slavic',
+        'cu' => 'Old Church Slavonic',
         'cv' => 'Chuvash',
         'cy' => 'Welsh',
         'da' => 'Danish',
@@ -99,7 +99,7 @@ class FormatHelper {
         'ki' => 'Kikuyu',
         'kj' => 'Kwanyama',
         'kk' => 'Kazakh',
-        'kl' => 'Kalaallisut',
+        'kl' => 'Greenlandic',
         'km' => 'Khmer',
         'kn' => 'Kannada',
         'ko' => 'Korean',
@@ -116,7 +116,7 @@ class FormatHelper {
         'ln' => 'Lingala',
         'lo' => 'Lao',
         'lt' => 'Lithuanian',
-        'lu' => 'Luba-Katanga',
+        'lu' => 'Luba',
         'lv' => 'Latvian',
         'mg' => 'Malagasy',
         'mh' => 'Marshallese',
@@ -150,7 +150,8 @@ class FormatHelper {
         'ps' => 'Pashto',
         'pt' => 'Portuguese',
         'qu' => 'Quechua',
-        'rm' => 'Raeto-Romance',
+        'rc' => 'Reunionese',
+        'rm' => 'Romansh',
         'rn' => 'Kirundi',
         'ro' => 'Romanian',
         'ru' => 'Russian',
@@ -160,7 +161,8 @@ class FormatHelper {
         'sd' => 'Sindhi',
         'se' => 'Northern Sami',
         'sg' => 'Sango',
-        'si' => 'Sinhala',
+        'sh' => 'Serbo-Croatian',
+        'si' => 'Sinhalese',
         'sk' => 'Slovak',
         'sl' => 'Slovenian',
         'sm' => 'Samoan',
@@ -169,7 +171,7 @@ class FormatHelper {
         'sq' => 'Albanian',
         'sr' => 'Serbian',
         'ss' => 'Swati',
-        'st' => 'Southern Sotho',
+        'st' => 'Sotho',
         'su' => 'Sundanese',
         'sv' => 'Swedish',
         'sw' => 'Swahili',
@@ -203,6 +205,205 @@ class FormatHelper {
         'zh' => 'Chinese',
         'zu' => 'Zulu'
     ];
+
+    /**
+     * Retourne la liste des traductions des locales (code sur 2 lettres ISO 639-1)
+     *
+     * @return array $translatedLocales
+     */
+    public static function getTranslatedLocales() {
+
+        $translatedLocales = [
+            'aa' => _i('Afar'),
+            'ab' => _i('Abkhaze'),
+            'ae' => _i('Avestique'),
+            'af' => _i('Afrikaans'),
+            'ak' => _i('Akan'),
+            'am' => _i('Amharique'),
+            'an' => _i('Aragonais'),
+            'ar' => _i('Arabe'),
+            'as' => _i('Assamais'),
+            'av' => _i('Avar'),
+            'ay' => _i('Aymara'),
+            'az' => _i('Azéri'),
+            'ba' => _i('Bachkir'),
+            'be' => _i('Biélorusse'),
+            'bg' => _i('Bulgare'),
+            'bh' => _i('Bihari'),
+            'bi' => _i('Bichelamar'),
+            'bm' => _i('Bambara'),
+            'bn' => _i('Bengali'),
+            'bo' => _i('Tibétain'),
+            'br' => _i('Breton'),
+            'bs' => _i('Bosnien'),
+            'ca' => _i('Catalan'),
+            'ce' => _i('Tchétchène'),
+            'ch' => _i('Chamorro'),
+            'co' => _i('Corse'),
+            'cr' => _i('Cri'),
+            'cs' => _i('Tchèque'),
+            'cu' => _i('Vieux-slave'),
+            'cv' => _i('Tchouvache'),
+            'cy' => _i('Gallois'),
+            'da' => _i('Danois'),
+            'de' => _i('Allemand'),
+            'dv' => _i('Maldivien'),
+            'dz' => _i('Dzongkha'),
+            'ee' => _i('Ewe'),
+            'el' => _i('Grec moderne'),
+            'en' => _i('Anglais'),
+            'eo' => _i('Espéranto'),
+            'es' => _i('Espagnol'),
+            'et' => _i('Estonien'),
+            'eu' => _i('Basque'),
+            'fa' => _i('Persan'),
+            'ff' => _i('Peul'),
+            'fi' => _i('Finnois'),
+            'fj' => _i('Fidjien'),
+            'fo' => _i('Féroïen'),
+            'fr' => _i('Français'),
+            'fy' => _i('Frison occidental'),
+            'ga' => _i('Irlandais'),
+            'gd' => _i('Écossais'),
+            'gl' => _i('Galicien'),
+            'gn' => _i('Guarani'),
+            'gu' => _i('Gujarati'),
+            'gv' => _i('Mannois'),
+            'ha' => _i('Haoussa'),
+            'he' => _i('Haoussa'),
+            'hi' => _i('Hindi'),
+            'ho' => _i('Hiri Motu'),
+            'hr' => _i('Croate'),
+            'ht' => _i('Créole haïtien'),
+            'hu' => _i('Hongrois'),
+            'hy' => _i('Arménien'),
+            'hz' => _i('Héréro'),
+            'ia' => _i('Interlingua'),
+            'id' => _i('Indonésien'),
+            'ie' => _i('Occidental'),
+            'ig' => _i('Igbo'),
+            'ii' => _i('Yi'),
+            'ik' => _i('Inupiak'),
+            'io' => _i('Ido'),
+            'is' => _i('Islandais'),
+            'it' => _i('Italien'),
+            'iu' => _i('Inuktitut'),
+            'ja' => _i('Japonais'),
+            'jv' => _i('Javanais'),
+            'ka' => _i('Géorgien'),
+            'kg' => _i('Kikongo'),
+            'ki' => _i('Kikuyu'),
+            'kj' => _i('Kuanyama'),
+            'kk' => _i('Kazakh'),
+            'kl' => _i('Groenlandais'),
+            'km' => _i('Khmer'),
+            'kn' => _i('Kannada'),
+            'ko' => _i('Coréen'),
+            'kr' => _i('Kanouri'),
+            'ks' => _i('Cachemiri'),
+            'ku' => _i('Kurde'),
+            'kv' => _i('Komi'),
+            'kw' => _i('Cornique'),
+            'ky' => _i('Kirghiz'),
+            'la' => _i('Latin'),
+            'lb' => _i('Luxembourgeois'),
+            'lg' => _i('Ganda'),
+            'li' => _i('Limbourgeois'),
+            'ln' => _i('Lingala'),
+            'lo' => _i('Lao'),
+            'lt' => _i('Lituanien'),
+            'lu' => _i('Luba'),
+            'lv' => _i('Letton'),
+            'mg' => _i('Malgache'),
+            'mh' => _i('Marshallais'),
+            'mi' => _i('Maori de Nouvelle-Zélande'),
+            'mk' => _i('Macédonien'),
+            'ml' => _i('Malayalam'),
+            'mn' => _i('Mongol'),
+            'mr' => _i('Marathi'),
+            'ms' => _i('Malais'),
+            'mt' => _i('Maltais'),
+            'my' => _i('Birman'),
+            'na' => _i('Nauruan'),
+            'nb' => _i('Norvégien Bokmål'),
+            'nd' => _i('Sindebele'),
+            'ne' => _i('Népalais'),
+            'ng' => _i('Ndonga'),
+            'nl' => _i('Néerlandais'),
+            'nn' => _i('Norvégien Nynorsk'),
+            'no' => _i('Norvégien'),
+            'nr' => _i('Nrebele'),
+            'nv' => _i('Navajo'),
+            'ny' => _i('Chichewa'),
+            'oc' => _i('Occitan'),
+            'oj' => _i('Ojibwé'),
+            'om' => _i('Oromo'),
+            'or' => _i('Oriya'),
+            'os' => _i('Ossète'),
+            'pa' => _i('Pendjabi'),
+            'pi' => _i('Pali'),
+            'pl' => _i('Polonais'),
+            'ps' => _i('Pachto'),
+            'pt' => _i('Portugais'),
+            'qu' => _i('Quechua'),
+            'rc' => _i('Créole Réunionnais'),
+            'rm' => _i('Romanche'),
+            'rn' => _i('Kirundi'),
+            'ro' => _i('Roumain'),
+            'ru' => _i('Russe'),
+            'rw' => _i('Kinyarwanda'),
+            'sa' => _i('Sanskrit'),
+            'sc' => _i('Sarde'),
+            'sd' => _i('Sindhi'),
+            'se' => _i('Same du Nord'),
+            'sg' => _i('Sango'),
+            'sh' => _i('Serbo-croate'),
+            'si' => _i('Cingalais'),
+            'sk' => _i('Slovaque'),
+            'sl' => _i('Slovène'),
+            'sm' => _i('Samoan'),
+            'sn' => _i('Shona'),
+            'so' => _i('Somali'),
+            'sq' => _i('Albanais'),
+            'sr' => _i('Serbe'),
+            'ss' => _i('Swati'),
+            'st' => _i('Sotho du Sud'),
+            'su' => _i('Soundanais'),
+            'sv' => _i('Suédois'),
+            'sw' => _i('Swahili'),
+            'ta' => _i('Tamoul'),
+            'te' => _i('Télougou'),
+            'tg' => _i('Tadjik'),
+            'th' => _i('Thaï'),
+            'ti' => _i('Tigrigna'),
+            'tk' => _i('Turkmène'),
+            'tl' => _i('Tagalog'),
+            'tn' => _i('Tswana'),
+            'to' => _i('Tongien'),
+            'tr' => _i('Turc'),
+            'ts' => _i('Tsonga'),
+            'tt' => _i('Tatar'),
+            'tw' => _i('Twi'),
+            'ty' => _i('Tahitien'),
+            'ug' => _i('Ouïghour'),
+            'uk' => _i('Ukrainien'),
+            'ur' => _i('Ourdou'),
+            'uz' => _i('Ouzbek'),
+            've' => _i('Venda'),
+            'vi' => _i('Vietnamien'),
+            'vo' => _i('Volapük'),
+            'wa' => _i('Wallon'),
+            'wo' => _i('Wolof'),
+            'xh' => _i('Xhosa'),
+            'yi' => _i('Yiddish'),
+            'yo' => _i('Yoruba'),
+            'za' => _i('Zhuang'),
+            'zh' => _i('Chinois'),
+            'zu' => _i('Zoulou')
+        ];
+
+        return $translatedLocales;
+    }
 
     /**
      * Retourne la liste des années depuis l'année de départ jusqu'à l'année en cours
@@ -534,6 +735,21 @@ class FormatHelper {
     }
 
     /**
+     * Retourne la traduction d'une locale (code sur 2 lettres ISO 639-1)
+     *
+     * @param string $locale
+     * @return string $translatedLocale
+     */
+    public static function getLocaleTranslation(string $locale = '') {
+
+        $locale = $locale ?: LaravelGettext::getLocale();
+        $locales = self::getTranslatedLocales();
+        $translatedLocale = isset($locales[$locale]) ? $locales[$locale] : '';
+
+        return $translatedLocale;
+    }
+
+    /**
      * Formatage numérique selon la locale
      *
      * @param mixed $value
@@ -573,7 +789,7 @@ class FormatHelper {
         if ($locale == 'fr') {
 
             $separators = [
-                'thousands' => ' ',
+                'thousands' => _i(' '),
                 'decimal' => ','
             ];
         }
@@ -614,5 +830,24 @@ class FormatHelper {
         $template = trim($template) . self::NEW_LINE;
 
         return $template;
+    }
+
+    /**
+     * Génère des attributs HTML sous forme de chaîne de caractères depuis un tableau
+     *
+     * @param array $htmlAttributes
+     * @return string $renderedHtmlAttributes
+     */
+    public static function renderHtmlAttributes(array $htmlAttributes): string {
+
+        $renderedHtmlAttributes = '';
+
+        array_walk($htmlAttributes, function($value, $key) use (&$renderedHtmlAttributes) { 
+
+            $renderedHtmlAttributes = $renderedHtmlAttributes ? rtrim($renderedHtmlAttributes) : $renderedHtmlAttributes;
+            $renderedHtmlAttributes .= ($renderedHtmlAttributes ? ' ' : '') . ($key && is_string($key) ? $key . '="' . $value . '"' : $value); 
+        });
+
+        return $renderedHtmlAttributes;
     }
 }

@@ -6,6 +6,8 @@ use Illuminate\Translation\Translator as IlluminateTranslator;
 use Illuminate\Translation\FileLoader;
 use Illuminate\Filesystem\Filesystem;
 
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
 use Arr;
 use Str;
 
@@ -65,7 +67,27 @@ class Translator extends IlluminateTranslator {
 
                         if ($label) {
 
-                            $this->translatedForm->translatedFields[$key] = Str::lower($label);
+                            $key = str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
+
+                            $keys = [
+                                $key => $label
+                            ];
+
+                            if ($field->getType() == 'translatable') {
+
+                                $keys = [];
+                                $locales = config('laravel-gettext.supported-locales');
+
+                                foreach ($locales as $locale) {
+
+                                    $keys[$key . '.' . $locale] = $label . ' ' . (FormatHelper::getLocaleTranslation($locale) ?: $locale);
+                                }
+                            }
+
+                            foreach ($keys as $key => $label) {
+
+                                $this->translatedForm->translatedFields[$key] = Str::lower($label);
+                            }
                         }
                     }
                 }

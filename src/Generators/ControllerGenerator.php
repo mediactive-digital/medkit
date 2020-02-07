@@ -152,18 +152,16 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->setDataTableJoin($field);
             $this->setDataTableFilter($field);
 
-            $datas = $field->dataTableAlias;
+            $datas = [
+                'title' => FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->cleanName)) . ')'
+            ];
 
             if (!$field->isSearchable) {
 
-                $datas = [
-                    'name' => $field->dataTableAlias,
-                    'data' => $field->dataTableAlias,
-                    'searchable' => false
-                ];
+                $datas['searchable'] = false;
             }
 
-            $dataTableColumns[FormatHelper::UNESCAPE . '_i(' . FormatHelper::writeValueToPhp($this->getLabel($field->cleanName)) . ')'] = $datas;
+            $dataTableColumns[$field->dataTableAlias] = FormatHelper::UNESCAPE . FormatHelper::writeValueToPhp($datas, 2, false, false);
         }
 
         return $dataTableColumns;
@@ -459,11 +457,6 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $attributes['step'] = 1;
         }
 
-        if ($field->dataTableType == self::DATATABLE_TYPE_JSON) {
-
-            $attributes['name'] = $attributes['id'] = $field->name . '[value]';
-        }
-
         return $attributes;
     }
 
@@ -536,6 +529,29 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         if ($field->dataTableType == self::DATATABLE_TYPE_JSON) {
 
             $options['value'] = FormatHelper::UNESCAPE . '$this->formatJson()';
+        }
+
+        if ($field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE && isset($options['attr'])) {
+
+            $locales = config('laravel-gettext.supported-locales');
+            $defaultLocale = config('laravel-gettext.locale');
+            $attributes = $defaultLocaleAttributes = $options['attr'];
+            $options['attr'] = [];
+
+            unset($attributes['autofocus']);
+            unset($attributes['required']);
+
+            foreach ($locales as $locale) {
+
+                if ($locale == $defaultLocale) {
+
+                    $options['attr'][$locale] = $defaultLocaleAttributes;
+                }
+                elseif ($attributes) {
+
+                    $options['attr'][$locale] = $attributes;
+                }
+            }
         }
 
         return $options;
@@ -876,8 +892,9 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
                 $type = $field->htmlType == 'password' ? '\'repeated\'' : 'Field::' . strtoupper(str_replace('-', '_', $field->htmlType));
                 $fn = $field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE ? 'Translatable' : '';
+                $name = $field->name . ($field->dataTableType == self::DATATABLE_TYPE_JSON ? '[value]' : '');
 
-                $formFields[] = '$this->add' . $fn . '(\'' . $field->name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
+                $formFields[] = '$this->add' . $fn . '(\'' . $name . '\', ' . $type . ', ' . FormatHelper::writeValueToPhp($field->htmlOptions, 3) . ');';
             }
         }
 
