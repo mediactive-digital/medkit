@@ -9,7 +9,27 @@ return [
         'field_error_class'   => '',
         'help_block_class'    => 'help-block',
         'error_class'         => 'text-danger',
-        'required_class'      => 'required'
+        'required_class' => 'required',
+        'checkbox' => [
+        'wrapper_class' => 'form-check',
+        'field_class' => 'form-check-input',
+        'label_class' => 'form-check-label',
+            'choice_options' => [
+                'wrapper_class' => 'custom-control custom-checkbox',
+                'label_class' => 'custom-control-label',
+                'field_class' => 'custom-control-input',
+            ],
+        ],
+        'radio' => [
+        'wrapper_class' => 'form-check',
+        'field_class' => 'form-check-input',
+        'label_class' => 'form-check-label',
+            'choice_options' => [
+                'wrapper_class' => 'custom-control custom-radio',
+                'label_class' => 'custom-control-label',
+                'field_class' => 'custom-control-input',
+            ],
+        ]
 
         // Override a class from a field.
         //'text'                => [
