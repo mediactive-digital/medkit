@@ -29,7 +29,14 @@ return [
                 'label_class' => 'custom-control-label',
                 'field_class' => 'custom-control-input',
             ],
-        ]
+        ],
+        'choice'               => [
+            'choice_options'  => [
+                'wrapper_class'     => 'custom-control custom-radio',
+                'label_class'       => 'custom-control-label',
+                'field_class'       => 'custom-control-input',
+             ]
+         ]
 
         // Override a class from a field.
         //'text'                => [
@@ -72,6 +79,7 @@ return [
 
     'custom_fields' => [
         'select2' =>'\MediactiveDigital\MedKit\Forms\Fields\Select2Type',
+        'dropzone' =>'\MediactiveDigital\MedKit\Forms\Fields\DropzoneType',
         'translatable' =>'\MediactiveDigital\MedKit\Forms\Fields\TranslatableType'
     ]
 ];
