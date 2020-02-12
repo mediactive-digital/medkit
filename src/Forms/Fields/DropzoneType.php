@@ -12,12 +12,12 @@ class DropzoneType extends FormField {
         // At first it tries to load config variable,
         // and if fails falls back to loading view
         // resources/views/fields/datetime.blade.php
-        return 'dropzone';
+        return 'medKitTheme::forms.fields.dropzone';
     }
 
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true)
     {
-        $options['attr']['class']='dropzone';
+        $options['attr']['class']= 'form-control dropzone';
         return parent::render($options, $showLabel, $showField, $showError);
     }
 }
