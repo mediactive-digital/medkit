@@ -853,4 +853,42 @@ class FormatHelper {
 
         return $renderedHtmlAttributes;
     }
+
+    /**
+     * Génère un tableau imbriqué depuis un tableau "à plat".
+     *
+     * @param array $flatArray
+     * @param int $parentId
+     * @param bool $unsetParentKey
+     * @param string $parentKey
+     * @param string $childrenKey
+     * @param string $idKey
+     * @return array $branch
+     */
+    public static function buildTreeFromFlatArray(array $flatArray, int $parentId = null, bool $unsetParentKey = true, string $parentKey = 'parent_id', string $childrenKey = 'children', $idKey = 'id'): array {
+    
+        $branch = [];
+
+        foreach ($flatArray as $element) {
+
+            if ($element[$parentKey] == $parentId) {
+
+                $children = self::buildTreeFromFlatArray($flatArray, $element[$idKey], $unsetParentKey, $parentKey, $childrenKey, $idKey);
+                
+                if ($children) {
+
+                    $element[$childrenKey] = $children;
+                }
+
+                if ($unsetParentKey) {
+
+                    unset($element[$parentKey]);
+                }
+                
+                $branch[] = $element;
+            }
+        }
+
+        return $branch;
+    }
 }
