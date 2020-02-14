@@ -15,22 +15,22 @@ class DropzoneType extends FormField {
         return 'medKitTheme::forms.fields.dropzone';
     }
 
-    public function setDefauts() {
+	public function allDefaults()
+	{
         return [
-            'url' => '/',
-            'autoQueue' => false,
-            'autoProcessQueue' => true,
-            'addRemoveLinks' => true
+			'url' => '/',
+			'autoQueue' => false,
+			'autoProcessQueue' => true,
+			'addRemoveLinks' => true
         ];
     }
 
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true)
     {
-
         // var_dump($options);
         // die();
         // if(isset($options['jsDropzoneOpts'])) {
-        $options['jsDropzoneOpts'] =  $this->setDefauts();
+        $options['jsDropzoneOpts'] =  $this->getOptions();
         // }
 
         $options['attr']['class']='form-control';
