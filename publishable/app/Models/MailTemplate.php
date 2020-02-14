@@ -12,8 +12,6 @@ use Spatie\Translatable\HasTranslations;
 
 use Spatie\MailTemplates\Models\MailTemplate as SpatieMailTemplate;
 
-use Spatie\MailTemplates\Interfaces\MailTemplateInterface;
-
 /**
  * Class MailTemplate
  * @package App\Models
@@ -24,7 +22,7 @@ use Spatie\MailTemplates\Interfaces\MailTemplateInterface;
  * @property string|array html_template
  * @property string|array text_template
  */
-class MailTemplate extends SpatieMailTemplate implements MailTemplateInterface {
+class MailTemplate extends SpatieMailTemplate {
 
     use SoftDeletes;
     use Userstamps;
