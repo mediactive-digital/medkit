@@ -1,39 +1,61 @@
 <?php
 
-
 namespace MediactiveDigital\MedKit\Forms\Fields;
 
 use Kris\LaravelFormBuilder\Fields\FormField;
 
+use Str;
+
 class DropzoneType extends FormField {
 
-    protected function getTemplate()
-    {
-        // At first it tries to load config variable,
-        // and if fails falls back to loading view
-        // resources/views/fields/datetime.blade.php
+    /**
+     * Get the template, can be config variable or view path.
+     *
+     * @return string
+     */
+    protected function getTemplate() {
+
         return 'medKitTheme::forms.fields.dropzone';
     }
 
-	public function allDefaults()
-	{
+    /**
+     * Default options for field.
+     *
+     * @return array
+     */
+	protected function getDefaults() {
+
         return [
-			'url' => '/',
-			'autoQueue' => false,
-			'autoProcessQueue' => true,
-			'addRemoveLinks' => true
+            'jsDropzoneOpts' => [
+                'url' => '/',
+                'autoQueue' => false,
+                'autoProcessQueue' => true,
+                'addRemoveLinks' => true
+            ]
         ];
     }
 
-    public function render(array $options = [], $showLabel = true, $showField = true, $showError = true)
-    {
-        // var_dump($options);
-        // die();
-        // if(isset($options['jsDropzoneOpts'])) {
-        $options['jsDropzoneOpts'] =  $this->getOptions();
-        // }
+    /**
+     * Overload class attribute option for field.
+     *
+     * @return array
+     */
+    protected function getClassOverload() {
 
-        $options['attr']['class']='form-control';
+        return [
+            'form-control'
+        ];
+    }
+
+    public function render(array $options = [], $showLabel = true, $showField = true, $showError = true) {
+
+        $this->options['attr']['class'] = isset($this->options['attr']['class']) ? rtrim($this->options['attr']['class']) : '';
+
+        foreach ($this->getClassOverload() as $class) {
+
+            $this->options['attr']['class'] .= Str::contains($this->options['attr']['class'], $class) ? '' : ($this->options['attr']['class'] ? ' ' : '') . $class;
+        }
+
         return parent::render($options, $showLabel, $showField, $showError);
     }
 }

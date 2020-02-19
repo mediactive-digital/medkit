@@ -41,29 +41,19 @@ class GenerateTranslationsCommand extends Command {
     protected $filesystem;
 
     /**
-     * @var string $resourcePath
+     * @var array $fileloaders
      */
-    protected $resourcePath;
-
-    /**
-     * @var string $vendorPath
-     */
-    protected $vendorPath;
-
-    /**
-     * @var \Illuminate\Translation\FileLoader $resourceFileloader
-     */
-    protected $resourceFileloader;
-
-    /**
-     * @var \Illuminate\Translation\FileLoader $vendorFileloader
-     */
-    protected $vendorFileloader;
+    protected $fileloaders;
 
     /**
      * @var array $locales
      */
     protected $locales;
+
+    /**
+     * @var string $locale
+     */
+    protected $locale;
 
     /**
      * @var string $referencePath
@@ -101,12 +91,16 @@ class GenerateTranslationsCommand extends Command {
 
         $this->filesystem = $filesystem;
 
-        $this->resourcePath = str_replace('\\', '/', resource_path('lang/'));
-        $this->vendorPath = str_replace('\\', '/', base_path('vendor/caouecs/laravel-lang/src/'));
-        $this->resourceFileloader = new FileLoader($this->filesystem, $this->resourcePath);
-        $this->vendorFileloader = new FileLoader($this->filesystem, $this->vendorPath);
+        $resourcePath = str_replace('\\', '/', resource_path('lang/'));
+        $vendorPath = str_replace('\\', '/', base_path('vendor/caouecs/laravel-lang/src/'));
+
+        $this->fileloaders = [
+            $resourcePath => new FileLoader($this->filesystem, $resourcePath),
+            $vendorPath => new FileLoader($this->filesystem, $vendorPath)
+        ];
 
         $this->locales = config('laravel-gettext.supported-locales');
+        $this->locale = config('laravel-gettext.locale');
 
         $this->referencePath = str_replace('\\', '/', resource_path('lang/po_laravel/'));
         $this->referenceFile = 'po_laravel.php';
@@ -119,6 +113,7 @@ class GenerateTranslationsCommand extends Command {
 
     /**
      * Execute the console command.
+     *
      * @return mixed
      */
     public function handle() {
@@ -164,6 +159,7 @@ class GenerateTranslationsCommand extends Command {
 
             $localePath = $path . $locale;
             $translationsDatas['langs'][$locale]['file'] = $localePath . '/LC_MESSAGES/messages.po';
+            $translationsDatas['langs'][$locale]['catalog'] = file_exists($translationsDatas['langs'][$locale]['file']) ? Parser::parseFile($translationsDatas['langs'][$locale]['file']) : null;
 
             if (in_array($locale, $createdLocales)) {
 
@@ -176,35 +172,22 @@ class GenerateTranslationsCommand extends Command {
                 $this->comment('Locale file already exists : ' . $translationsDatas['langs'][$locale]['file']);
             }
 
-            $fileloader = null;
-
-            if ($this->filesystem->isDirectory($this->resourcePath . $locale)) {
-
-                $translationsPath = $this->resourcePath . $locale;
-                $fileloader = $this->resourceFileloader;
-            }
-
-            if (!$fileloader && $this->filesystem->isDirectory($this->vendorPath . $locale)) {
-
-                $translationsPath = $this->vendorPath . $locale;
-                $fileloader = $this->vendorFileloader;
-            }
+            $fileloader = $this->getFileloader($locale);
 
             if ($fileloader) {
 
-                $this->comment('Laravel translations directory found : ' . $translationsPath);
+                $this->comment('Laravel translations directory found : ' . $fileloader['path']);
 
-                $laravelTranslations = $this->filesystem->files($translationsPath);
-                $translationsDatas['langs'][$locale]['catalog'] = file_exists($translationsDatas['langs'][$locale]['file']) ? Parser::parseFile($translationsDatas['langs'][$locale]['file']) : null;
+                $laravelTranslations = $this->filesystem->files($fileloader['path']);
 
                 if ($translationsDatas['langs'][$locale]['catalog']) {
 
                     foreach ($laravelTranslations as $laravelTranslation) {
 
-                        $this->comment('Laravel translations file found : ' . $translationsPath . '/' . $laravelTranslation->getFilename());
+                        $this->comment('Laravel translations file found : ' . $fileloader['path'] . '/' . $laravelTranslation->getFilename());
 
                         $group = $laravelTranslation->getBasename('.php');
-                        $translations = $fileloader->load($locale, $group);
+                        $translations = $fileloader['loader']->load($fileloader['locale'], $group);
 
                         if ($translations) {
 
@@ -243,35 +226,45 @@ class GenerateTranslationsCommand extends Command {
 
             foreach ($translationsDatas['langs'] as $lang => $datas) {
 
-                foreach ($translationsDatas['keys'] as $key) {
+                if ($datas['catalog']) {
 
-                    $translation = '';
+                    foreach ($translationsDatas['keys'] as $key) {
 
-                    if (isset($datas['translations'][$key]) && is_string($datas['translations'][$key])) {
+                        $translation = '';
 
-                        $translation = $datas['translations'][$key];
+                        if (isset($datas['translations'][$key]) && is_string($datas['translations'][$key])) {
+
+                            $translation = $datas['translations'][$key];
+                        }
+                        else if (Str::startsWith($key, 'validation')) {
+
+                            $translation = str_replace('_', ' ', Str::afterLast($key, '.'));
+                        }
+
+                        $entry = $datas['catalog']->getEntry($key);
+
+                        if ($entry && !$entry->getMsgStr()) {
+
+                            $entry->setMsgStr($translation);
+                        }
+
+                        $entry = $entry ?: new Entry($key, $translation);
+                        $references = $entry->getReference();
+
+                        if (!in_array($this->reference, $references)) {
+
+                            $references[] = $this->reference;
+                        }
+
+                        $entry->setReference($references);
+                        $datas['catalog']->addEntry($entry);
                     }
-                    else if (Str::startsWith($key, 'validation')) {
 
-                        $translation = str_replace('_', ' ', Str::afterLast($key, '.'));
-                    }
+                    $fileHandler = new SepiaFileSystem($datas['file']);
+                    $fileHandler->save($this->compiler->compile($datas['catalog']));
 
-                    $entry = $datas['catalog']->getEntry($key) ?: new Entry($key, $translation);
-                    $references = $entry->getReference();
-
-                    if (!in_array($this->reference, $references)) {
-
-                        $references[] = $this->reference;
-                    }
-
-                    $entry->setReference($references);
-                    $datas['catalog']->addEntry($entry);
+                    $this->comment('Locale file updated : ' . $datas['file']);
                 }
-
-                $fileHandler = new SepiaFileSystem($datas['file']);
-                $fileHandler->save($this->compiler->compile($datas['catalog']));
-
-                $this->comment('Locale file updated : ' . $datas['file']);
             }
 
             foreach ($translationsDatas['keys'] as $index => $key) {
@@ -298,5 +291,67 @@ class GenerateTranslationsCommand extends Command {
 
             $this->error(' #ERR2 [SKIP] No translations found');
         }
+    }
+
+    /**
+     * Get file loader for locale.
+     *
+     * @param string $locale
+     *
+     * @return array $fileloader
+     */
+    public function getFileloader(string $locale): array {
+
+        $fileloader = [];
+
+        $locales = [
+            $locale
+        ];
+
+        if ($locale != $this->locale) {
+
+            $locales[] = $this->locale;
+        }
+
+        foreach ($locales as $locale) {
+
+            foreach ($this->fileloaders as $path => $loader) {
+
+                $fullPath = $path . $locale;
+                $isDir = $this->filesystem->isDirectory($fullPath);
+
+                if (!$isDir) {
+
+                    $directories = $this->filesystem->directories($path);
+                    
+                    foreach ($directories as $directory) {
+
+                        $basename = $this->filesystem->basename($directory);
+
+                        if (Str::startsWith($basename, $locale . '-')) {
+
+                            $locale = $basename;
+                            $fullPath = $path . $locale;
+                            $isDir = true;
+
+                            break;
+                        }
+                    }
+                }
+
+                if ($isDir) {
+
+                    $fileloader = [
+                        'locale' => $locale,
+                        'path' => $fullPath,
+                        'loader' => $loader
+                    ];
+
+                    break 2;
+                }
+            }
+        }
+
+        return $fileloader;
     }
 }
