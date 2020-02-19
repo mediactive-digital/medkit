@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Str;
 use LaravelGettext;
 
+use Closure;
+
 class FormatHelper {
 
     const START_YEAR = 2017;
@@ -859,13 +861,13 @@ class FormatHelper {
      *
      * @param array $flatArray
      * @param int $parentId
-     * @param bool $unsetParentKey
+     * @param \Closure $callback
      * @param string $parentKey
      * @param string $childrenKey
      * @param string $idKey
      * @return array $branch
      */
-    public static function buildTreeFromFlatArray(array $flatArray, int $parentId = null, bool $unsetParentKey = true, string $parentKey = 'parent_id', string $childrenKey = 'children', $idKey = 'id'): array {
+    public static function buildTreeFromFlatArray(array $flatArray, int $parentId = null, Closure $callback = null, string $parentKey = 'parent_id', string $childrenKey = 'children', $idKey = 'id'): array {
     
         $branch = [];
 
@@ -873,16 +875,16 @@ class FormatHelper {
 
             if ($element[$parentKey] == $parentId) {
 
-                $children = self::buildTreeFromFlatArray($flatArray, $element[$idKey], $unsetParentKey, $parentKey, $childrenKey, $idKey);
+                $children = self::buildTreeFromFlatArray($flatArray, $element[$idKey], $callback, $parentKey, $childrenKey, $idKey);
                 
                 if ($children) {
 
                     $element[$childrenKey] = $children;
                 }
 
-                if ($unsetParentKey) {
+                if ($callback) {
 
-                    unset($element[$parentKey]);
+                    $element = $callback($element);
                 }
                 
                 $branch[] = $element;
