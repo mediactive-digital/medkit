@@ -4,6 +4,8 @@ namespace MediactiveDigital\MedKit\Forms\Fields;
 
 use Kris\LaravelFormBuilder\Fields\FormField;
 
+use Str;
+
 class TranslatableType extends FormField {
 
     /**
@@ -14,6 +16,18 @@ class TranslatableType extends FormField {
     protected function getTemplate() {
 
         return 'translatable';
+    }
+
+    /**
+     * Overload class attribute option for field.
+     *
+     * @return array
+     */
+    protected function getClassOverload() {
+
+        return [
+            'form-control'
+        ];
     }
 
     /**
@@ -50,6 +64,12 @@ class TranslatableType extends FormField {
             $fields[$locale] = [];
             $value = $model ? $model->getTranslation($this->name, $locale) : null;
             $localeAttributes = $localesAttributes ? (isset($this->options['attr'][$locale]) && is_array($this->options['attr'][$locale]) ? $this->options['attr'][$locale] : []) : $attributes;
+            $classes = isset($localeAttributes['class']) ? rtrim($localeAttributes['class']) : '';
+
+            foreach ($this->getClassOverload() as $class) {
+
+                $classes .= Str::contains($classes, $class) ? '' : ($classes ? ' ' : '') . $class;
+            }
 
             $fields[$locale]['button'] = [
                 'type' => 'button',
@@ -62,7 +82,7 @@ class TranslatableType extends FormField {
             $fields[$locale]['field'] = [
                 'type' => $type,
                 'attributes' => array_merge($localeAttributes, [
-                    'class' => 'form-control',
+                    'class' => $classes,
                     'name' => $this->name . '[' . $locale . ']'
                 ])
             ];

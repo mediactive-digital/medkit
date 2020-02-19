@@ -18,6 +18,7 @@ composer.lock
 package-lock.json
 yarn.lock
 docker_data/mysql/db/*
+.DS_Store
 
 #Generation auto via npm
 public/css/*
