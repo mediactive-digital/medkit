@@ -85,6 +85,11 @@ class UserPolicy {
 	 */
 	public function update(User $u, User $user) {
 
+		if ($user->id == 1 && $u->id != $user->id) {
+
+			return false;
+		}
+
 		if ($u->can('users_edit_all')) {
 			return true;
 		}
@@ -103,6 +108,11 @@ class UserPolicy {
 	 * @return mixed
 	 */
 	public function delete(User $u, User $user) {
+
+		if ($user->id == 1 || $u->id == $user->id) {
+
+			return false;
+		}
 
 		if ($u->can('users_delete_any')) {
 			return true;
