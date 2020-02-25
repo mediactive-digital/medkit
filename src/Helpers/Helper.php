@@ -119,8 +119,7 @@ class Helper {
 
         if (!$table) {
 
-            $classPrefix = '\\' . config('laravel_generator.namespace.model', 'App\Models') . '\\';
-            $class = ($class = $classPrefix . $table) && class_exists($class) ? $class : (($class = $classPrefix . Str::studly(Str::singular($table))) && class_exists($class) ? $class : '');
+            $class = self::getClassNameFromTableName($table);
 
             if ($class) {
 
@@ -130,6 +129,20 @@ class Helper {
         }
 
         return $table;
+    }
+
+    /**
+     * Get class name from assumed table name
+     *
+     * @param string $table
+     * @return string $class
+     */
+    public static function getClassNameFromTableName(string $table): string {
+
+        $classPrefix = '\\' . config('laravel_generator.namespace.model', 'App\Models') . '\\';
+        $class = ($class = $classPrefix . $table) && class_exists($class) ? $class : (($class = $classPrefix . Str::studly(Str::singular($table))) && class_exists($class) ? $class : '');
+
+        return $class;
     }
 
     /**
