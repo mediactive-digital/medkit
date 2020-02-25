@@ -2,22 +2,22 @@
 
 namespace MediactiveDigital\MedKit\Generators\Scaffold;
 
-// use InfyOm\Generator\Generators\Scaffold\MenuGenerator as InfyOmMenuGenerator;
-
 use MediactiveDigital\MedKit\Common\CommandData;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
-
-use Str;
 
 class TracksHistoryGenerator {
 
 	use Reflection;
 
-	/**  @var CommandData  */
+	/**  
+	 * @var CommandData  
+	 */
 	private $commandData;
 
-	/**  @var string */
+	/** 
+	 * @var string 
+	 */
 	private $providerContents;
 	private $providerTemplate;
 	private $path;
@@ -32,21 +32,17 @@ class TracksHistoryGenerator {
 		$this->providerTemplate	= fill_template($this->commandData->dynamicVars, $this->providerTemplate);
 	}
 
-	/**
-	 *
-	 */
 	public function generate() {
 
 		$add = false;
 
-		$this->providerContents = preg_replace_callback('/(# TracksHistory)'
-			. '([\s\S]*?)'
-			. '(# fin TracksHistory)/', function($matches) use (&$add) {
+		$this->providerContents = preg_replace_callback('/(# TracksHistory)([\s\S]*?)(# fin TracksHistory)/', function($matches) use (&$add) {
 
-			if (strpos($matches[2], ucfirst($this->commandData->config->mCamel) . '::observe') !== false) {
+			if (strpos($matches[2], '\\' . $this->commandData->config->nsModel . '\\' . $this->commandData->config->mName . '::observe') !== false) {
 
 				$return = $matches[1] . $matches[2] . $matches[3];
-			} else {
+			} 
+			else {
 
 				$return = $matches[1] . rtrim($matches[2]) . $this->providerTemplate . $matches[3];
 
@@ -54,6 +50,7 @@ class TracksHistoryGenerator {
 			}
 
 			return $return;
+
 		}, $this->providerContents);
 
 		if ($add) {
@@ -61,7 +58,8 @@ class TracksHistoryGenerator {
 			$this->commandData->commandComment("\n" . $this->commandData->config->mCamelPlural . ' tracker history added.');
 
 			file_put_contents($this->path, $this->providerContents);
-		} else {
+		} 
+		else {
 
 			$this->commandData->commandObj->info('Tracker history ' . $this->commandData->config->mHumanPlural . ' already exists, Skipping Adjustment.');
 		}
