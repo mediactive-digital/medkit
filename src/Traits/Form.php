@@ -98,7 +98,9 @@ trait Form {
                 $select = DB::raw('CONCAT(\'' . addcslashes(Str::ucfirst(str_replace('_', ' ', Str::singular(Str::lower($table)))), '\'') . ' ' . '\', `' . $primary . '`)  AS `' . $label . '`');
             }
 
-            $relations = DB::table($table)->select([$primary, $select])->orderBy($label)->limit($limit);
+            $class = Helper::getClassNameFromTableName($table);
+            $query = $class ? $class::query() : DB::table($table);
+            $relations = $query->select([$primary, $select])->orderBy($label)->limit($limit);
 
             if ($this->model && ($selfTable = $this->model->getTable()) && $selfTable == $table && ($primaryKey = Helper::getTablePrimaryName($selfTable))) {
 
