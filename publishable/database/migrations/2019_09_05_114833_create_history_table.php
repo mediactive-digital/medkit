@@ -26,7 +26,7 @@ class CreateHistoryTable extends Migration {
             $table->unsignedBigInteger('actor_id');
 
             // What did they do
-            $table->string('body');
+            $table->longtext('body');
 
             $table->timestamps();
         });
