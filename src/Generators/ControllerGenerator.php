@@ -272,7 +272,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                         if ($field->dataTableJoinLabelField) {
 
                             $value = $field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER ? 
-                                'DB::raw(TranslationHelper::getTranslatableQuery(\'' . $field->dataTableJoinLabelField . '\', \'' . $field->dataTableJoinTable . '\') . \' AS ' . $field->dataTableAlias . '\')' : 
+                                'DB::raw(TranslationHelper::getTranslatableQuery(\'' . $field->dataTableJoinLabelField . '\', \'' . $field->dataTableJoinTableAlias . '\') . \' AS ' . $field->dataTableAlias . '\')' : 
                                 '\'' . $field->dataTableJoinTableAlias . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
                         }
                         else {
@@ -926,7 +926,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             case self::DATATABLE_TYPE_FK_INTEGER :
             case self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER :
 
-                $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTable);
+                $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTableAlias);
 
             break;
 
