@@ -24,6 +24,16 @@ class Helper {
     /**
      * @var array
      */
+    const LABEL_FIELDS = [
+        'nom', 
+        'name', 
+        'libelle', 
+        'label'
+    ];
+
+    /**
+     * @var array
+     */
     const TRANSLATABLE_FIELDS = [
         'nom', 
         'name', 
@@ -214,12 +224,21 @@ class Helper {
     /** 
      * Check if field is JSON
      *
-     * @param \InfyOm\Generator\Common\GeneratorField $field
-     * @return bool
+     * @param \InfyOm\Generator\Common\GeneratorField|array $field
+     * @return bool $isJson
      */
-    public static function isJsonField(GeneratorField $field) {
+    public static function isJsonField($field) {
 
-        return in_array($field->htmlType, ['textarea', 'text']) && $field->fieldType == 'json';
+        if ($field instanceof GeneratorField) {
+
+            $isJson = in_array($field->htmlType, ['textarea', 'text']) && $field->fieldType == 'json';
+        }
+        else {
+
+            $isJson = in_array($field['htmlType'], ['textarea', 'text']) && Str::startsWith($field['dbType'], 'json');
+        }
+
+        return $isJson;
     }
 
     /** 

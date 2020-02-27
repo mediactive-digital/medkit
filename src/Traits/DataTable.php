@@ -4,6 +4,7 @@ namespace MediactiveDigital\MedKit\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 
+use MediactiveDigital\MedKit\Helpers\TranslationHelper;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 use MediactiveDigital\MedKit\Helpers\Helper;
 
@@ -261,9 +262,10 @@ trait DataTable {
      * @param string $keyword
      * @param \Illuminate\Database\Query\Expression|string $column
      * @param bool $raw
+     * @param bool $translatable
      * @return void
      */
-    private function filterFkIntegerColumn(Builder $query, string $keyword, $column, bool $raw = false) {
+    private function filterFkIntegerColumn(Builder $query, string $keyword, $column, bool $raw = false, bool $translatable = false) {
 
         if (!$raw && is_string($column)) {
 
@@ -284,7 +286,7 @@ trait DataTable {
 
                 if ($label) {
 
-                    $column = $tableAlias . '.' . $label;
+                    $column = $translatable ? TranslationHelper::getTranslatableQuery($label, $table) : $tableAlias . '.' . $label;
                     $raw = false;
                 }
                 elseif (($primary = Helper::getTablePrimaryName($table))) {
@@ -302,6 +304,20 @@ trait DataTable {
 
             $query->whereRaw($rawQuery, $parameters);
         }
+    }
+
+    /**
+     * Filter translatable foreign key integer column.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $keyword
+     * @param \Illuminate\Database\Query\Expression|string $column
+     * @param bool $raw
+     * @return void
+     */
+    private function filterTranslatableFkIntegerColumn(Builder $query, string $keyword, $column, bool $raw = false) {
+
+        $this->filterFkIntegerColumn($query, $keyword, $column, $raw, true);
     }
 
     /**
