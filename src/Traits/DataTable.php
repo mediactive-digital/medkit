@@ -286,8 +286,15 @@ trait DataTable {
 
                 if ($label) {
 
-                    $column = $translatable ? TranslationHelper::getTranslatableQuery($label, $table) : $tableAlias . '.' . $label;
-                    $raw = false;
+                    if ($translatable) {
+
+                        $column = TranslationHelper::getTranslatableQuery($label, $table);
+                    }
+                    else {
+
+                        $column = $tableAlias . '.' . $label;
+                        $raw = false;
+                    }
                 }
                 elseif (($primary = Helper::getTablePrimaryName($table))) {
 
