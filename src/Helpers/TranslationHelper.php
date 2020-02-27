@@ -2,9 +2,13 @@
 
 namespace MediactiveDigital\MedKit\Helpers;
 
+use Carbon\Carbon;
+
 use LaravelGettext;
 use File;
 use Str;
+use Redirect;
+use URL;
 
 class TranslationHelper {
 
@@ -47,5 +51,43 @@ class TranslationHelper {
         }
 
         return $translations;
+    }
+
+    /**
+     * Changes the current language and returns to previous page.
+     *
+     * @param string $locale
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public static function changeLang(string $locale = '') {
+
+        $locale = $locale && in_array($locale, config('laravel-gettext.supported-locales')) ? $locale : LaravelGettext::getLocale();
+
+        // Set locale and refresh locale file
+        LaravelGettext::getTranslator()->setLocale($locale);
+        Carbon::setLocale($locale);
+        
+        return Redirect::to(URL::previous());
+    }
+
+    /**
+     * Get translatatable query.
+     *
+     * @param string $field
+     * @param string $table
+     * @param bool $unQuote
+     *
+     * @return string
+     */
+    public static function getTranslatableQuery(string $field = 'label', string $table = '', bool $unQuote = true): string {
+
+        $locale = LaravelGettext::getLocale();
+        $fallbackLocale = config('translatable.fallback_locale');
+        $table .= $table ? '.' : '';
+        $unQuote = $unQuote ? '>' : '';
+
+        return 'IF(' . $table . $field . '->\'$.' . $locale . '\' != \'\' AND JSON_TYPE(' . $table . $field . '->\'$.' . $locale . '\') != \'NULL\', ' . 
+            $table . $field . '->' . $unQuote . '\'$.' . $locale . '\', ' . $table . $field . '->' . $unQuote . '\'$.' . $fallbackLocale . '\')';
     }
 }

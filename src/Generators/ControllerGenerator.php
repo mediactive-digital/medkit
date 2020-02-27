@@ -8,11 +8,13 @@ use InfyOm\Generator\Common\GeneratorField;
 use InfyOm\Generator\Common\GeneratorFieldRelation;
 
 use MediactiveDigital\MedKit\Common\CommandData;
+use MediactiveDigital\MedKit\Utils\TableFieldsGenerator;
 use MediactiveDigital\MedKit\Traits\Reflection;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 use MediactiveDigital\MedKit\Helpers\Helper;
 
 use Str;
+use File;
 
 class ControllerGenerator extends InfyOmControllerGenerator {
 
@@ -33,6 +35,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     const DATATABLE_TYPE_FLOAT = 'Float';
     const DATATABLE_TYPE_INTEGER = 'Integer';
     const DATATABLE_TYPE_FK_INTEGER = 'FkInteger';
+    const DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER = 'TranslatableFkInteger';
     const DATATABLE_TYPE_ENUM = 'Enum';
     const DATATABLE_TYPE_CHOICE = 'Choice';
     const DATATABLE_TYPE_JSON = 'Json';
@@ -231,7 +234,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
         foreach ($this->commandData->formatedFields as $field) {
 
-            if ($field->inIndex && $field->dataTableType == self::DATATABLE_TYPE_FK_INTEGER) {
+            if ($field->inIndex && in_array($field->dataTableType, [self::DATATABLE_TYPE_FK_INTEGER, self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER])) {
 
                 $join = fill_template($this->commandData->dynamicVars, $template);
                 $join = str_replace('$JOIN_TABLE_FULL_ALIAS$', $field->dataTableJoinTable == $field->dataTableJoinTableAlias ? $field->dataTableJoinTable : $field->dataTableJoinTable . ' AS ' . $field->dataTableJoinTableAlias, $join);
@@ -264,10 +267,13 @@ class ControllerGenerator extends InfyOmControllerGenerator {
                 switch ($field->dataTableType) {
 
                     case self::DATATABLE_TYPE_FK_INTEGER :
+                    case self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER :
 
                         if ($field->dataTableJoinLabelField) {
 
-                            $value = '\'' . $field->dataTableJoinTableAlias . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
+                            $value = $field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER ? 
+                                'DB::raw(TranslationHelper::getTranslatableQuery(\'' . $field->dataTableJoinLabelField . '\', \'' . $field->dataTableJoinTableAlias . '\') . \' AS ' . $field->dataTableAlias . '\')' : 
+                                '\'' . $field->dataTableJoinTableAlias . '.' . $field->dataTableJoinLabelField . ' AS ' . $field->dataTableAlias . '\'';
                         }
                         else {
 
@@ -702,7 +708,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             case 'select' :
 
-                $field->dataTableType = self::DATATABLE_TYPE_FK_INTEGER;
+                $this->setFkDataTableType($field);
 
             break;
 
@@ -751,6 +757,74 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     }
 
     /** 
+     * Set field datatable type for HTML select type (foreign key)
+     *
+     * @param \InfyOm\Generator\Common\GeneratorField $field
+     * @return void
+     */
+    public function setFkDataTableType(GeneratorField $field) {
+
+        $isTranslatable = false;
+
+        if ($table = Helper::getTableName($field->cleanName)) {
+
+            $tableFieldsGenerator = new TableFieldsGenerator($table, [], $this->commandData->config->connection);
+            $tableFieldsGenerator->prepareRelations();
+            $tableFieldsGenerator->prepareFieldsFromTable();
+
+            foreach ($tableFieldsGenerator->fields as $relationField) {
+
+                if (in_array($relationField->name, Helper::LABEL_FIELDS) && 
+                    in_array($relationField->name, Helper::TRANSLATABLE_FIELDS) && 
+                    Helper::isJsonField($relationField)) {
+
+                    $isTranslatable = true;
+
+                    break;
+                }
+            }
+        }
+        elseif ($class = Helper::getClassNameFromTableName($field->cleanName)) {
+
+            if (($model = new $class) && $model->translatable) {
+
+                foreach ($model->translatable as $translatable) {
+
+                    if (in_array($translatable, Helper::LABEL_FIELDS) && 
+                        in_array($translatable, Helper::TRANSLATABLE_FIELDS)) {
+
+                        $isTranslatable = true;
+
+                        break;
+                    }
+                }
+            }
+        }
+        elseif (isset($field->relation->inputs[0]) && ($file = $field->relation->inputs[0])) {
+
+            $path = config('infyom.laravel_generator.path.schema_files') . $file . '.json';
+
+            if (File::exists($path) && ($json = json_decode(File::get($path), true))) {
+
+                foreach ($json as $relationField) {
+
+                    if (isset($relationField['name']) && 
+                        in_array($relationField['name'], Helper::LABEL_FIELDS) && 
+                        in_array($relationField['name'], Helper::TRANSLATABLE_FIELDS) && 
+                        Helper::isJsonField($relationField)) {
+
+                        $isTranslatable = true;
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        $field->dataTableType = $isTranslatable ? self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER : self::DATATABLE_TYPE_FK_INTEGER;
+    }
+
+    /** 
      * Set field datatable methods from type
      *
      * @param \InfyOm\Generator\Common\GeneratorField $field
@@ -770,6 +844,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             break;
 
             case self::DATATABLE_TYPE_FK_INTEGER :
+            case self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER :
             case self::DATATABLE_TYPE_ENUM :
             case self::DATATABLE_TYPE_CHOICE :
 
@@ -792,6 +867,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         switch ($field->dataTableType) {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
+            case self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER :
 
                 $field->dataTableAlias = $field->cleanName;
 
@@ -824,6 +900,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         switch ($field->dataTableType) {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
+            case self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER :
 
                 $field->dataTableJoinTable = Helper::getTableName($field->cleanName);
                 $field->dataTableJoinTableAlias = $field->dataTableJoinTable . ($field->dataTableJoinTable == $this->commandData->dynamicVars['$TABLE_NAME$'] ? '_join' : '');
@@ -847,6 +924,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         switch ($field->dataTableType) {
 
             case self::DATATABLE_TYPE_FK_INTEGER :
+            case self::DATATABLE_TYPE_TRANSLATABLE_FK_INTEGER :
 
                 $field->dataTableFilter = FormatHelper::writeValueToPhp($field->dataTableJoinTableAlias);
 

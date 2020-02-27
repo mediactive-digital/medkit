@@ -38,6 +38,8 @@ class MailTemplate extends SpatieMailTemplate {
     const UPDATED_BY = 'updated_by';
     const DELETED_BY = 'deleted_by';
 
+    const TEST_MAIL_CLASS = 'App\Mails\WelcomeMail';
+
     protected $dates = [
         'created_at',
         'updated_at',
