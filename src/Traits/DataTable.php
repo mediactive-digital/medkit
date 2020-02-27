@@ -288,7 +288,7 @@ trait DataTable {
 
                     if ($translatable) {
 
-                        $column = TranslationHelper::getTranslatableQuery($label, $table);
+                        $column = TranslationHelper::getTranslatableQuery($label, $tableAlias);
                     }
                     else {
 
