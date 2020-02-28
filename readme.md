@@ -68,6 +68,7 @@ SENTRY_LARAVEL_DSN=https://CODE@SENTRY_SERVER
 * Lien phpInfo dans outil dev
 * Dans CRUD voir si on ajoute le Helper::setVideoQueryPermissions($newQuery) aux datatables (à réfléchir)
 * Bloc choix d'icon material (medkit theme ?)
+* Finir les views Generator (pas les id, carbon, translatable, ...)
 
 
 ## Change log
