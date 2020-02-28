@@ -33,11 +33,11 @@ class MailTemplateDataTable extends YajraDataTable {
             })
             ->editColumn('html_template', function(MailTemplate $mailTemplate) {
 
-                return $mailTemplate->html_template;
+                return \Illuminate\Support\Str::limit(strip_tags($mailTemplate->html_template), 150, $end='...'); 
             })
             ->editColumn('text_template', function(MailTemplate $mailTemplate) {
 
-                return $mailTemplate->text_template;
+                return \Illuminate\Support\Str::limit( $mailTemplate->text_template , 150, $end='...');
             });
     }
 
@@ -101,10 +101,10 @@ class MailTemplateDataTable extends YajraDataTable {
                 'name' => 'subject->' . LaravelGettext::getLocale(),
                 'data' => 'subject'
             ],
-            _i('Html template') => [
+            /**_i('Html template') => [
                 'name' => 'html_template->' . LaravelGettext::getLocale(),
                 'data' => 'html_template'
-            ],
+            ],**/
             _i('Text template') => [
                 'name' => 'text_template->' . LaravelGettext::getLocale(),
                 'data' => 'text_template'
