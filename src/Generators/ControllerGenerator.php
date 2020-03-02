@@ -1024,16 +1024,16 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->commandData->commandComment('Form file deleted: ' . $this->formFileName);
         }
 
-        if ($this->rollbackFile($this->commandData->config->pathHelpers, $this->commandData->helperFileName)) {
+        if ($this->rollbackFile($this->helperPath, $this->helperFileName)) {
 
-            $this->commandData->commandComment('Helper file deleted: ' . $this->fileName);
+            $this->commandData->commandComment('Helper file deleted: ' . $this->helperFileName);
         }
 
         if ($this->commandData->getAddOn('datatables')) {
 
-            if ($this->rollbackFile($this->commandData->config->pathDataTables, $this->commandData->dataTableFileName)) {
+            if ($this->rollbackFile($this->dataTablePath, $this->dataTableFileName)) {
 
-                $this->commandData->commandComment('DataTable file deleted: ' . $this->fileName);
+                $this->commandData->commandComment('DataTable file deleted: ' . $this->dataTableFileName);
             }
         }
 
