@@ -119,6 +119,7 @@ trait BaseCommand {
             $this->controllerGenerator = new ControllerGenerator($this->commandData);
 
             $this->generateForm();
+            $this->generateHelper();
             $this->generateDataTable();
             $this->generateController();
         }
@@ -370,6 +371,24 @@ trait BaseCommand {
     }
 
     /**
+     * Generate helper
+     *
+     * @return void
+     */
+    public function generateHelper() {
+
+        $path = $this->controllerGenerator->getReflectionProperty('helperPath', true);
+        $fileName = $this->controllerGenerator->getReflectionProperty('helperFileName', true);
+
+        if (file_exists($path . $fileName) && !$this->confirmOverwrite('Helper ' . $fileName)) {
+
+            return;
+        }
+
+        $this->controllerGenerator->generateHelper();
+    }
+
+    /**
      * Generate datatable
      *
      * @return void
@@ -378,8 +397,8 @@ trait BaseCommand {
 
         if ($this->commandData->getAddOn('datatables')) {
 
-            $path = $this->commandData->config->pathDataTables;
-            $fileName = $this->commandData->modelName . 'DataTable.php';
+            $path = $this->controllerGenerator->getReflectionProperty('dataTablePath', true);
+            $fileName = $this->controllerGenerator->getReflectionProperty('dataTableFileName', true);
 
             if (file_exists($path . $fileName) && !$this->confirmOverwrite('DataTable ' . $fileName)) {
 

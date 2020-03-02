@@ -55,13 +55,15 @@ return [
 
         'forms'             => app_path('Forms/'),
 
+        'helpers'           => app_path('Helpers/'),
+
         'middlewares'       => app_path('Http/Middleware/'),
 		
-        'app_provider'     => app_path('Providers/AppServiceProvider.php'),
+        'app_provider'      => app_path('Providers/AppServiceProvider.php'),
 
-        'providers'       => app_path('Providers/'),
+        'providers'         => app_path('Providers/'),
 		
-        'policies'       => app_path('Policies/'),
+        'policies'          => app_path('Policies/'),
 		
         'auth_provider'     => app_path('Providers/AuthServiceProvider.php'),
 
@@ -99,7 +101,9 @@ return [
 
         'forms'             => 'App\Forms',
 
-        'policies'        => 'App\Policies',
+        'helpers'           => 'App\Helpers',
+
+        'policies'          => 'App\Policies',
     ],
 
     /*

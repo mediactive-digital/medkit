@@ -42,6 +42,7 @@ class ControllerGeneratorCommand extends InfyOmControllerGeneratorCommand {
         $this->controllerGenerator = new ControllerGenerator($this->commandData);
 
         $this->generateForm();
+        $this->generateHelper();
         $this->generateDataTable();
         $this->generateController();
         $this->performPostActions();

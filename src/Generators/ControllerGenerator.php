@@ -59,12 +59,32 @@ class ControllerGenerator extends InfyOmControllerGenerator {
     /** 
      * @var string 
      */
+    private $helperPath;
+
+    /** 
+     * @var string 
+     */
+    private $dataTablePath;
+
+    /** 
+     * @var string 
+     */
     private $fileName;
 
     /** 
      * @var string 
      */
     private $formFileName;
+
+    /** 
+     * @var string 
+     */
+    private $helperFileName;
+
+    /** 
+     * @var string 
+     */
+    private $dataTableFileName;
 
      /** 
      * @var string 
@@ -78,8 +98,12 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         $this->commandData = $commandData;
         $this->path = $this->getReflectionProperty('path');
         $this->formPath = $this->commandData->config->pathForms;
+        $this->helperPath = $this->commandData->config->pathHelpers;
+        $this->dataTablePath = $this->commandData->config->pathDataTables;
         $this->fileName = $this->getReflectionProperty('fileName');
         $this->formFileName = $this->commandData->modelName . 'Form.php';
+        $this->helperFileName = $this->commandData->modelName . 'Helper.php';
+        $this->dataTableFileName = $this->commandData->modelName . 'DataTable.php';
         $this->schemaPath = $this->commandData->config->pathSchema;
 
         $this->setDefaults();
@@ -107,6 +131,23 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         }
     }
 
+    /** 
+     * Generate helper
+     *
+     * @return void 
+     */
+    public function generateHelper() {
+
+        $templateData = get_template('scaffold.helper.helper');
+        $templateData = fill_template($this->commandData->dynamicVars, $templateData);
+        $templateData = FormatHelper::cleanTemplate($templateData);
+
+        FileUtil::createFile($this->helperPath, $this->helperFileName, $templateData);
+
+        $this->commandData->commandComment("\nHelper created: ");
+        $this->commandData->commandInfo($this->helperFileName);
+    }
+
 	/**
 	 * Generate datatable
      *
@@ -130,13 +171,10 @@ class ControllerGenerator extends InfyOmControllerGenerator {
         $templateData = str_replace('$QUERY_SELECT$', $this->generateDataTableQuerySelect(), $templateData);
         $templateData = FormatHelper::cleanTemplate($templateData);
 
-        $path = $this->commandData->config->pathDataTables;
-        $fileName = $this->commandData->modelName . 'DataTable.php';
-
-        FileUtil::createFile($path, $fileName, $templateData);
+        FileUtil::createFile($this->dataTablePath, $this->dataTableFileName, $templateData);
 
         $this->commandData->commandComment("\nDataTable created: ");
-        $this->commandData->commandInfo($fileName);
+        $this->commandData->commandInfo($this->dataTableFileName);
     }
 
     private function generateDataTableColumns() {
@@ -986,11 +1024,16 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $this->commandData->commandComment('Form file deleted: ' . $this->formFileName);
         }
 
+        if ($this->rollbackFile($this->helperPath, $this->helperFileName)) {
+
+            $this->commandData->commandComment('Helper file deleted: ' . $this->helperFileName);
+        }
+
         if ($this->commandData->getAddOn('datatables')) {
 
-            if ($this->rollbackFile($this->commandData->config->pathDataTables, $this->commandData->modelName . 'DataTable.php')) {
+            if ($this->rollbackFile($this->dataTablePath, $this->dataTableFileName)) {
 
-                $this->commandData->commandComment('DataTable file deleted: ' . $this->fileName);
+                $this->commandData->commandComment('DataTable file deleted: ' . $this->dataTableFileName);
             }
         }
 
