@@ -1,0 +1,35 @@
+<?php
+
+namespace $NAMESPACE_HELPERS$;
+
+use $NAMESPACE_MODEL$\$MODEL_NAME$;
+
+use Auth;
+
+class $MODEL_NAME$Helper {
+
+    /**
+     * Set query permissions clauses.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\JoinClause $query
+     *
+     * @return void
+     */
+    public static function setQueryPermissions($query) {
+
+        $user = Auth::user();
+        $table = (new $MODEL_NAME$)->getTable();
+        
+        if ($user->cannot('$MODEL_NAME_PLURAL_DASHED$_view_all')) {
+            
+            if ($user->can('$MODEL_NAME_PLURAL_DASHED$_view_own')) {
+
+                $query->where($table . '.created_by', $user->id);
+            } 
+            else {
+
+                $query->whereNull($table . '.id'); 
+            }
+        }
+    }
+}

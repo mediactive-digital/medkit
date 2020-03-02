@@ -8,6 +8,7 @@ use Yajra\DataTables\Services\DataTable as YajraDataTable;
 use Yajra\DataTables\EloquentDataTable;
 
 use App\Traits\DataTable;
+use $NAMESPACE_HELPERS$\$MODEL_NAME$Helper;
 
 use DB;
 use Auth;
@@ -35,11 +36,15 @@ class $MODEL_NAME$DataTable extends YajraDataTable {
      *
      * @param \App\Models\$MODEL_NAME$ $model
      *
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Builder $query
      */
     public function query($MODEL_NAME$ $model) {
 
-        return $model->newQuery()$QUERY_JOINS$$QUERY_SELECT$;
+        $query = $model->newQuery()$QUERY_JOINS$$QUERY_SELECT$;
+
+        $MODEL_NAME$Helper::setQueryPermissions($query);
+
+        return $query;
     }
 
     /**

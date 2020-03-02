@@ -120,6 +120,7 @@ class CommandData extends InfyOmCommandData {
 
         // Dynamic variables
         $this->addDynamicVariable('$NAMESPACE_FORMS$', config('infyom.laravel_generator.namespace.forms', 'App\Forms') . $nameSpacePrefix);
+        $this->addDynamicVariable('$NAMESPACE_HELPERS$', config('infyom.laravel_generator.namespace.helpers', 'App\Helpers') . $nameSpacePrefix);
         $this->addDynamicVariable('$BD_FIELD_CREATED_BY_NAME$', config('infyom.laravel_generator.user_stamps.created_by', 'created_by'));
         $this->addDynamicVariable('$NAMESPACE_POLICIES$', config('infyom.laravel_generator.namespace.policies', 'App\Policies') . $nameSpacePrefix);
         $this->addDynamicVariable('$TABLE_NAME_SINGULAR$', Str::endsWith($this->modelName, 's') ? $this->dynamicVars['$TABLE_NAME$'] : Str::singular($this->dynamicVars['$TABLE_NAME$']));
@@ -131,6 +132,7 @@ class CommandData extends InfyOmCommandData {
 
         // Paths
         $this->config->pathForms = config('infyom.laravel_generator.path.forms', app_path('Forms/')) . $pathPrefix;
+        $this->config->pathHelpers = config('infyom.laravel_generator.path.helpers', app_path('Helpers/')) . $pathPrefix;
         $this->config->pathSchema = config('infyom.laravel_generator.path.schema_files', resource_path('model_schemas/'));
         $this->config->pathMiddlewares = config('infyom.laravel_generator.path.middlewares', app_path('Http/Middleware/')) . $pathPrefix;
         $this->config->pathPolicies = config('infyom.laravel_generator.path.policies', app_path('Policies/')) . $pathPrefix;
