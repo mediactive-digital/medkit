@@ -44,7 +44,8 @@ class Translator extends IlluminateTranslator {
      */
     private function setForm() {
 
-        $controller = request()->route()->controller;
+        $request = request();
+        $controller = $request->route()->controller;
 
         if ($controller) {
 
@@ -55,7 +56,7 @@ class Translator extends IlluminateTranslator {
 
                 if (class_exists($form)) {
 
-                    $this->translatedForm = app('laravel-form-builder')->create($form);
+                    $this->translatedForm = app('laravel-form-builder')->create($form, ['model' => $request->route(Str::lower($model))]);
                     $this->translatedForm->translatedFields = [];
 
                     $fields = $this->translatedForm->getFields();

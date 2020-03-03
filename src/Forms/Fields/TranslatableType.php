@@ -19,6 +19,21 @@ class TranslatableType extends FormField {
     }
 
     /**
+     * Default options for field.
+     *
+     * @return array
+     */
+    protected function getDefaults() {
+
+        return [
+            'ck_editor' => false,
+            'ckEditorOpts' => [
+                'minHeight' => '253px'
+            ]
+        ];
+    }
+
+    /**
      * Overload class attribute option for field.
      *
      * @return array
@@ -26,7 +41,31 @@ class TranslatableType extends FormField {
     protected function getClassOverload() {
 
         return [
-            'form-control'
+            'form-control',
+            'js-input-translatable'
+        ];
+    }
+
+    /**
+     * get CK Editor toolbar option.
+     *
+     * @return array
+     */
+    protected function getCkEditorToolbarOption() {
+
+        return [
+            'heading', 
+            '|', 
+            'bold', 
+            'italic', 
+            'link', 
+            'bulletedList', 
+            'numberedList', 
+            '|', 
+            'blockQuote', 
+            'insertTable', 
+            'Undo', 
+            'Redo'
         ];
     }
 
@@ -44,7 +83,7 @@ class TranslatableType extends FormField {
         $locales = config('laravel-gettext.supported-locales');
         $model = $this->parent->getModel();
         $type = $this->options['subtype'] == 'textarea' ? $this->options['subtype'] : 'input';
-        $ckEditor = $type == 'textarea' ? config('laravel-form-builder.translatable_textarea_ck_editor') : null;
+        $ckEditor = $type == 'textarea' ? $this->options['ck_editor'] : null;
         $attributes = isset($this->options['attr']) ? $this->options['attr'] : [];
         $localesAttributes = false;
         $fields = [];
@@ -62,7 +101,7 @@ class TranslatableType extends FormField {
         foreach ($locales as $locale) {
 
             $fields[$locale] = [];
-            $value = $model ? $model->getTranslation($this->name, $locale) : null;
+            $value = $model ? $model->getTranslation($this->name, $locale, false) : null;
             $localeAttributes = $localesAttributes ? (isset($this->options['attr'][$locale]) && is_array($this->options['attr'][$locale]) ? $this->options['attr'][$locale] : []) : $attributes;
             $classes = isset($localeAttributes['class']) ? rtrim($localeAttributes['class']) : '';
 
@@ -90,9 +129,16 @@ class TranslatableType extends FormField {
             if ($this->options['subtype'] == 'textarea') {
 
                 $fields[$locale]['field']['value'] = $value;
-                $fields[$locale]['field']['attributes']['cols'] = 50;
-                $fields[$locale]['field']['attributes']['rows'] = 10;
+                $fields[$locale]['field']['attributes']['cols'] = isset($fields[$locale]['field']['attributes']['cols']) ? $fields[$locale]['field']['attributes']['cols'] : 50;
+                $fields[$locale]['field']['attributes']['rows'] = isset($fields[$locale]['field']['attributes']['rows']) ? $fields[$locale]['field']['attributes']['rows'] : 10;
                 $fields[$locale]['field']['ck_editor'] = $ckEditor;
+
+                if ($ckEditor) {
+
+                    $fields[$locale]['field']['ckEditorOpts'] = isset($fields[$locale]['field']['ckEditorOpts']) ? $fields[$locale]['field']['ckEditorOpts'] : $this->options['ckEditorOpts'];
+                    $fields[$locale]['field']['ckEditorOpts']['toolbar'] = isset($fields[$locale]['field']['ckEditorOpts']['toolbar']) ? $fields[$locale]['field']['ckEditorOpts']['toolbar'] : $this->getCkEditorToolbarOption();
+                    $fields[$locale]['field']['attributes']['class'] .= ' js-ck-editor';
+                }
             }
             else {
 
