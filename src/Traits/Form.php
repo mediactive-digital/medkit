@@ -150,6 +150,7 @@ trait Form {
     }
     
     
+   
     /**
      * Get Material Icons select choices.
      *
@@ -160,6 +161,25 @@ trait Form {
 	 */
     private function getMaterialIconsChoices( $byGroups = [], $byIcons = [] ) {
 
+		$allCat = [
+			'action',
+			'alert',
+			'av',
+			'communication',
+			'content',
+			'device',
+			'editor',
+			'file',
+			'hardware',
+			'image',
+			'maps',
+			'navigation',
+			'notification',
+			'places',
+			'social',
+			'toggle'
+		];
+		
 		/**
 		 * Tout les icons.
 		 * Formule magic d'extraction :
@@ -1272,7 +1292,17 @@ trait Form {
 		];
 
 		$return = [];
+		 
+		// tout par default
+		if( count($byGroups) == 0 && count($byIcons) == 0 ){
+			$byGroups = $allCat;
+		}
 		
+		// On prend par unitairement
+		foreach ($byIcons as $value) { 
+			$return = array_merge($return, [$value => $value] ); 
+		}
+		 
 		// On prend par groupements
 		foreach ($byGroups as $value) {
 			if( isset( $$value ) ){
@@ -1280,10 +1310,6 @@ trait Form {
 			}
 		}
 		
-		// On prend par unitairement
-		foreach ($byIcons as $value) { 
-			$return = array_merge($return, [$value => $value] ); 
-		}
 		
 		return $return;
     }
