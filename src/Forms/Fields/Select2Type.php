@@ -57,7 +57,7 @@ class Select2Type extends FormField {
      */
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true) {
 
-        if ($this->options['select2Opts']['multiple'] == false) {
+        if (!$this->options['select2Opts']['multiple']) {
 
             $this->options['select2Opts']['closeOnSelect'] = true;
         }
