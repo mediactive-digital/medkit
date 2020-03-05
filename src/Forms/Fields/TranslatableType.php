@@ -2,9 +2,12 @@
 
 namespace MediactiveDigital\MedKit\Forms\Fields;
 
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
 use Kris\LaravelFormBuilder\Fields\FormField;
 
 use Str;
+use Arr;
 
 class TranslatableType extends FormField {
 
@@ -84,15 +87,14 @@ class TranslatableType extends FormField {
         $model = $this->parent->getModel();
         $type = $this->options['subtype'] == 'textarea' ? $this->options['subtype'] : 'input';
         $ckEditor = $type == 'textarea' ? $this->options['ck_editor'] : null;
-        $attributes = isset($this->options['attr']) ? $this->options['attr'] : [];
-        $localesAttributes = false;
+        $localesParameters = false;
         $fields = [];
 
-        foreach ($attributes as $key => $attribute) {
+        foreach ($this->options as $key => $value) {
 
-            if (in_array($key, $locales) && is_array($attribute)) {
+            if (in_array($key, $locales) && is_array($value)) {
 
-                $localesAttributes = true;
+                $localesParameters = true;
 
                 break;
             }
@@ -102,8 +104,11 @@ class TranslatableType extends FormField {
 
             $fields[$locale] = [];
             $value = $model ? $model->getTranslation($this->name, $locale, false) : null;
-            $localeAttributes = $localesAttributes ? (isset($this->options['attr'][$locale]) && is_array($this->options['attr'][$locale]) ? $this->options['attr'][$locale] : []) : $attributes;
-            $classes = isset($localeAttributes['class']) ? rtrim($localeAttributes['class']) : '';
+            $parameters = $localesParameters ? (isset($this->options[$locale]) && is_array($this->options[$locale]) ? $this->options[$locale] : []) : $this->options;
+            $attributes = isset($parameters['attr']) ? $parameters['attr'] : [];
+            $classes = isset($attributes['class']) ? rtrim($attributes['class']) : '';
+            $flag = isset($parameters['flag']) && $parameters['flag'] ? FormatHelper::getFlag($parameters['flag']) : '';
+            $flag = $flag ?: Arr::first(FormatHelper::getLocaleFlags($locale));
 
             foreach ($this->getClassOverload() as $class) {
 
@@ -115,12 +120,17 @@ class TranslatableType extends FormField {
                 'attributes' => [
                     'type' => 'button'
                 ],
-                'value' => $locale
+                'value' => $flag ?: $locale
             ];
+
+            if ($flag) {
+
+                $fields[$locale]['button']['lang'] = FormatHelper::getLocaleTranslation($locale);
+            }
 
             $fields[$locale]['field'] = [
                 'type' => $type,
-                'attributes' => array_merge($localeAttributes, [
+                'attributes' => array_merge($attributes, [
                     'class' => $classes,
                     'name' => $this->name . '[' . $locale . ']'
                 ])
