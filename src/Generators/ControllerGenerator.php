@@ -575,25 +575,33 @@ class ControllerGenerator extends InfyOmControllerGenerator {
             $options['value'] = FormatHelper::UNESCAPE . '$this->formatJson()';
         }
 
-        if ($field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE && isset($options['attr'])) {
+        if ($field->dataTableType == self::DATATABLE_TYPE_TRANSLATABLE) {
 
             $locales = config('laravel-gettext.supported-locales');
             $defaultLocale = config('laravel-gettext.locale');
-            $attributes = $defaultLocaleAttributes = $options['attr'];
-            $options['attr'] = [];
 
-            unset($attributes['autofocus']);
-            unset($attributes['required']);
+            if (isset($options['attr']) && $options['attr']) {
 
-            foreach ($locales as $locale) {
+                $attributes = $defaultLocaleAttributes = $options['attr'];
 
-                if ($locale == $defaultLocale) {
+                unset($attributes['autofocus']);
+                unset($attributes['required']);
 
-                    $options['attr'][$locale] = $defaultLocaleAttributes;
-                }
-                elseif ($attributes) {
+                if ($attributes != $defaultLocaleAttributes) {
 
-                    $options['attr'][$locale] = $attributes;
+                    $options['attr'] = [];
+
+                    foreach ($locales as $locale) {
+
+                        if ($locale == $defaultLocale) {
+
+                            $options[$locale]['attr'] = $defaultLocaleAttributes;
+                        }
+                        elseif ($attributes) {
+
+                            $options[$locale]['attr'] = $attributes;
+                        }
+                    }
                 }
             }
         }

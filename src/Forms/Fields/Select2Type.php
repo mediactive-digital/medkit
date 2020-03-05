@@ -28,8 +28,6 @@ class Select2Type extends FormField {
         return [
             'select2Opts' => [
                 'closeOnSelect' => false,
-                'selectOnClose' => false,
-                'allowClear' => false,
                 'multiple' => true
             ]
         ];
@@ -58,6 +56,11 @@ class Select2Type extends FormField {
      * @return string
      */
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true) {
+
+        if (!$this->options['select2Opts']['multiple']) {
+
+            $this->options['select2Opts']['closeOnSelect'] = true;
+        }
 
         $this->options['attr']['class'] = isset($this->options['attr']['class']) ? rtrim($this->options['attr']['class']) : '';
 

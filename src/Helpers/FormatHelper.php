@@ -6,8 +6,8 @@ use Carbon\Carbon;
 
 use Str;
 use LaravelGettext;
-
 use Closure;
+use File;
 
 class FormatHelper {
 
@@ -205,7 +205,23 @@ class FormatHelper {
         'yo' => 'Yoruba',
         'za' => 'Zhuang',
         'zh' => 'Chinese',
+        'zt' => 'Traditional Chinese',
         'zu' => 'Zulu'
+    ];
+
+    const LANGUAGES_FLAGS = [
+        'de' => 'de',
+        'en' => [
+            'gb',
+            'us'
+        ],
+        'es' => 'es',
+        'fr' => 'fr',
+        'it' => 'it',
+        'ja' => 'jp',
+        'nl' => 'nl',
+        'zh' => 'cn',
+        'zt' => 'tw'
     ];
 
     /**
@@ -401,6 +417,7 @@ class FormatHelper {
             'yo' => _i('Yoruba'),
             'za' => _i('Zhuang'),
             'zh' => _i('Chinois'),
+            'zt' => _i('Chinois traditionnel'),
             'zu' => _i('Zoulou')
         ];
 
@@ -749,6 +766,54 @@ class FormatHelper {
         $translatedLocale = isset($locales[$locale]) ? $locales[$locale] : '';
 
         return $translatedLocale;
+    }
+
+    /**
+     * Retourne les drapeaux d'une locale sous forme de SVG
+     *
+     * @param string $locale
+     * @return array $flags
+     */
+    public static function getLocaleFlags(string $locale): array {
+
+        $flags = [];
+        $localeFlags = isset(self::LANGUAGES_FLAGS[$locale]) ? self::LANGUAGES_FLAGS[$locale] : [];
+
+        if ($localeFlags) {
+
+            $localeFlags = is_array($localeFlags) ? $localeFlags : (array)$localeFlags;
+
+            foreach ($localeFlags as $localeFlag) {
+
+                $flag = self::getFlag($localeFlag);
+
+                if ($flag) {
+
+                    $flags[$localeFlag] = $flag;
+                }
+            }
+        }
+
+        return $flags;
+    }
+
+    /**
+     * Retourne un drapeau sous forme de SVG
+     *
+     * @param string $flagName
+     * @return string $flag
+     */
+    public static function getFlag(string $flagName): string {
+
+        $flag = '';
+        $path = base_path('node_modules/svg-country-flags/svg/' . $flagName . '.svg');
+
+        if (File::exists($path)) {
+
+            $flag = File::get($path);
+        }
+
+        return $flag;
     }
 
     /**
