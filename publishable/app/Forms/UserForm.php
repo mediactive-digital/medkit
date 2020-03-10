@@ -53,7 +53,7 @@ class UserForm extends KrisForm {
                 'first_options' => [
                     'label' => _i('Mot de passe'),
                     'attr' => [
-                        'required' => $this->setAttribute('required', false),
+                        'required' => $this->setAttribute('required'),
                         'minlength' => '8',
                         'maxlength' => '120'
                     ],
@@ -62,7 +62,7 @@ class UserForm extends KrisForm {
                 'second_options' => [
                     'label' => _i('Confirmation du mot de passe'),
                     'attr' => [
-                        'required' => $this->setAttribute('required', false),
+                        'required' => $this->setAttribute('required'),
                         'minlength' => '8',
                         'maxlength' => '120'
                     ]

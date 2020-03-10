@@ -557,7 +557,7 @@ class ControllerGenerator extends InfyOmControllerGenerator {
 
             if (isset($options['attr']['required'])) {
 
-                $options['attr']['required'] = FormatHelper::UNESCAPE . '$this->setAttribute(\'required\', null)';
+                $options['attr']['required'] = FormatHelper::UNESCAPE . '$this->setAttribute(\'required\')';
             }
 
             $optionsArray = $options;
