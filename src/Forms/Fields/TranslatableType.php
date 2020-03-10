@@ -45,7 +45,7 @@ class TranslatableType extends FormField {
 
         return [
             'form-control',
-            'js-input-translatable'
+            'js-translatable'
         ];
     }
 
@@ -147,6 +147,7 @@ class TranslatableType extends FormField {
 
                     $fields[$locale]['field']['ckEditorOpts'] = isset($fields[$locale]['field']['ckEditorOpts']) ? $fields[$locale]['field']['ckEditorOpts'] : $this->options['ckEditorOpts'];
                     $fields[$locale]['field']['ckEditorOpts']['toolbar'] = isset($fields[$locale]['field']['ckEditorOpts']['toolbar']) ? $fields[$locale]['field']['ckEditorOpts']['toolbar'] : $this->getCkEditorToolbarOption();
+                    $fields[$locale]['field']['attributes']['id'] = isset($fields[$locale]['field']['attributes']['id']) ? $fields[$locale]['field']['attributes']['id'] : $this->name . '-' . $locale;
                     $fields[$locale]['field']['attributes']['class'] .= ' js-ck-editor';
                 }
             }

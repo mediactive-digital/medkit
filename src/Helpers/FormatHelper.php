@@ -4,6 +4,8 @@ namespace MediactiveDigital\MedKit\Helpers;
 
 use Carbon\Carbon;
 
+use Collective\Html\HtmlBuilder;
+
 use Str;
 use LaravelGettext;
 use Closure;
@@ -910,15 +912,7 @@ class FormatHelper {
      */
     public static function renderHtmlAttributes(array $htmlAttributes): string {
 
-        $renderedHtmlAttributes = '';
-
-        array_walk($htmlAttributes, function($value, $key) use (&$renderedHtmlAttributes) { 
-
-            $renderedHtmlAttributes = $renderedHtmlAttributes ? rtrim($renderedHtmlAttributes) : $renderedHtmlAttributes;
-            $renderedHtmlAttributes .= ($renderedHtmlAttributes ? ' ' : '') . ($key && is_string($key) ? $key . '="' . $value . '"' : $value); 
-        });
-
-        return $renderedHtmlAttributes;
+        return trim((new HtmlBuilder(null, view()))->attributes($htmlAttributes));
     }
 
     /**
