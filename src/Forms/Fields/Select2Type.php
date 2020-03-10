@@ -57,11 +57,16 @@ class Select2Type extends FormField {
      */
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true) {
 
-        if (!$this->options['select2Opts']['multiple']) {
+        if ($this->options['select2Opts']['multiple']) {
+
+            $this->options['attr']['multiple'] = 'multiple';
+        }
+        else {
 
             $this->options['select2Opts']['closeOnSelect'] = true;
         }
 
+        $this->options['attr']['id'] = isset($this->options['attr']['id']) ? $this->options['attr']['id'] : $this->name;
         $this->options['attr']['class'] = isset($this->options['attr']['class']) ? rtrim($this->options['attr']['class']) : '';
 
         foreach ($this->getClassOverload() as $class) {

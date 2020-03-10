@@ -29,7 +29,6 @@ class DropzoneType extends FormField {
             'jsDropzoneOpts' => [
                 'url' => '/',
                 'autoQueue' => false,
-                'autoProcessQueue' => true,
                 'addRemoveLinks' => true
             ]
         ];
@@ -43,12 +42,14 @@ class DropzoneType extends FormField {
     protected function getClassOverload() {
 
         return [
-            'form-control'
+            'form-control',
+            'js-dropzone'
         ];
     }
 
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true) {
 
+        $this->options['attr']['id'] = isset($this->options['attr']['id']) ? $this->options['attr']['id'] : $this->name;
         $this->options['attr']['class'] = isset($this->options['attr']['class']) ? rtrim($this->options['attr']['class']) : '';
 
         foreach ($this->getClassOverload() as $class) {
