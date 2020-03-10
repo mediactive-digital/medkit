@@ -71,7 +71,7 @@ trait Form {
      */
     private function setAttribute($createValue, $updateValue = null) {
 
-        return $this->model ? ($updateValue !== null ? $updateValue : $createValue) : $createValue;
+        return $this->model ? $updateValue : $createValue;
     }
 
     /** 
