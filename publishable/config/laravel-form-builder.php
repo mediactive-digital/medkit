@@ -77,6 +77,7 @@ return [
     'custom_fields' => [
         'select2' =>'\MediactiveDigital\MedKit\Forms\Fields\Select2Type',
         'dropzone' =>'\MediactiveDigital\MedKit\Forms\Fields\DropzoneType',
+        'datetimepicker' =>'\MediactiveDigital\MedKit\Forms\Fields\DateTimePickerType',
         'translatable' =>'\MediactiveDigital\MedKit\Forms\Fields\TranslatableType'
     ]
 ];
