@@ -65,8 +65,7 @@ SENTRY_LARAVEL_DSN=https://CODE@SENTRY_SERVER
 * Faire une surcouche pour compléter la génération des migrations
 * Faire une surcouche pour compléter la génération des factories
 * Passer les mails sur mailTemplate (activer compte, mdp oublié, ...) + event création user...  + motifs sur datatable (cf videomanager)
-* Ajouter une description sur permission + La générer dans le(s) generate() du crud
-* Bloc choix d'icon material (medkit theme ?)
+* Ajouter une description sur permission + La générer dans le(s) generate() du crud 
 * Lien phpInfo dans outil dev
 
 
