@@ -17,6 +17,8 @@ class DateTimePickerType extends FormField {
 
     public function render(array $options = [], $showLabel = true, $showField = true, $showError = true)
     {
+        $this->options['attr']['data-target'] = '#datetimepicker-'.Str::slug( $this->options["real_name"], '-');
+        $this->options['attr']['class'] = 'form-control datetimepicker-input';
 
         return parent::render($options, $showLabel, $showField, $showError);
     }
