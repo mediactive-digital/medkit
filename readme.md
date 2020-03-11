@@ -52,6 +52,12 @@ $ docker-compose exec core_services php /var/www/artisan medkit:migrate
 $ php artisan medkit:migrate
 ```
 
+## Run Composer (with Docker)
+
+``` bash
+$ docker-compose exec core_services composer update
+```
+
 ## Integrations
 ### Sentry
 Ajout dans le .env
