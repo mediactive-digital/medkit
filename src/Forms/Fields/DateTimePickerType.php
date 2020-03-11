@@ -5,6 +5,8 @@ namespace MediactiveDigital\MedKit\Forms\Fields;
 
 use Kris\LaravelFormBuilder\Fields\FormField;
 
+use Illuminate\Support\Str;
+
 class DateTimePickerType extends FormField {
 
     protected function getTemplate()
