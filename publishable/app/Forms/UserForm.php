@@ -2,9 +2,10 @@
 
 namespace App\Forms;
 
-use App\Models\Role;
 use Kris\LaravelFormBuilder\Form as KrisForm;
 use Kris\LaravelFormBuilder\Field;
+
+use App\Models\Role;
 
 use App\Traits\Form;
 
@@ -74,14 +75,8 @@ class UserForm extends KrisForm {
                 'value' => 1
             ]);
 
-        $selectedValues = [];
-        if((bool) $this->model) {
-            $selectedValues = $this->model->roles()->pluck('id')->toArray();
-        }
-
-        $this->add('roles','select2',[
-            'choices' => Role::all()->pluck('name','id')->toArray(),
-            'selected' => $selectedValues
+        $this->add('roles', 'select2', [
+            'choices' => Role::all()->pluck('name', 'id')->toArray()
         ]);
 		
         $this->add('submit', Field::BUTTON_SUBMIT, [

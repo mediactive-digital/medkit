@@ -9,6 +9,13 @@ use Str;
 class Select2Type extends FormField {
 
     /**
+     * The name of the property that holds the value.
+     *
+     * @var string
+     */
+    protected $valueProperty = 'selected';
+
+    /**
      * Get the template, can be config variable or view path.
      *
      * @return string
