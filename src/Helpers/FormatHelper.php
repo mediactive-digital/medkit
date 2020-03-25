@@ -952,4 +952,28 @@ class FormatHelper {
 
         return $branch;
     }
+
+    /**
+     * Ajoute des paramètres de requête à une URL
+     *
+     * @param string $url
+     * @param array $parameters
+     *
+     * @return string
+     */
+    public static function addUrlQueryParameters(string $url, array $parameters): string {
+
+        $parsedUrl = parse_url($url);
+        $hash = isset($parsedUrl['fragment']) ? '#' . $parsedUrl['fragment'] : '';
+        $query = [];
+
+        if (isset($parsedUrl['query'])) {
+            
+            parse_str($parsedUrl['query'], $query);
+        }
+
+        $query = ($query = array_merge($query, $parameters)) ? '?' . preg_replace('/%5B[0-9]+%5D/simU', '%5B%5D', http_build_query($query)) : '';
+
+        return explode('?', explode('#', $url)[0])[0] . $query . $hash;
+    }
 }
