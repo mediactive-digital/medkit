@@ -10,6 +10,8 @@ use Str;
 use LaravelGettext;
 use Closure;
 use File;
+use Route;
+use Request;
 
 class FormatHelper {
 
@@ -954,7 +956,7 @@ class FormatHelper {
     }
 
     /**
-     * Ajoute des paramètres de requête à une URL
+     * Ajoute des paramètres de requête à une URL.
      *
      * @param string $url
      * @param array $parameters
@@ -975,5 +977,20 @@ class FormatHelper {
         $query = ($query = array_merge($query, $parameters)) ? '?' . preg_replace('/%5B[0-9]+%5D/simU', '%5B%5D', http_build_query($query)) : '';
 
         return explode('?', explode('#', $url)[0])[0] . $query . $hash;
+    }
+
+    /**
+     * Récupère une route depuis une URL.
+     *
+     * @param string $url
+     *
+     * @return \Illuminate\Routing\Route|null
+     */
+    public static function getRouteFromUrl(string $url) {
+
+        return collect(Route::getRoutes())->first(function($route) use ($url) {
+
+           return $route->matches(Request::create($url));
+        });
     }
 }
