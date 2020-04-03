@@ -47,6 +47,15 @@ services:
             - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
         networks:
             - backend
+    pra:
+        container_name: pra_$DB_DATABASE
+        image: erikdubbelboer/phpredisadmin
+        ports:
+            - 8082:80
+        environment:
+            - "REDIS_1_HOST=db_redis_${DB_DATABASE}"
+        networks:
+            - backend
 
 networks:
     backend:
