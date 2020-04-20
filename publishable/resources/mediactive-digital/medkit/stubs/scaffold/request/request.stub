@@ -10,11 +10,6 @@ class $MODEL_NAME$Request extends FormRequest {
 
     use Request;
 
-    public function __construct() {
-
-        $this->tableNameSingular = '$TABLE_NAME_SINGULAR$';
-    }
-
     /**
      * Set the validation rules that apply to the request.
      *
@@ -33,5 +28,15 @@ class $MODEL_NAME$Request extends FormRequest {
     private function setMessages() {
 
         $this->requestMessages = $MESSAGES$;
+    }
+
+    /**
+     * Set the singular table name to retrieve the model.
+     *
+     * @return void
+     */
+    private function setTableNameSingular() {
+
+        $this->tableNameSingular = '$TABLE_NAME_SINGULAR$';
     }
 }
