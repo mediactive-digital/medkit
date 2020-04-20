@@ -47,6 +47,18 @@ trait Request {
     }
 
     /**
+     * Prepare the data for manual validation.
+     *
+     * @return object
+     */
+    public function validation() {
+
+        $this->prepareForValidation();
+
+        return $this;
+    }
+
+    /**
      * Prepare the data for validation.
      *
      * @return void
