@@ -47,18 +47,33 @@ trait Request {
     }
 
     /**
+     * Prepare the data for manual validation.
+     *
+     * @return object
+     */
+    public function validation() {
+
+        $this->prepareForValidation();
+
+        return $this;
+    }
+
+    /**
      * Prepare the data for validation.
      *
      * @return void
      */
     protected function prepareForValidation() {
-		
+
+        $this->setTableNameSingular();
+        
         $this->modelId = $this->route($this->tableNameSingular);
-		
-		if(is_object($this->modelId) ){
-			$this->modelId = $this->modelId->id;
-		} 
-		
+        
+        if (is_object($this->modelId)) {
+            
+            $this->modelId = $this->modelId->id;
+        } 
+        
         $this->setRules();
         $this->setMessages();
 
