@@ -54,14 +54,14 @@ trait Request {
     protected function prepareForValidation() {
 
         $this->setTableNameSingular();
-		
+        
         $this->modelId = $this->route($this->tableNameSingular);
-		
-		if (is_object($this->modelId)) {
+        
+        if (is_object($this->modelId)) {
             
-			$this->modelId = $this->modelId->id;
-		} 
-		
+            $this->modelId = $this->modelId->id;
+        } 
+        
         $this->setRules();
         $this->setMessages();
 
