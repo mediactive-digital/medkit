@@ -993,4 +993,18 @@ class FormatHelper {
            return $route->matches(Request::create($url));
         });
     }
+
+    /**
+     * Formatage d'un code postal français.
+     *
+     * @param int|string $cp
+     * 
+     * @return string $cp
+     */
+    public static function formatCP($cp): string {
+
+        $cp = $cp && ($cp = filter_var($cp, FILTER_SANITIZE_NUMBER_INT)) ? number_format($cp, 0, '', ' ') : '';
+
+        return $cp;
+    }
 }
