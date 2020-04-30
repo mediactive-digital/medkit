@@ -6,7 +6,7 @@ use Tightenco\Ziggy\BladeRouteGenerator as ZiggyBladeRouteGenerator;
 
 class BladeRouteGenerator extends ZiggyBladeRouteGenerator {
 
-    private static $generated;
+    public static $generated;
     private $baseProtocol;
     private $baseDomain;
     private $basePort;
