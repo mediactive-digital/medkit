@@ -303,7 +303,8 @@ class InstallCommand extends Command {
             $this->doCommand("php artisan medkit-theme:install --force");
         }
     }
-
+		
+	
     /**
      * Execute a command
      *
@@ -313,11 +314,15 @@ class InstallCommand extends Command {
     private function doCommand($command)
     {
         $process = Process::fromShellCommandline($command);
+        // process = new Process( [  base_path() , $command ]);
+		// process = new Process( [ 'cd '.base_path() . ' && ' .$command ]);
         $process->setTimeout(null); // Setting timeout to null to prevent installation from stopping at a certain point in time
-
-        $process->setWorkingDirectory(base_path())->run(function ($type, $buffer) {
-            $this->line($buffer);
-        });
+		// $process->setEnv([]);	
+        $process
+			->setWorkingDirectory( base_path() )
+			->run(function ($type, $buffer) {
+            $this->line($buffer); 
+		});
     }
 
 
