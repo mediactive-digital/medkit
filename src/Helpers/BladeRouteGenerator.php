@@ -12,13 +12,13 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator {
     private $basePort;
     private $baseUrl;
 
-    public function generate($group = false) {
+    public function generate($group = false, $nonce = false) {
 
         $json = $this->getRoutePayload($group)->toJson();
 
         if (static::$generated) {
 
-            return $this->generateMergeJavascript($json);
+           return $this->generateMergeJavascript($json, $nonce);
         }
 
         $this->prepareDomain();
@@ -33,25 +33,31 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator {
         static::$generated = true;
 
         return <<<EOT
-var Ziggy = {
-    namedRoutes: $json,
-    baseProtocol: {$this->baseProtocol},
-    baseDomain: {$this->baseDomain},
-    basePort: {$this->basePort},
-    defaultParameters: $defaultParameters
-};
-Ziggy.baseUrl = {$this->baseUrl};
-$routeFunction
+<script type="text/javascript"{$nonce}>
+    var Ziggy = {
+        namedRoutes: $json,
+        baseUrl: '{$this->baseUrl}',
+        baseProtocol: '{$this->baseProtocol}',
+        baseDomain: '{$this->baseDomain}',
+        basePort: {$this->basePort},
+        defaultParameters: $defaultParameters
+    };
+    $routeFunction
+</script>
 EOT;
     }
 
-    private function generateMergeJavascript($json) {
+    private function generateMergeJavascript($json, $nonce) {
 
         return <<<EOT
-(function() {
-    var routes = $json;
-    for (var name in routes) Ziggy.namedRoutes[name] = routes[name]
-})();
+<script type="text/javascript"{$nonce}>
+    (function() {
+        var routes = $json;
+        for (var name in routes) {
+            Ziggy.namedRoutes[name] = routes[name];
+        }
+    })();
+</script>
 EOT;
     }
 
