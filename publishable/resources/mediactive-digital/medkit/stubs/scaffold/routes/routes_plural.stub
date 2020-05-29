@@ -1,3 +1,3 @@
 
 
-Route::resource('$MODEL_NAME_PLURAL_SNAKE$', '$PATH_PREFIX$$MODEL_NAME$Controller', ['parameters' => '$MODEL_NAME_PLURAL_SNAKE$' => '$MODEL_NAME_PLURAL_SNAKE$']);
+Route::resource('$MODEL_NAME_PLURAL_SNAKE$', '$CONTROLLER_PREFIX$$MODEL_NAME$Controller', ['parameters' => '$MODEL_NAME_PLURAL_SNAKE$' => '$MODEL_NAME_PLURAL_SNAKE$']);

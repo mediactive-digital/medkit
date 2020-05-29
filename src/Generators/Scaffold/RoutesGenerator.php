@@ -39,6 +39,7 @@ class RoutesGenerator extends InfyOmRoutesGenerator {
         parent::__construct($commandData);
 
         $this->commandData = $commandData;
+        $this->commandData->addDynamicVariable('$CONTROLLER_PREFIX$', Str::afterLast($this->commandData->dynamicVars['$NAMESPACE_CONTROLLER$'], '\\') . '\\');
         $this->path = $this->getReflectionProperty('path');
         $this->routeContents = $this->getReflectionProperty('routeContents');
 
