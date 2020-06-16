@@ -10,10 +10,13 @@ class ModelTrackObserver
     use TracksHistoryTrait;
 
     public function updated($model) {
+
         if (!Auth::check()) {
+
             return;
         }
-        $this->track($model, function ($value, $field) {
+
+        $this->track($model, function ($value, $field) use ($model) {
 
             if ($field == 'password') {
 
@@ -21,16 +24,11 @@ class ModelTrackObserver
                     'body' => "{$field} : hidden ",
                 ];
             } 
-            /* elseif ($field == 'updated by') {
-
-                throw new \Exception();
-            } */
-            elseif ($field == 'created by') {
+            elseif ($field == 'created by' && !$model->wasRecentlyCreated) {
 
                 throw new \Exception();
             } 
-
-            if ($field == 'deleted by') {
+            elseif ($field == 'deleted by') {
 
                 return [
                     'body' => 'Deleted'
