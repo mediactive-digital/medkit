@@ -45,57 +45,59 @@ class Translator extends IlluminateTranslator {
     private function setForm() {
 
         $request = request();
-        $controller = $request->route()->controller;
+        $form = $request->translationForm ?: null;
 
-        if ($controller) {
+        if (!$form) {
 
-            $model = Str::afterLast(str_replace('Controller', '', get_class($controller)), '\\');
-            $form = 'App\Forms\\' . $model . 'Form';
+            $controller = $request->route()->controller;
+            $form = $controller ? 'App\Forms\\' . str_replace('Controller', 'Form', Str::afterLast(get_class($controller), 'Controllers\\')) : $form;
+        }
 
-            if (!$this->translatedForm || get_class($this->translatedForm) != $form) {
+        if ($form && (!$this->translatedForm || get_class($this->translatedForm) != $form)) {
 
-                if (class_exists($form)) {
+            if (class_exists($form)) {
 
-                    $this->translatedForm = app('laravel-form-builder')->create($form, ['model' => $request->route(Str::lower($model))]);
-                    $this->translatedForm->translatedFields = [];
+                $model = Str::afterLast(str_replace('Form', '', $form), '\\');
 
-                    $fields = $this->translatedForm->getFields();
+                $this->translatedForm = app('laravel-form-builder')->create($form, ['model' => $request->route(Str::lower($model))]);
+                $this->translatedForm->translatedFields = [];
 
-                    foreach ($fields as $key => $field) {
+                $fields = $this->translatedForm->getFields();
 
-                        $options = $field->getOptions();
-                        $label = isset($options['first_options']['label']) && $options['first_options']['label'] ? $options['first_options']['label'] : (isset($options['label']) ? $options['label'] : '');
+                foreach ($fields as $key => $field) {
 
-                        if ($label) {
+                    $options = $field->getOptions();
+                    $label = isset($options['first_options']['label']) && $options['first_options']['label'] ? $options['first_options']['label'] : (isset($options['label']) ? $options['label'] : '');
 
-                            $key = str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
+                    if ($label) {
 
-                            $keys = [
-                                $key => $label
-                            ];
+                        $key = str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
 
-                            if ($field->getType() == 'translatable') {
+                        $keys = [
+                            $key => $label
+                        ];
 
-                                $keys = [];
-                                $locales = config('laravel-gettext.supported-locales');
+                        if ($field->getType() == 'translatable') {
 
-                                foreach ($locales as $locale) {
+                            $keys = [];
+                            $locales = config('laravel-gettext.supported-locales');
 
-                                    $keys[$key . '.' . $locale] = $label . ' ' . (FormatHelper::getLocaleTranslation($locale) ?: $locale);
-                                }
+                            foreach ($locales as $locale) {
+
+                                $keys[$key . '.' . $locale] = $label . ' ' . (FormatHelper::getLocaleTranslation($locale) ?: $locale);
                             }
+                        }
 
-                            foreach ($keys as $key => $label) {
+                        foreach ($keys as $key => $label) {
 
-                                $this->translatedForm->translatedFields[$key] = Str::lower($label);
-                            }
+                            $this->translatedForm->translatedFields[$key] = Str::lower($label);
                         }
                     }
                 }
-                else {
+            }
+            else {
 
-                    $this->translatedForm = null;
-                }
+                $this->translatedForm = null;
             }
         }
 
