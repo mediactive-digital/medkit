@@ -26,6 +26,11 @@ trait Request {
      */
     private $tableNameSingular;
 
+    /** 
+     * @var string $translationForm
+     */
+    private $translationForm;
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -66,6 +71,12 @@ trait Request {
     protected function prepareForValidation() {
 
         $this->setTableNameSingular();
+        $this->setTranslationForm();
+
+        if ($this->translationForm) {
+
+            request()->translationForm = $this->translationForm;
+        }
         
         $this->modelId = $this->route($this->tableNameSingular);
         
@@ -126,5 +137,45 @@ trait Request {
     private function setRule(string $createRule, string $updateRule = ''): string {
 
         return $this->modelId > 0 ? ($updateRule !== '' ? $updateRule : $createRule) : $createRule;
+    }
+
+    /**
+     * Set the validation rules that apply to the request.
+     *
+     * @return void
+     */
+    private function setRules() {
+
+        $this->requestRules = [];
+    }
+
+    /**
+     * Set custom messages for validator errors.
+     *
+     * @return void
+     */
+    private function setMessages() {
+
+        $this->requestMessages = [];
+    }
+
+    /**
+     * Set the singular table name to retrieve the model.
+     *
+     * @return void
+     */
+    private function setTableNameSingular() {
+
+        $this->tableNameSingular = '';
+    }
+
+    /**
+     * Set the form class to retrieve label translations.
+     *
+     * @return void
+     */
+    private function setTranslationForm() {
+
+        $this->translationForm = '';
     }
 }

@@ -39,4 +39,14 @@ class $MODEL_NAME$Request extends FormRequest {
 
         $this->tableNameSingular = '$TABLE_NAME_SINGULAR$';
     }
+
+    /**
+     * Set the form class to retrieve label translations.
+     *
+     * @return void
+     */
+    private function setTranslationForm() {
+
+        $this->translationForm = '';
+    }
 }
