@@ -70,13 +70,12 @@ trait Request {
      */
     protected function prepareForValidation() {
 
+        $request = request();
+
         $this->setTableNameSingular();
         $this->setTranslationForm();
 
-        if ($this->translationForm) {
-
-            request()->translationForm = $this->translationForm;
-        }
+        $request->translationForm = $this->translationForm;
         
         $this->modelId = $this->route($this->tableNameSingular);
         
