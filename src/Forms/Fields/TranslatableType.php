@@ -8,6 +8,7 @@ use Kris\LaravelFormBuilder\Fields\FormField;
 
 use Str;
 use Arr;
+use LaravelGettext;
 
 class TranslatableType extends FormField {
 
@@ -31,7 +32,8 @@ class TranslatableType extends FormField {
         return [
             'ck_editor' => false,
             'ckEditorOpts' => [
-                'minHeight' => '253px'
+                'minHeight' => '253px',
+                'language' => LaravelGettext::getLocale()
             ]
         ];
     }
