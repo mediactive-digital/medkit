@@ -22,6 +22,11 @@ trait Request {
     private $requestMessages;
 
     /** 
+     * @var array $ignoredNullFields
+     */
+    private $ignoredNullFields;
+
+    /** 
      * @var string $tableNameSingular
      */
     private $tableNameSingular;
@@ -49,6 +54,16 @@ trait Request {
     public function messages() {
 
         return $this->requestMessages;
+    }
+
+    /**
+     * Get fields removed from request when nullable (update).
+     *
+     * @return array
+     */
+    public function ignored() {
+
+        return $this->ignoredNullFields;
     }
 
     /**
@@ -87,6 +102,7 @@ trait Request {
         
         $this->setRules();
         $this->setMessages();
+        $this->setIgnored();
 
         $this->formatDatas();
     }
@@ -115,7 +131,7 @@ trait Request {
 
         if ($this->modelId > 0) {
 
-            if (isset($this->requestRules[$key]) && in_array('nullable', $this->requestRules[$key]) && is_null($value)) {
+            if (isset($this->requestRules[$key]) && in_array($key, $this->ignored()) && in_array('nullable', $this->requestRules[$key]) && is_null($value)) {
 
                 $this->request->remove($key);
 
@@ -157,6 +173,18 @@ trait Request {
     private function setMessages() {
 
         $this->requestMessages = [];
+    }
+
+    /**
+     * Set fields removed from request when nullable (update).
+     *
+     * @return void
+     */
+    private function setIgnored() {
+
+        $this->ignoredNullFields = [
+            'password'
+        ];
     }
 
     /**
