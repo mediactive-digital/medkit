@@ -7,6 +7,7 @@ services:
         working_dir: /var/www/
         ports:
             - 8080:80
+            - 6001:6001
         volumes:
             - "./:/var/www/"
             - "./public/:/var/www/html/"
@@ -15,19 +16,22 @@ services:
             - backend
     mysql:
         container_name: db_mysql_$DB_DATABASE
-        image: mysql:8.0.19
+        image: mysql:latest
+        security_opt:
+            - seccomp:unconfined
         ports:
             - 33062:3306
         environment:
             - "MYSQL_ROOT_PASSWORD=${DB_PASSWORD}"
         volumes:
+            - "./docker_data/mysql/my.cnf:/etc/mysql/conf.d/my.cnf"
             - "./docker_data/mysql/db/data:/var/lib/mysql"
             - "./docker_data/mysql/db/initdb.d:/docker-entrypoint-initdb.d"
         networks:
             - backend
     redis:
         container_name: db_redis_$DB_DATABASE
-        image: redis:5.0.7
+        image: redis:latest
         ports:
             - 6379:6379
         volumes:
