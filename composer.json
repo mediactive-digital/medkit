@@ -36,7 +36,8 @@
         "spatie/laravel-database-mail-templates": "^3.2",
         "spatie/laravel-translatable": "^4.2",
         "predis/predis": "^1.1",
-		"doctrine/dbal": "^2.10"
+		"doctrine/dbal": "^2.10",
+        "rairlie/laravel-locking-session": "^1.1"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
