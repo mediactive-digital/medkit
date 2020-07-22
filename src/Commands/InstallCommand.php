@@ -10,6 +10,8 @@ use Symfony\Component\Process\Process;
 use Composer\Json\JsonFile;
 
 use MediactiveDigital\MedKit\Helpers\ConfigHelper;
+use MediactiveDigital\MedKit\Helpers\FormatHelper;
+
 use MediactiveDigital\MedKit\Json\JsonManipulator;
 
 class InstallCommand extends Command {
@@ -30,16 +32,18 @@ class InstallCommand extends Command {
         0 => 'Exit',
         1 => 'Run All',
         2 => 'Add Require Packages',
-        3 => 'Copy Source',
-        4 => 'Publish packages sources',
-        5 => 'Add Route',
-        6 => 'Add AdminGuard',
-        7 => 'Add Facades',
-        8 => 'Install Theme',
-        9 => 'Add helpers',
-        10 => 'Generate Laravel default translations for Poedit',
-        11 => 'Generate JS translations',
-        12 => 'Generate JS routes'
+        3 => 'Add Providers',
+        4 => 'Copy Source',
+        5 => 'Publish packages sources',
+        6 => 'Add Route',
+        7 => 'Add AdminGuard',
+        8 => 'Add session config',
+        9 => 'Add Facades',
+        10 => 'Install Theme',
+        11 => 'Add helpers',
+        12 => 'Generate Laravel default translations for Poedit',
+        13 => 'Generate JS translations',
+        14 => 'Generate JS routes'
     ];
 
     /**
@@ -72,11 +76,13 @@ class InstallCommand extends Command {
 
                     $this->addHelpers();
                     $this->addRequirePackages();
+                    $this->addProviders();
                     $this->composerDump();
                     $this->copySource();
                     $this->publishPackagesSource();
                     $this->addRoutes();
                     $this->addAdminGuard();
+                    $this->addSessionConfig();
                     $this->addFacades();
                     $this->installTheme();
                     $this->generateTranslations();
@@ -97,61 +103,74 @@ class InstallCommand extends Command {
 
                 case 3 :
 
-                    $this->copySource();
+                    $this->addProviders();
+                    $this->composerDump();
 
                 break;
 
                 case 4 :
 
-                    $this->publishPackagesSource();
+                    $this->copySource();
 
                 break;
 
                 case 5 :
 
-                    $this->addRoutes();
+                    $this->publishPackagesSource();
 
                 break;
 
                 case 6 :
 
-                    $this->addAdminGuard();
+                    $this->addRoutes();
 
                 break;
 
                 case 7 :
 
-                    $this->addFacades();
+                    $this->addAdminGuard();
 
                 break;
 
                 case 8 :
+
+                    $this->addSessionConfig();
+
+                break;
+
+                case 9 :
+
+                    $this->addFacades();
+
+                break;
+
+                case 10 :
 
                     $this->installTheme();
                     $this->composerDump();
 
                 break;
 
-                case 9 :
+                case 11 :
 
                     $this->addHelpers();
                     $this->composerDump();
                     
                 break;
 
-                case 10 :
+                case 12 :
 
                     $this->generateTranslations();
                     
                 break;
 
-                case 11 :
+                case 13 :
 
                     $this->generateJsTranslations();
                     
                 break;
 
-                case 12 :
+                case 14 :
 
                     $this->generateJsRoutes();
                     
@@ -181,6 +200,54 @@ class InstallCommand extends Command {
 
         if ($this->hasOption('theme')) {
             $this->doCommand('composer require ' . $this->option('theme').'');
+        }
+    }
+
+    /**
+     * Add providers to configuration
+     */
+    public function addProviders() {
+
+        $this->info('Add Providers to config/app.php');
+
+        $path = base_path('config') . '/app.php';
+        $configContents = file_get_contents($path);
+        $add = false;
+
+        $configContents = preg_replace_callback('/(\'providers\' => \[)([\s\S]*?)(])/', function($matches) use (&$add) {
+
+            $matches2 = $matches[2];
+
+            if (strpos($matches2, 'Rairlie\LockingSession\LockingSessionServiceProvider') === false) {
+
+                $matches2 = str_replace('Illuminate\Session\SessionServiceProvider', '// Illuminate\Session\SessionServiceProvider', $matches2);
+
+                $matches2 = preg_replace_callback('/(Package Service Providers[\s\S]*?\*\/)([\s\S]*?)(\/\*)/', function($matches) {
+
+                    $return = $matches[1] . rtrim($matches[2]) . FormatHelper::NEW_LINE . FormatHelper::TAB . FormatHelper::TAB .
+                        'Rairlie\LockingSession\LockingSessionServiceProvider::class,' . 
+                        FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB . FormatHelper::TAB . $matches[3];
+
+                    return $return;
+
+                }, $matches2);
+
+                $add = true;
+            }
+
+            $return = $matches[1] . $matches2 . $matches[3];
+    
+            return $return;
+
+        }, $configContents);
+
+        if ($add) {
+
+            file_put_contents($path, $configContents);
+        }
+        else {
+
+            $this->error(' #ERR1 [SKIP] ' . $path . ' already has providers');
         }
     }
 
@@ -272,6 +339,45 @@ class InstallCommand extends Command {
         $this->info('Update app/Kernel.php');
     }
 
+    /**
+     * Add session configuration
+     */
+    public function addSessionConfig() {
+
+        $this->info('Add Session configuration to config/session.php');
+
+        $path = base_path('config') . '/session.php';
+        $configContents = file_get_contents($path);
+        $add = false;
+
+        $configContents = preg_replace_callback('/(Session File Location[\s\S]*?\*\/)([\s\S]*?)(\/\*)/', function($matches) use (&$add) {
+
+            $matches2 = $matches[2];
+
+            if (strpos($matches2, 'lockfile_dir') === false) {
+
+                $matches2 = rtrim($matches2) . FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB .
+                    '\'lockfile_dir\' => storage_path(\'framework/lock_sessions\'),' . 
+                    FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB;
+
+                $add = true;
+            }
+
+            $return = $matches[1] . $matches2 . $matches[3];
+    
+            return $return;
+
+        }, $configContents);
+
+        if ($add) {
+
+            file_put_contents($path, $configContents);
+        }
+        else {
+
+            $this->error(' #ERR1 [SKIP] ' . $path . ' already has configuration');
+        }
+    }
 
     /**
      * Edit config/auth.php to add admin guard
@@ -352,21 +458,23 @@ class InstallCommand extends Command {
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $authConfigPasswordBroker);
     }
 
+    /**
+     * Add facades to configuration
+     */
     public function addFacades() {
 
-        $this->info("Add Facades to config/app.php");
+        $this->info('Add Facades to config/app.php');
+
         $fileToEdit = base_path('config') . '/app.php';
+        $sectionTitle = 'Class Aliases';
         $appConfig = include($fileToEdit);
 
-        /**
-         * Add facades
-         */
         $appConfigFacades = ['aliases' => array_merge($appConfig['aliases'], [
             'Debugbar' => \Barryvdh\Debugbar\Facade::class,
             'Translation' => \App\Helpers\TranslationHelper::class,
             'Format' => \App\Helpers\FormatHelper::class
         ])];
-        $sectionTitle = "Class Aliases";
+
         ConfigHelper::replaceArrayInConfig($fileToEdit, $sectionTitle, null, $appConfigFacades);
     }
 
