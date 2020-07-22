@@ -352,18 +352,18 @@ class InstallCommand extends Command {
 
         $configContents = preg_replace_callback('/(Session File Location[\s\S]*?\*\/)([\s\S]*?)(\/\*)/', function($matches) use (&$add) {
 
-            if (strpos($matches[2], 'lockfile_dir') !== false) {
+            $matches2 = $matches[2];
 
-                $return = $matches[1] . $matches[2] . $matches[3];
-            }
-            else {
+            if (strpos($matches2, 'lockfile_dir') === false) {
 
-                $return = $matches[1] . rtrim($matches[2]) . FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB .
+                $matches2 = rtrim($matches2) . FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB .
                     '\'lockfile_dir\' => storage_path(\'framework/lock_sessions\'),' . 
-                    FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB . $matches[3];
+                    FormatHelper::NEW_LINE . FormatHelper::NEW_LINE . FormatHelper::TAB;
 
                 $add = true;
             }
+
+            $return = $matches[1] . $matches2 . $matches[3];
     
             return $return;
 
