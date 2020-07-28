@@ -70,9 +70,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      */
     public function store($MODEL_NAME$Request $request) {
 
-        $input = $request->all();
-
-        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($input);
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->create($request);
 
         Flash::success(_i('$MODEL_NAME_HUMAN$ enregistré avec succès'));
 
@@ -123,7 +121,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      */
     public function update($MODEL_NAME$ $$MODEL_NAME_CAMEL$, $MODEL_NAME$Request $request) {
 
-        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($request->all(), $$MODEL_NAME_CAMEL$->id);
+        $$MODEL_NAME_CAMEL$ = $this->$MODEL_NAME_CAMEL$Repository->update($request, $$MODEL_NAME_CAMEL$);
 
         Flash::success(_i('$MODEL_NAME_HUMAN$ mis à jour avec succès'));
 
@@ -139,7 +137,7 @@ class $MODEL_NAME$Controller extends AppBaseController {
      */
     public function destroy($MODEL_NAME$ $$MODEL_NAME_CAMEL$) {
 
-        $this->$MODEL_NAME_CAMEL$Repository->delete($$MODEL_NAME_CAMEL$->id);
+        $this->$MODEL_NAME_CAMEL$Repository->delete($$MODEL_NAME_CAMEL$);
 
         Flash::success(_i('$MODEL_NAME_HUMAN$ supprimé avec succès'));
 
