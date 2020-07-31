@@ -139,7 +139,7 @@ abstract class BaseRepository {
      */
     public function create($request) {
 
-        $datas = $request instanceof Request ? $request->validated() : $datas;
+        $datas = $request instanceof Request ? $request->validated() : $request;
         $model = $this->model->newInstance($datas);
 
         $model->save();
@@ -174,7 +174,7 @@ abstract class BaseRepository {
      */
     public function update($request, $model) {
 
-        $datas = $request instanceof Request ? $request->validated() : $datas;
+        $datas = $request instanceof Request ? $request->validated() : $request;
         $model = $model instanceof Model ? $model : $this->model->newQuery()->findOrFail($model);
         
         $model->fill($datas);
