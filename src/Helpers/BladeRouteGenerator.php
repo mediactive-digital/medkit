@@ -33,31 +33,31 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator {
         static::$generated = true;
 
         return <<<EOT
-<script type="text/javascript"{$nonce}>
+
     var Ziggy = {
         namedRoutes: $json,
-        baseUrl: '{$this->baseUrl}',
-        baseProtocol: '{$this->baseProtocol}',
-        baseDomain: '{$this->baseDomain}',
+        baseProtocol: {$this->baseProtocol},
+        baseDomain: {$this->baseDomain},
         basePort: {$this->basePort},
         defaultParameters: $defaultParameters
     };
+    Ziggy.baseUrl = {$this->baseUrl};
     $routeFunction
-</script>
+
 EOT;
     }
 
     private function generateMergeJavascript($json, $nonce) {
 
         return <<<EOT
-<script type="text/javascript"{$nonce}>
+
     (function() {
         var routes = $json;
         for (var name in routes) {
             Ziggy.namedRoutes[name] = routes[name];
         }
     })();
-</script>
+
 EOT;
     }
 
