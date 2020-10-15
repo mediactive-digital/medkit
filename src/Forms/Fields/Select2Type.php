@@ -36,7 +36,9 @@ class Select2Type extends FormField {
             'select2Opts' => [
                 'closeOnSelect' => false,
                 'multiple' => true
-            ]
+            ],
+            'options_attr' => [],
+            'opt_groups_attr' => []
         ];
     }
 
