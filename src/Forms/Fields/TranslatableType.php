@@ -152,6 +152,10 @@ class TranslatableType extends FormField {
                     $fields[$locale]['field']['attributes']['id'] = isset($fields[$locale]['field']['attributes']['id']) ? $fields[$locale]['field']['attributes']['id'] : $this->name . '-' . $locale;
                     $fields[$locale]['field']['attributes']['class'] .= ' js-ck-editor';
                 }
+            } else if($this->options['subtype'] == 'file' || $this->options['subtype'] == 'image' ) {
+
+                $fields[$locale]['field']['attributes']['type']     = $this->options['subtype'];
+                $fields[$locale]['field']['attributes']['data-val'] = $value;
             }
             else {
 
