@@ -38,7 +38,7 @@
         "predis/predis": "^1.1",
 		"doctrine/dbal": "^2.10",
         "rairlie/laravel-locking-session": "^1.1",
-        "laravel/ui": "^2.0",
+        "laravel/ui": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
