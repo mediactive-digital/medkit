@@ -312,7 +312,7 @@ class InstallCommand extends Command {
      */
     private function doCommand($command)
     {
-        $process = new Process($command);
+        $process = Process::fromShellCommandline($command);
         $process->setTimeout(null); // Setting timeout to null to prevent installation from stopping at a certain point in time
 
         $process->setWorkingDirectory(base_path())->run(function ($type, $buffer) {
