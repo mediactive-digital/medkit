@@ -8,6 +8,8 @@ use Illuminate\Filesystem\Filesystem;
 
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
+use Kris\LaravelFormBuilder\Fields\ChildFormType;
+
 use Arr;
 use Str;
 
@@ -59,10 +61,16 @@ class Translator extends IlluminateTranslator {
 
                 $model = $request->tableNameSingular ?: Str::snake(Str::afterLast(str_replace('Form', '', $form), '\\'));
 
-                $this->translatedForm = app('laravel-form-builder')->create($form, ['model' => $request->route($model)]);
+                $this->translatedForm = app('laravel-form-builder')->create($form, [
+                    'model' => $request->route($model),
+                    'data' => [
+                        'translation_form' => true
+                    ]
+                ]);
+
                 $this->translatedForm->translatedFields = [];
 
-                $fields = $this->translatedForm->getFields();
+                $fields = $this->getFormFields();
 
                 foreach ($fields as $key => $field) {
 
@@ -140,5 +148,62 @@ class Translator extends IlluminateTranslator {
         }
 
         return $translations;
+    }
+
+    /**
+     * Get current form fields for label translation.
+     *
+     * @return array $fields
+     */
+    private function getFormFields(): array {
+
+        $fields = [];
+
+        $currentFields = $this->translatedForm->getFields();
+
+        foreach ($currentFields as $key => $field) {
+
+            if ($field instanceof ChildFormType) {
+
+                $fields += $this->getChildFormFields($field, $key);
+            }
+            else {
+
+                $fields[$key] = $field;
+            }
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Get current form child fields for label translation.
+     *
+     * @param \Kris\LaravelFormBuilder\Fields\ChildFormType $childForm
+     * @param string $parentKey
+     *
+     * @return array $fields
+     */
+    private function getChildFormFields(ChildFormType $childForm, string $parentKey): array {
+
+        $fields = [];
+
+        $currentFields = $childForm->getChildren();
+
+        foreach ($currentFields as $key => $field) {
+
+            $key = $parentKey . '[' . $key . ']';
+
+            if ($field instanceof ChildFormType) {
+
+                $fields += $this->getChildFormFields($field, $key);
+            }
+            else {
+
+                $fields[$key] = $field;
+            }
+        }
+
+        return $fields;
     }
 }
