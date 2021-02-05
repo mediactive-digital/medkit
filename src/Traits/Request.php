@@ -3,6 +3,7 @@
 namespace MediactiveDigital\MedKit\Traits;
 
 use Str;
+use Arr;
 
 trait Request {
 
@@ -35,6 +36,11 @@ trait Request {
      * @var string $translationForm
      */
     private $translationForm;
+
+    /** 
+     * @var array $customDatas
+     */
+    private $customDatas = [];
 
     /**
      * Get the validation rules that apply to the request.
@@ -79,6 +85,91 @@ trait Request {
     }
 
     /**
+     * Pass custom data to the Request instance.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return object
+     */
+    public function customData(string $key, $value) {
+
+        $customDatas = $this->getCustomDatas();
+
+        $customDatas[$key] = $value;
+
+        $this->setCustomDatas($customDatas);
+
+        return $this;
+    }
+
+    /**
+     * Pass custom datas to the Request instance.
+     *
+     * @param array $customDatas
+     *
+     * @return object
+     */
+    public function customDatas(array $customDatas) {
+
+        $this->setCustomDatas($customDatas);
+
+        return $this;
+    }
+
+    /**
+     * Get custom data from the Request instance.
+     *
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getCustomData(string $key) {
+
+        return $this->customDatas[$key] ?? null;
+    }
+
+    /**
+     * Get custom datas from the Request instance.
+     *
+     * @return array
+     */
+    public function getCustomDatas(): array {
+
+        return $this->customDatas;
+    }
+
+    /**
+     * Remove custom data from the Request instance.
+     *
+     * @param string $key
+     *
+     * @return object
+     */
+    public function removeCustomData(string $key) {
+
+        $customDatas = $this->getCustomDatas();
+
+        unset($customDatas[$key]);
+
+        $this->setCustomDatas($customDatas);
+
+        return $this;
+    }
+
+    /**
+     * Remove custom datas from the Request instance.
+     *
+     * @return object
+     */
+    public function removeCustomDatas(): array {
+
+        $this->setCustomDatas([]); 
+
+        return $this;
+    }
+
+    /**
      * Prepare the data for validation.
      *
      * @return void
@@ -105,6 +196,18 @@ trait Request {
         $this->setIgnored();
 
         $this->formatDatas();
+    }
+
+    /**
+     * Set custom datas for the Request instance.
+     *
+     * @param array $customDatas
+     *
+     * @return void
+     */
+    protected function setCustomDatas(array $customDatas) {
+
+        $this->customDatas = Arr::dot($customDatas);
     }
 
     /**

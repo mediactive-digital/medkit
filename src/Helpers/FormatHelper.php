@@ -12,6 +12,7 @@ use Closure;
 use File;
 use Route;
 use Request;
+use Arr;
 
 class FormatHelper {
 
@@ -1006,5 +1007,150 @@ class FormatHelper {
         $cp = $cp && ($cp = filter_var($cp, FILTER_SANITIZE_NUMBER_INT)) ? number_format($cp, 0, '', ' ') : '';
 
         return $cp;
+    }
+
+    /**
+     * Convertit une date sous forme de chaîne de caractères en objet Carbon selon un ou plusieurs formats possibles d'entrée.
+     *
+     * @param string $date
+     * @param string|array $formats
+     *
+     * @return \Carbon\Carbon|null
+     */
+    public static function castDateStringToCarbon(string $date, $formats = 'Y-m-d H:i:s'): ?Carbon {
+
+        $formats = (array)$formats;
+
+        foreach ($formats as $format) {
+
+            try {
+
+                $date = Carbon::createFromFormat($format, $date);
+            }
+            catch (\Error | \Exception $e) {
+
+            }
+
+            if ($date instanceof Carbon) {
+
+                return $date;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Transforme un tableau à plat en tableau multidimensionnel.
+     *
+     * @param array $doted
+     *
+     * @return array $unDoted
+     */
+    public static function arrayUnDot(array $doted): array {
+
+        $unDoted = [];
+        
+        foreach ($doted as $key => $value) {
+
+            array_set($unDoted, $key, $value);
+        }
+
+        return $unDoted;
+    }
+
+    /**
+     * Différence entre des tableaux multidimensionnels.
+     *
+     * @param array $array
+     * @param array ...$arrays
+     *
+     * @return array $unDoted
+     */
+    public static function arrayDiffMulti(array $array, ...$arrays): array {
+
+        foreach ($arrays as $key => $value) {
+
+            $arrays[$key] = array_map('self::arrayToJson', Arr::dot((array)$value));
+        }
+
+        $unDoted = self::arrayUnDot(array_map('self::jsonToArray', array_diff(array_map('self::arrayToJson', Arr::dot($array)), ...$arrays)));
+
+        return $unDoted;
+    }
+
+    /**
+     * Transforme un tableau en JSON.
+     *
+     * @param mixed $array
+     *
+     * @return mixed $json
+     */
+    public static function arrayToJson($array) {
+
+        $json = is_array($array) ? json_encode($array) : $array;
+
+        return $json;
+    }
+
+    /**
+     * Transforme un JSON en tableau.
+     *
+     * @param mixed $json
+     *
+     * @return mixed $array
+     */
+    public static function jsonToArray($json) {
+
+        $array = json_decode($json);
+        $array = is_array($array) ? $array : $json;
+
+        return $array;
+    }
+
+    /**
+     * Retournes les valeurs d'un tableau filtrées par clés.
+     *
+     * @param \ArrayAccess|array $array
+     * @param array|string|int|null $keys
+     * @param mixed $default
+     * @param bool $defaultArray
+     *
+     * @return mixed $arrayValues
+     */
+    public static function arrayGetMulti($array, $keys, $default = null, bool $defaultArray = false) {
+
+        if (is_array($keys)) {
+
+            if ($keys) {
+
+                $arrayValues = [];
+
+                foreach ($keys as $index => $key) {
+
+                    $defaultValue = $defaultArray ? (isset($default[$index]) ? $default[$index] : null) : $default;
+                    $arrayValues[$key] = Arr::get($array, $key, $defaultValue);
+                }
+
+                if (count($keys) == 1) {
+
+                    $arrayValues = Arr::first($arrayValues);
+                }
+                else {
+
+                    $arrayValues = self::arrayUnDot($arrayValues);
+                }
+            }
+            else {
+
+                $arrayValues = $array;
+            }
+        }
+        else {
+
+            $arrayValues = Arr::get($array, $keys, $default);
+        }
+
+        return $arrayValues;
     }
 }
