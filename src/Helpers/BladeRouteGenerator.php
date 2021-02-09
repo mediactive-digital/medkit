@@ -3,8 +3,10 @@
 namespace MediactiveDigital\MedKit\Helpers;
 
 use Tightenco\Ziggy\BladeRouteGenerator as ZiggyBladeRouteGenerator;
+use Tightenco\Ziggy\Ziggy;
 
-class BladeRouteGenerator extends ZiggyBladeRouteGenerator {
+class BladeRouteGenerator extends ZiggyBladeRouteGenerator
+{
 
     public static $generated;
     private $baseProtocol;
@@ -12,55 +14,67 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator {
     private $basePort;
     private $baseUrl;
 
-    public function generate($group = false, $nonce = false) {
 
-        $json = $this->getRoutePayload($group)->toJson();
+    public function generate($group = false, $nonce = false)
+    {
 
-        if (static::$generated) {
-
-           return $this->generateMergeJavascript($json, $nonce);
-        }
 
         $this->prepareDomain();
+        $payload = new Ziggy($group);
+        $nonce = $nonce ? ' nonce="' . $nonce . '"' : '';
 
-        $parent = (new \ReflectionClass($this))->getParentClass();
-        $getRouteFunction = $parent->getMethod('getRouteFunction');
-        $getRouteFunction->setAccessible(true);
-        $routeFunction = $getRouteFunction->invoke($this);
+        if (static::$generated) {
+            return $this->generateMergeJavascript(json_encode($payload->toArray()['routes']), $nonce);
+        }
 
-        $defaultParameters = method_exists(app('url'), 'getDefaultParameters') ? json_encode(app('url')->getDefaultParameters()) : '[]';
+        $routeFunction = $this->getRouteFunction();
 
         static::$generated = true;
 
-        return <<<EOT
+        return <<<HTML
 
-    var Ziggy = {
-        namedRoutes: $json,
-        baseProtocol: {$this->baseProtocol},
-        baseDomain: {$this->baseDomain},
-        basePort: {$this->basePort},
-        defaultParameters: $defaultParameters
-    };
+    const Ziggy = {$payload->toJson()};
     Ziggy.baseUrl = {$this->baseUrl};
     $routeFunction
 
-EOT;
+HTML;
     }
 
-    private function generateMergeJavascript($json, $nonce) {
+    private function generateMergeJavascript($json, $nonce)
+    {
+        return <<<HTML
 
-        return <<<EOT
+    (function () {
+        const routes = {$json};
 
-    (function() {
-        var routes = $json;
-        for (var name in routes) {
-            Ziggy.namedRoutes[name] = routes[name];
+        for (let name in routes) {
+            Ziggy.routes[name] = routes[name];
         }
     })();
 
-EOT;
+HTML;
     }
 
+    private function getRouteFilePath()
+    {
+      
+        $ziggyDir =__DIR__."/../../../../tightenco/ziggy/";
+       
+        return $ziggyDir . 'dist/index.js';
+    }
+
+    private function getRouteFunction()
+    {
+        if (config()->get('ziggy.skip-route-function')) {
+            return '';
+        }
+
+        return file_get_contents($this->getRouteFilePath());
+    }
+
+
+
+    
     private function prepareDomain() {
 
         $this->baseProtocol = 'window.location.protocol.slice(0, -1)';
