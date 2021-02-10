@@ -9,18 +9,11 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator
 {
 
     public static $generated;
-    private $baseProtocol;
-    private $baseDomain;
-    private $basePort;
-    private $baseUrl;
-
 
     public function generate($group = false, $nonce = false)
     {
 
-
-        $this->prepareDomain();
-        $payload = new Ziggy($group);
+        $payload = new Ziggy($group, env('APP_URL'));
         $nonce = $nonce ? ' nonce="' . $nonce . '"' : '';
 
         if (static::$generated) {
@@ -34,7 +27,6 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator
         return <<<HTML
 
     const Ziggy = {$payload->toJson()};
-    Ziggy.baseUrl = {$this->baseUrl};
     $routeFunction
 
 HTML;
@@ -57,9 +49,8 @@ HTML;
 
     private function getRouteFilePath()
     {
-      
-        $ziggyDir =__DIR__."/../../../../tightenco/ziggy/";
-       
+
+        $ziggyDir = __DIR__ . "/../../../../tightenco/ziggy/";
         return $ziggyDir . 'dist/index.js';
     }
 
@@ -68,18 +59,6 @@ HTML;
         if (config()->get('ziggy.skip-route-function')) {
             return '';
         }
-
         return file_get_contents($this->getRouteFilePath());
-    }
-
-
-
-    
-    private function prepareDomain() {
-
-        $this->baseProtocol = 'window.location.protocol.slice(0, -1)';
-        $this->baseDomain = 'window.location.hostname';
-        $this->basePort = 'window.location.port';
-        $this->baseUrl = 'Ziggy.baseProtocol + "://" + Ziggy.baseDomain + (Ziggy.basePort ? ":" + Ziggy.basePort : "") + "/"';
     }
 }
