@@ -31,6 +31,16 @@ class $MODEL_NAME$Request extends FormRequest {
     }
 
     /**
+     * Set custom attributes for validator errors.
+     *
+     * @return void
+     */
+    private function setAttributes() {
+
+        $this->requestAttributes = [];
+    }
+
+    /**
      * Set the singular table name to retrieve the model.
      *
      * @return void
