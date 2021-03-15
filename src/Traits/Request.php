@@ -23,6 +23,11 @@ trait Request {
     private $requestMessages;
 
     /** 
+     * @var array $requestAttributes
+     */
+    private $requestAttributes;
+
+    /** 
      * @var array $ignoredNullFields
      */
     private $ignoredNullFields;
@@ -60,6 +65,16 @@ trait Request {
     public function messages() {
 
         return $this->requestMessages;
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes() {
+
+        return $this->requestAttributes;
     }
 
     /**
@@ -193,6 +208,7 @@ trait Request {
         
         $this->setRules();
         $this->setMessages();
+        $this->setAttributes();
         $this->setIgnored();
 
         $this->formatDatas();
@@ -276,6 +292,16 @@ trait Request {
     private function setMessages() {
 
         $this->requestMessages = [];
+    }
+
+    /**
+     * Set custom attributes for validator errors.
+     *
+     * @return void
+     */
+    private function setAttributes() {
+
+        $this->requestAttributes = [];
     }
 
     /**
