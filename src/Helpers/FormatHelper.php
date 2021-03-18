@@ -6,6 +6,8 @@ use Carbon\Carbon;
 
 use Collective\Html\HtmlBuilder;
 
+use Illuminate\Routing\Route as IlluminateRoute;
+
 use Str;
 use LaravelGettext;
 use Closure;
@@ -985,14 +987,25 @@ class FormatHelper {
      *
      * @param string $url
      *
-     * @return \Illuminate\Routing\Route|null
+     * @return \Illuminate\Routing\Route|null $route
      */
-    public static function getRouteFromUrl(string $url) {
+    public static function getRouteFromUrl(string $url, string $method = null): ?IlluminateRoute {
 
-        return collect(Route::getRoutes())->first(function($route) use ($url) {
+        $method = $method ?? 'GET';
 
-           return $route->matches(Request::create($url));
+        $request = Request::create($url, $method);
+
+        $route = collect(Route::getRoutes())->first(function($route) use ($request) {
+
+            return $route->matches($request);
         });
+
+        if ($route) {
+
+            $route->bind($request);
+        }
+
+        return $route;
     }
 
     /**
