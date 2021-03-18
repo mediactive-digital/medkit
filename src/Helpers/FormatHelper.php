@@ -236,7 +236,7 @@ class FormatHelper {
      *
      * @return array $translatedLocales
      */
-    public static function getTranslatedLocales() {
+    public static function getTranslatedLocales(): array {
 
         $translatedLocales = [
             'aa' => _i('Afar'),
@@ -434,15 +434,21 @@ class FormatHelper {
     /**
      * Retourne la liste des années depuis l'année de départ jusqu'à l'année en cours
      *
-     * @param mixed $endYear
+     * @param int|string|\Carbon\Carbon $startYear
+     * @param int|string|\Carbon\Carbon $endYear
+     *
      * @return array $years
      */
-    public static function getYears($endYear = null) {
+    public static function getYears($startYear = null, $endYear = null): array {
 
         $years = [];
-        $endYear = $endYear === null ? Carbon::now()->year : ((int)$endYear > self::START_YEAR ? (int)$endYear : self::START_YEAR);
 
-        for ($year = self::START_YEAR; $year <= $endYear; $year++) {
+        $startYear = $startYear === null ? (int)self::START_YEAR : (int)($startYear instanceof Carbon ? $startYear->year : $startYear);
+        $endYear = $endYear === null ? Carbon::now()->year : (int)($endYear instanceof Carbon ? $endYear->year : $endYear);
+
+        $startYear = $startYear > $endYear ? $endYear : $startYear;
+
+        for ($year = $startYear; $year <= $endYear; $year++) {
 
             $years[$year] = $year;
         }
@@ -453,8 +459,9 @@ class FormatHelper {
     /**
      * Retourne la liste des mois de l'année
      *
-     * @param mixed $monthIds
-     * @return mixed array|string $months
+     * @param array|int|string $monthIds
+     *
+     * @return array|string $months
      */
     public static function getMonths($monthIds = null) {
 
@@ -560,8 +567,9 @@ class FormatHelper {
     /**
      * Convertit une valeur en octets (php.ini)
      *
-     * @param mixed string|int|float $value
-     * @return mixed int|float $value
+     * @param string|int|float $value
+     *
+     * @return int|float $value
      */
     public static function convertToBytes($value) {
 
@@ -591,7 +599,8 @@ class FormatHelper {
      * Retourne la taille maximum autorisée pour l'upload des fichiers
      *
      * @param string $format
-     * @return mixed int|float $maxSize
+     *
+     * @return int|float $maxSize
      */
     public static function getUploadMaxSize(string $format = 'Mo') {
 
@@ -628,6 +637,7 @@ class FormatHelper {
      * Retire les espaces d'une chaîne de caractères
      *
      * @param mixed $value
+     *
      * @return mixed $value
      */
     public static function removeSpaces($value) {
@@ -643,6 +653,7 @@ class FormatHelper {
      * @param bool $doubleQuotes
      * @param bool $newLines
      * @param bool|null $associative
+     *
      * @return string $string
      */
     public static function writeArrayToPhp(array $array, int $level = 0, bool $doubleQuotes = false, bool $newLines = true, bool $associative = null): string {
@@ -676,6 +687,7 @@ class FormatHelper {
      * @param bool $doubleQuotes
      * @param bool $newLines
      * @param bool|null $associative
+     *
      * @return string
      */
     public static function writeValueToPhp($value, int $level = 0, bool $doubleQuotes = false, bool $newLines = true, bool $associative = null): string {
@@ -717,9 +729,10 @@ class FormatHelper {
      * Check if array is associative
      *
      * @param array $array
+     *
      * @return bool
      */
-    public static function isAssociativeArray(array $array) {
+    public static function isAssociativeArray(array $array): bool {
 
         return [] === $array ? false : array_keys($array) !== range(0, count($array) - 1);
     }
@@ -729,7 +742,7 @@ class FormatHelper {
      *
      * @return string $theme
      */
-    public static function getTheme() {
+    public static function getTheme(): string {
 
         $theme = 'medkit-theme-malabar';
         $path = base_path('vendor/mediactive-digital');
@@ -751,9 +764,10 @@ class FormatHelper {
      * Utilisé pour la traduction des datatables
      *
      * @param string $locale
+     *
      * @return string $language
      */
-    public static function getLanguage(string $locale) {
+    public static function getLanguage(string $locale): string {
 
         $language = isset(self::LANGUAGES[$locale]) ? self::LANGUAGES[$locale] : '';
 
@@ -764,9 +778,10 @@ class FormatHelper {
      * Retourne la traduction d'une locale (code sur 2 lettres ISO 639-1)
      *
      * @param string $locale
+     *
      * @return string $translatedLocale
      */
-    public static function getLocaleTranslation(string $locale = '') {
+    public static function getLocaleTranslation(string $locale = ''): string {
 
         $locale = $locale ?: LaravelGettext::getLocale();
         $locales = self::getTranslatedLocales();
@@ -779,6 +794,7 @@ class FormatHelper {
      * Retourne les drapeaux d'une locale sous forme de SVG
      *
      * @param string $locale
+     *
      * @return array $flags
      */
     public static function getLocaleFlags(string $locale): array {
@@ -808,6 +824,7 @@ class FormatHelper {
      * Retourne un drapeau sous forme de SVG
      *
      * @param string $flagName
+     *
      * @return string $flag
      */
     public static function getFlag(string $flagName): string {
@@ -829,6 +846,7 @@ class FormatHelper {
      * @param mixed $value
      * @param null|int $decimalPlaces
      * @param string $locale
+     *
      * @return string $return
      */
     public static function numberFormat($value, int $decimalPlaces = null, string $locale = ''): string {
@@ -849,6 +867,7 @@ class FormatHelper {
      * Retourne les séparateurs numériques selon la locale
      *
      * @param string $locale
+     *
      * @return array $separators
      */
     public static function getNumberSeparators(string $locale = ''): array {
@@ -879,6 +898,7 @@ class FormatHelper {
      * @param bool $unescapedUnicode
      * @param bool $unescapedSlashes
      * @param bool $forceObject
+     *
      * @return string
      */
     public static function formatArraytoJson(array $array, $prettyPrint = true, $unescapedUnicode = true, $unescapedSlashes = true, $forceObject = true): string {
@@ -893,6 +913,7 @@ class FormatHelper {
      * Nettoye un template Laravel Generator
      *
      * @param string $template
+     *
      * @return string $template
      */
     public static function cleanTemplate(string $template): string {
@@ -913,6 +934,7 @@ class FormatHelper {
      * Génère des attributs HTML sous forme de chaîne de caractères depuis un tableau
      *
      * @param array $htmlAttributes
+     *
      * @return string $renderedHtmlAttributes
      */
     public static function renderHtmlAttributes(array $htmlAttributes): string {
@@ -929,6 +951,7 @@ class FormatHelper {
      * @param string $parentKey
      * @param string $childrenKey
      * @param string $idKey
+     *
      * @return array $branch
      */
     public static function buildTreeFromFlatArray(array $flatArray, int $parentId = null, Closure $callback = null, string $parentKey = 'parent_id', string $childrenKey = 'children', $idKey = 'id'): array {
