@@ -3,7 +3,8 @@
 namespace MediactiveDigital\MedKit\Helpers;
 
 use Tightenco\Ziggy\BladeRouteGenerator as ZiggyBladeRouteGenerator;
-use Tightenco\Ziggy\Ziggy;
+
+use MediactiveDigital\MedKit\Generators\JsRouteGenerator;
 
 class BladeRouteGenerator extends ZiggyBladeRouteGenerator
 {
@@ -13,20 +14,23 @@ class BladeRouteGenerator extends ZiggyBladeRouteGenerator
     public function generate($group = false, $nonce = false)
     {
 
-        $payload = new Ziggy($group, env('APP_URL'));
+        $payload = new JsRouteGenerator($group);
         $nonce = $nonce ? ' nonce="' . $nonce . '"' : '';
 
         if (static::$generated) {
             return $this->generateMergeJavascript(json_encode($payload->toArray()['routes']), $nonce);
         }
 
+        $json = $payload->jsonSerialize();
+        $defaults = json_encode($json['defaults']);
+        $routes = json_encode($json['routes']);
         $routeFunction = $this->getRouteFunction();
 
         static::$generated = true;
 
         return <<<HTML
 
-    const Ziggy = {$payload->toJson()};
+    const Ziggy = {url: {$json['url']}, port: {$json['port']}, defaults: $defaults, routes: $routes};
     $routeFunction
 
 HTML;
