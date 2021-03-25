@@ -1145,7 +1145,7 @@ class FormatHelper {
     }
 
     /**
-     * Retournes les valeurs d'un tableau filtrées par clés.
+     * Retourne les valeurs d'un tableau filtrées par clés.
      *
      * @param \ArrayAccess|array $array
      * @param array|string|int|null $keys
@@ -1188,5 +1188,66 @@ class FormatHelper {
         }
 
         return $arrayValues;
+    }
+
+    /**
+     * Retourne l'URL d'un asset avec un timestamp.
+     *
+     * @param string $path
+     *
+     * @return string|null $url
+     */
+    public static function getTimestampAsset(string $path): ?string {
+
+        $url = null;
+
+        $publicPath = public_path($path);
+
+        if (File::exists($publicPath)) {
+
+            $directory = File::dirname($path);
+            $name = File::name($path);
+            $timestamp = File::lastModified($publicPath);
+            $extension = File::extension($path);
+            
+            $url = asset(($directory ? $directory . '/' : '') . $name . ($timestamp ? '.' . $timestamp : '') . '.' . $extension);
+        }
+
+        return $url;
+    }
+
+    /**
+     * Retourne l'URL du fichier JS des traductions.
+     *
+     * @param string $directory
+     * @param string $locale
+     *
+     * @return string|null $url
+     */
+    public static function getJsTranslations(string $directory = 'translations', string $locale = null): ?string {
+
+        $directory = trim($directory, '/');
+        $locale = $locale ?: LaravelGettext::getLocale();
+
+        $url = self::getTimestampAsset('js/' . ($directory ? $directory . '/' : '') . $locale . '.js');
+
+        return $url;
+    }
+
+    /**
+     * Retourne l'URL du fichier JS des routes.
+     *
+     * @param string $directory
+     * @param string $name
+     *
+     * @return string|null $url
+     */
+    public static function getJsRoutes(string $directory = null, string $name = 'routes'): ?string {
+
+        $directory = trim($directory, '/');
+
+        $url = self::getTimestampAsset('js/' . ($directory ? $directory . '/' : '') . $name . '.js');
+
+        return $url;
     }
 }
