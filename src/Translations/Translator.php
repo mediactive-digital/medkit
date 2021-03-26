@@ -79,7 +79,7 @@ class Translator extends IlluminateTranslator {
 
                     if ($label) {
 
-                        $key = str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $key);
+                        $key = FormatHelper::transformToDotSyntax($key);
 
                         $keys = [
                             $key => $label
