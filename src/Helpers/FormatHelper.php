@@ -1250,4 +1250,37 @@ class FormatHelper {
 
         return $url;
     }
+
+    /**
+     * Transforme une chaîne de caractères "tableau" en "à plat".
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function transformToDotSyntax(string $string): string {
+
+        return str_replace(['.', '[]', '[', ']'], ['_', '', '.', ''], $string);
+    }
+
+    /**
+     * Transforme une chaîne de caractères "à plat" en "tableau".
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function transformToBracketSyntax(string $string): string {
+
+        $name = explode('.', $string);
+
+        if ($name && count($name) == 1) {
+
+            return $name[0];
+        }
+
+        $first = array_shift($name);
+
+        return $first . '[' . implode('][', $name) . ']';
+    }
 }
