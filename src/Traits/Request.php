@@ -196,8 +196,8 @@ trait Request {
         $this->setTableNameSingular();
         $this->setTranslationForm();
 
-        $request->tableNameSingular = $this->tableNameSingular;
-        $request->translationForm = $this->translationForm;
+        $request->tableNameSingular = $request->tableNameSingular === null ? $this->tableNameSingular : $request->tableNameSingular;
+        $request->translationForm = $request->translationForm === null ? $this->translationForm : $request->translationForm;
         
         $this->modelId = $this->route($this->tableNameSingular);
         

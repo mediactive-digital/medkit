@@ -6,8 +6,12 @@ use Carbon\Carbon;
 
 use MediactiveDigital\MedKit\Helpers\Helper;
 
+use Illuminate\Support\ViewErrorBag;
+
 use DB;
 use Str;
+use Session;
+use App;
 
 trait Form {
 
@@ -148,8 +152,26 @@ trait Form {
 
         $this->add($name, 'translatable', $options, $modify);
     }
+
+    /**
+     * Get the form error bag.
+     *
+     * @return string
+     */
+    public function getErrorBag(): string {
+
+        return $this->getData('error_bag') ?: $this->errorBag;
+    }
     
-    
+    /**
+     * Get the current session errors bound to the form.
+     *
+     * @return array
+     */
+    public function getSessionErrors(): array {
+
+        return Session::get('errors', App::make(ViewErrorBag::class))->getBag($this->getErrorBag())->getMessages();
+    }
    
     /**
      * Get Material Icons select choices.
