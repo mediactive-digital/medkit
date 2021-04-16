@@ -15,7 +15,7 @@
         "php": "7.*",
         "laravel/framework": "^6.2",
         "illuminate/support": "^6.2",
-        "caouecs/laravel-lang": "^4.0",
+        "laravel-lang/lang": "~5.0", 
         "kris/laravel-form-builder": "^1.2",
         "lavary/laravel-menu": "^1.7",
         "spatie/laravel-permission": "^3.0",
