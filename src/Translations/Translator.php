@@ -9,6 +9,7 @@ use Illuminate\Filesystem\Filesystem;
 use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Kris\LaravelFormBuilder\Fields\ChildFormType;
+use Kris\LaravelFormBuilder\Fields\CollectionType;
 
 use Arr;
 use Str;
@@ -153,54 +154,23 @@ class Translator extends IlluminateTranslator {
     /**
      * Get current form fields for label translation.
      *
-     * @return array $fields
-     */
-    private function getFormFields(): array {
-
-        $fields = [];
-
-        $currentFields = $this->translatedForm->getFields();
-
-        foreach ($currentFields as $key => $field) {
-
-            if ($field instanceof ChildFormType) {
-
-                $fields += $this->getChildFormFields($field, $key);
-            }
-            else {
-
-                $fields[$key] = $field;
-            }
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Get current form child fields for label translation.
-     *
-     * @param \Kris\LaravelFormBuilder\Fields\ChildFormType $childForm
-     * @param string $parentKey
+     * @param \Kris\LaravelFormBuilder\Fields\ChildFormType|\Kris\LaravelFormBuilder\Fields\CollectionType|null $child
      *
      * @return array $fields
      */
-    private function getChildFormFields(ChildFormType $childForm, string $parentKey): array {
+    private function getFormFields($child = null): array {
 
         $fields = [];
 
-        $currentFields = $childForm->getChildren();
+        foreach ($child ? $child->getChildren() : $this->translatedForm->getFields() as $field) {
 
-        foreach ($currentFields as $key => $field) {
+            if ($field instanceof ChildFormType || $field instanceof CollectionType) {
 
-            $key = $parentKey . '[' . $key . ']';
-
-            if ($field instanceof ChildFormType) {
-
-                $fields += $this->getChildFormFields($field, $key);
+                $fields += $this->getFormFields($field);
             }
             else {
 
-                $fields[$key] = $field;
+                $fields[$field->getName()] = $field;
             }
         }
 
