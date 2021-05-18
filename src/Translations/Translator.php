@@ -10,6 +10,7 @@ use MediactiveDigital\MedKit\Helpers\FormatHelper;
 
 use Kris\LaravelFormBuilder\Fields\ChildFormType;
 use Kris\LaravelFormBuilder\Fields\CollectionType;
+use Kris\LaravelFormBuilder\Fields\ChoiceType;
 
 use Arr;
 use Str;
@@ -164,13 +165,27 @@ class Translator extends IlluminateTranslator {
 
         foreach ($child ? $child->getChildren() : $this->translatedForm->getFields() as $field) {
 
-            if ($field instanceof ChildFormType || $field instanceof CollectionType) {
+            if ($field instanceof ChildFormType || $field instanceof CollectionType || $field instanceof ChoiceType) {
 
                 $fields += $this->getFormFields($field);
             }
             else {
 
-                $fields[$field->getName()] = $field;
+                $name = $field->getName();
+                
+                if (Str::endsWith($name, '[]')) {
+
+                    $arrayName = Str::beforeLast($name, '[');
+
+                    $key = count(Arr::where($fields, function ($value, $key) use ($arrayName) {
+                        
+                        return Str::startsWith($key, $arrayName . '[');
+                    }));
+
+                    $name = $arrayName . '[' . $key . ']';
+                }
+
+                $fields[$name] = $field;
             }
         }
 
