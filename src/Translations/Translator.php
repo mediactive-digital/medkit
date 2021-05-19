@@ -11,6 +11,7 @@ use MediactiveDigital\MedKit\Helpers\FormatHelper;
 use Kris\LaravelFormBuilder\Fields\ChildFormType;
 use Kris\LaravelFormBuilder\Fields\CollectionType;
 use Kris\LaravelFormBuilder\Fields\ChoiceType;
+use Kris\LaravelFormBuilder\Fields\RepeatedType;
 
 use Arr;
 use Str;
@@ -70,16 +71,11 @@ class Translator extends IlluminateTranslator {
                     ]
                 ]);
 
-                $this->translatedForm->translatedFields = [];
+                $this->translatedForm->defaultTranslatedFields = $this->translatedForm->translatedFields = [];
 
-                $fields = $this->getFormFields();
+                foreach ($this->getFormFields() as $key => $field) {
 
-                foreach ($fields as $key => $field) {
-
-                    $options = $field->getOptions();
-                    $label = isset($options['first_options']['label']) && $options['first_options']['label'] ? $options['first_options']['label'] : (isset($options['label']) ? $options['label'] : '');
-
-                    if ($label) {
+                    if ($label = $field->getOption('label')) {
 
                         $key = FormatHelper::transformToDotSyntax($key);
 
@@ -100,7 +96,16 @@ class Translator extends IlluminateTranslator {
 
                         foreach ($keys as $key => $label) {
 
-                            $this->translatedForm->translatedFields[$key] = Str::lower($label);
+                            $label = Str::lower($label);
+
+                            if (Str::endsWith($key, '.*')) {
+
+                                $this->translatedForm->defaultTranslatedFields[$key] = $label;
+                            }
+                            else {
+
+                                $this->translatedForm->translatedFields[$key] = $label;
+                            }
                         }
                     }
                 }
@@ -145,7 +150,7 @@ class Translator extends IlluminateTranslator {
 
             if ($this->translatedForm) {
 
-                $translations = array_merge($translations, $this->translatedForm->translatedFields);
+                $translations = array_merge($this->translatedForm->defaultTranslatedFields, $translations, $this->translatedForm->translatedFields);
             }
         }
 
@@ -165,27 +170,39 @@ class Translator extends IlluminateTranslator {
 
         foreach ($child ? $child->getChildren() : $this->translatedForm->getFields() as $field) {
 
-            if ($field instanceof ChildFormType || $field instanceof CollectionType || $field instanceof ChoiceType) {
+            if (!$repeated = $field instanceof RepeatedType) {
 
-                $fields += $this->getFormFields($field);
-            }
-            else {
+                $currentField = $field;
 
-                $name = $field->getName();
-                
-                if (Str::endsWith($name, '[]')) {
+                $names = [$field->getName()];
 
-                    $arrayName = Str::beforeLast($name, '[');
+                if (Str::endsWith($names[0], '[]')) {
 
-                    $key = count(Arr::where($fields, function ($value, $key) use ($arrayName) {
-                        
-                        return Str::startsWith($key, $arrayName . '[');
-                    }));
+                    $currentField = $child instanceof ChoiceType ? $child : $field;
 
-                    $name = $arrayName . '[' . $key . ']';
+                    $names[0] = Str::beforeLast($names[0], '[');
+                    $names[1] = $names[0] . '[*]';
+
+                    if (isset($fields[$names[0]])) {
+
+                        unset($names[0]);
+                    }
+
+                    if (isset($fields[$names[1]])) {
+
+                        unset($names[1]);
+                    }
                 }
 
-                $fields[$name] = $field;
+                foreach ($names as $name) {
+
+                    $fields[$name] = $currentField;
+                }
+            }
+
+            if ($field instanceof ChildFormType || $field instanceof CollectionType || $field instanceof ChoiceType || $repeated) {
+
+                $fields += $this->getFormFields($field);
             }
         }
 
