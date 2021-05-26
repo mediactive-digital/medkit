@@ -15,6 +15,7 @@ use File;
 use Route;
 use Request;
 use Arr;
+use URL;
 
 class FormatHelper {
 
@@ -1009,6 +1010,7 @@ class FormatHelper {
      * Récupère une route depuis une URL.
      *
      * @param string $url
+     * @param string $method
      *
      * @return \Illuminate\Routing\Route|null $route
      */
@@ -1029,6 +1031,20 @@ class FormatHelper {
         }
 
         return $route;
+    }
+
+    /**
+     * Retourne l'URL de retour (page précédente ou URL par défaut).
+     *
+     * @param string $defaultUrl
+     *
+     * @return string $url
+     */
+    public static function getReturnUrl(string $defaultUrl = null): string {
+
+        $url = ($previousUrl = URL::previous()) == URL::current() ? ($defaultUrl ?? URL::to('/')) : $previousUrl;
+
+        return $url;
     }
 
     /**
