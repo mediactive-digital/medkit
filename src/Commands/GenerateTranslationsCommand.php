@@ -92,7 +92,7 @@ class GenerateTranslationsCommand extends Command {
         $this->filesystem = $filesystem;
 
         $resourcePath = str_replace('\\', '/', resource_path('lang/'));
-        $vendorPath = str_replace('\\', '/', base_path('vendor/caouecs/laravel-lang/src/'));
+        $vendorPath = str_replace('\\', '/', base_path('vendor/laravel-lang/lang/src/'));
 
         $this->fileloaders = [
             $resourcePath => new FileLoader($this->filesystem, $resourcePath),
