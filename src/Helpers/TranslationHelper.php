@@ -12,45 +12,59 @@ use URL;
 
 class TranslationHelper {
 
-	/** 
+    /** 
      * Get datatable translations.
      *
      * @param string $locale
+     * 
      * @return array $translations
      */
     public static function getDataTable(string $locale = ''): array {
 
         $translations = [];
-        $language = ($language = FormatHelper::getLanguage($locale ?: LaravelGettext::getLocale())) ? str_replace(' ', '-', $language) : '';
+        $locale = $locale ?: LaravelGettext::getLocale();
 
-        if ($language) {
+        if ($path = self::getPath($locale) ?? self::getPath($locale, true)) {
 
-            $path = base_path('node_modules/datatables.net-plugins/i18n');
+            $json = file_get_contents($path);
+            $json = substr($json, strpos($json, '{'));
+            $translations = json_decode(substr($json, 0, strrpos($json, '}') + 1), true) ?: $translations;
+        }
 
-            if (File::isDirectory($path)) {
+        return $translations;
+    }
 
-                $files = File::files($path);
+    /** 
+     * Get datatable translations path.
+     *
+     * @param string $locale
+     * @param bool $first
+     * 
+     * @return string|null $filePath
+     */
+    public static function getPath(string $locale = '', bool $first = false): ?string {
 
-                foreach ($files as $file) {
+        $filePath = null;
+        $path = base_path('node_modules/datatables.net-plugins/i18n');
 
-                    $extension = $file->getExtension();
-                    $name = $file->getBasename('.' . $extension);
+        if (File::isDirectory($path) && ($files = File::files($path))) {
 
-                    if (Str::lower($language) == Str::lower($name)) {
+            $locale = Str::lower($locale ?: LaravelGettext::getLocale());
 
-                        $json = file_get_contents($path . '/' . $name . '.' . $extension);
-                        $json = substr($json, strpos($json, '{'));
-                        $json = json_decode(substr($json, 0, strrpos($json, '}') + 1), true);
+            foreach ($files as $file) {
 
-                        $translations = $json ?: $translations;
+                $name = Str::lower($file->getBasename('.' . $file->getExtension()));
 
-                        break;
-                    }
+                if ($first ? Str::startsWith($name, $locale) : $locale == $name) {
+
+                    $filePath = $file->getPathName();
+
+                    break;
                 }
             }
         }
 
-        return $translations;
+        return $filePath;
     }
 
     /**
