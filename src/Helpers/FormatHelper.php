@@ -1025,10 +1025,7 @@ class FormatHelper {
             return $route->matches($request);
         });
 
-        if ($route) {
-
-            $route->bind($request);
-        }
+        $route = $route ? clone $route->bind($request) : $route;
 
         return $route;
     }
