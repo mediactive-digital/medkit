@@ -94,7 +94,7 @@ trait Form {
 
             $label = Helper::getTableLabelName($table, $label);
             $select = $label;
-            $limit = $limit <= 0 ? self::$defaultChoiceLimit : $limit;
+            $limit = $limit ?: self::$defaultChoiceLimit;
 
             if (!$label) {
 
@@ -104,7 +104,12 @@ trait Form {
 
             $class = Helper::getClassNameFromTableName($table);
             $query = $class ? $class::query() : DB::table($table);
-            $relations = $query->select([$primary, $select])->orderBy($label)->limit($limit);
+            $relations = $query->select([$primary, $select])->orderBy($label);
+
+            if ($limit > 0) {
+
+            	$relations->limit($limit);
+            }
 
             if ($this->model && ($selfTable = $this->model->getTable()) && $selfTable == $table && ($primaryKey = Helper::getTablePrimaryName($selfTable))) {
 
