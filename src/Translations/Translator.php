@@ -60,15 +60,24 @@ class Translator extends IlluminateTranslator {
 
         if ($form && (!$this->translatedForm || get_class($this->translatedForm) != $form)) {
 
-            if (class_exists($form)) {
+            try {
+
+                class_exists($form);
+            }
+            catch (\Exception $exception) {
+
+                $form = null;
+            }
+
+            if ($form) {
 
                 $model = $request->tableNameSingular ?: Str::snake(Str::afterLast(str_replace('Form', '', $form), '\\'));
 
                 $this->translatedForm = app('laravel-form-builder')->create($form, [
                     'model' => $request->route($model),
-                    'data' => [
+                    'data' => array_merge($request->translationFormDatas ?? [], [
                         'translation_form' => true
-                    ]
+                    ])
                 ]);
 
                 $this->translatedForm->defaultTranslatedFields = $this->translatedForm->translatedFields = [];

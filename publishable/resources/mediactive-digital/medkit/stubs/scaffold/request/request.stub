@@ -59,4 +59,14 @@ class $MODEL_NAME$Request extends FormRequest {
 
         $this->translationForm = '';
     }
+
+    /**
+     * Set the form datas to retrieve label translations.
+     *
+     * @return void
+     */
+    private function setTranslationFormDatas() {
+
+        $this->translationFormDatas = [];
+    }
 }
