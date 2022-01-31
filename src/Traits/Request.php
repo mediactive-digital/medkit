@@ -43,6 +43,11 @@ trait Request {
     private $translationForm;
 
     /** 
+     * @var array $translationFormDatas
+     */
+    private $translationFormDatas;
+
+    /** 
      * @var array $customDatas
      */
     private $customDatas = [];
@@ -195,9 +200,11 @@ trait Request {
 
         $this->setTableNameSingular();
         $this->setTranslationForm();
+        $this->setTranslationFormDatas();
 
         $request->tableNameSingular = $request->tableNameSingular === null ? $this->tableNameSingular : $request->tableNameSingular;
         $request->translationForm = $request->translationForm === null ? $this->translationForm : $request->translationForm;
+        $request->translationFormDatas = $request->translationFormDatas === null ? $this->translationFormDatas : $request->translationFormDatas;
         
         $this->modelId = $this->route($this->tableNameSingular);
         
@@ -334,5 +341,15 @@ trait Request {
     private function setTranslationForm() {
 
         $this->translationForm = '';
+    }
+
+    /**
+     * Set the form datas to retrieve label translations.
+     *
+     * @return void
+     */
+    private function setTranslationFormDatas() {
+
+        $this->translationFormDatas = [];
     }
 }
