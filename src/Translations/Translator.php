@@ -62,7 +62,7 @@ class Translator extends IlluminateTranslator {
 
             try {
 
-                class_exists($form);
+                $form = class_exists($form) ? $form : null;
             }
             catch (\Exception $exception) {
 
