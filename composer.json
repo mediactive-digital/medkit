@@ -34,7 +34,7 @@
         "sepia/po-parser": "6.*",
         "tightenco/ziggy": "^1.0",
         "spatie/laravel-database-mail-templates": "^3.4",
-        "spatie/laravel-translatable": "4.6.*",
+        "spatie/laravel-translatable": "6.*",
         "predis/predis": "^1.1",
         "doctrine/dbal": "^3",
         "rairlie/laravel-locking-session": "^1.1",
