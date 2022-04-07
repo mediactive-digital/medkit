@@ -25,7 +25,7 @@
         "genealabs/laravel-model-caching": "*",
         "ext-pdo": "*",
         "sentry/sentry-laravel": "*",
-        "soved/laravel-gdpr": "^1.5",
+        "soved/laravel-gdpr": "^1.6",
         "infyomlabs/laravel-generator": "8.0.x-dev",
         "funkjedi/composer-include-files": "^1.1",
         "composer/composer": "^2",
