@@ -12,9 +12,9 @@
     "homepage": "https://github.com/mediactive-digital/medkit",
     "keywords": ["Laravel", "MedKit", "boilerplate"],
     "require": {
-        "php": ">=7.3",
-        "laravel/framework": ">=8.26.1",
-        "illuminate/support": ">=8.26.1",
+        "php": "^8.0.2",
+        "laravel/framework": "^9.0",
+        "illuminate/support": "^9.0",
         "laravel-lang/lang": "~7.0",
         "kris/laravel-form-builder": "1.*",
         "lavary/laravel-menu": "^1.8",

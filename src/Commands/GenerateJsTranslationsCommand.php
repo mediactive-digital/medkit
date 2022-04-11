@@ -54,7 +54,7 @@ class GenerateJsTranslationsCommand extends Command {
             if (in_array($locale, $defaultLocales)) {
 
                 $translations = [];
-                $file = resource_path() . '/lang/i18n/' . $locale . '/LC_MESSAGES/messages.po';
+                $file = lang_path() . '/i18n/' . $locale . '/LC_MESSAGES/messages.po';
                 $file = file_exists($file) ? Parser::parseFile($file)->getEntries() : [];
 
                 foreach ($file as $value) {

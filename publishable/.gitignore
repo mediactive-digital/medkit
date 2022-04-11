@@ -1,7 +1,7 @@
 /node_modules
 /public/hot
 /public/storage
-/resources/lang/i18n/*/LC_MESSAGES/messages.mo
+/lang/i18n/*/LC_MESSAGES/messages.mo
 /storage/*.key
 /storage/framework/messages/*
 /vendor

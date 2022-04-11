@@ -135,7 +135,7 @@ class Translator extends IlluminateTranslator {
      */
     private function setTranslations(): array {
 
-        $this->poLaravel = $this->poLaravel ?: (new FileLoader(new Filesystem, resource_path('lang')))->load('po_laravel', 'po_laravel');
+        $this->poLaravel = $this->poLaravel ?: (new FileLoader(new Filesystem, lang_path()))->load('po_laravel', 'po_laravel');
 
         return $this->poLaravel;
     }

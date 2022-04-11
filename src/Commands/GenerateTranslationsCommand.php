@@ -91,7 +91,7 @@ class GenerateTranslationsCommand extends Command {
 
         $this->filesystem = $filesystem;
 
-        $resourcePath = str_replace('\\', '/', resource_path('lang/'));
+        $resourcePath = str_replace('\\', '/', lang_path()) . '/';
         $vendorPath = str_replace('\\', '/', base_path('vendor/laravel-lang/lang/src/'));
 
         $this->fileloaders = [
@@ -102,9 +102,9 @@ class GenerateTranslationsCommand extends Command {
         $this->locales = config('laravel-gettext.supported-locales');
         $this->locale = config('laravel-gettext.locale');
 
-        $this->referencePath = str_replace('\\', '/', resource_path('lang/po_laravel/'));
+        $this->referencePath = str_replace('\\', '/', lang_path('po_laravel/'));
         $this->referenceFile = 'po_laravel.php';
-        $this->reference = '../resources/lang/po_laravel/' . $this->referenceFile;
+        $this->reference = '../lang/po_laravel/' . $this->referenceFile;
 
         $this->comment = '// Laravel default translations';
 
@@ -149,7 +149,7 @@ class GenerateTranslationsCommand extends Command {
             $createdLocales[] = $locale;
         }
 
-        $path = str_replace('\\', '/', resource_path('lang/i18n/'));
+        $path = str_replace('\\', '/', lang_path('i18n/'));
 
         foreach ($this->locales as $locale) {
 
