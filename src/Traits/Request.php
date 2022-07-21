@@ -2,10 +2,17 @@
 
 namespace MediactiveDigital\MedKit\Traits;
 
+use Illuminate\Database\Eloquent\Model;
+
 use Str;
 use Arr;
 
 trait Request {
+
+    /** 
+     * @var \Illuminate\Database\Eloquent\Model|null $model
+     */
+    private $model;
 
     /** 
      * @var int $modelId
@@ -206,10 +213,11 @@ trait Request {
         $request->translationForm = $request->translationForm === null ? $this->translationForm : $request->translationForm;
         $request->translationFormDatas = $request->translationFormDatas === null ? $this->translationFormDatas : $request->translationFormDatas;
         
-        $this->modelId = $this->route($this->tableNameSingular);
+        $this->modelId = $request->route($this->tableNameSingular);
         
-        if (is_object($this->modelId)) {
+        if ($this->modelId instanceof Model) {
             
+            $this->model = $this->modelId;
             $this->modelId = $this->modelId->id;
         } 
         
