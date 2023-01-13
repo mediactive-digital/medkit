@@ -1072,6 +1072,8 @@ class FormatHelper {
 
         foreach ($formats as $format) {
 
+            $format = '!' . ltrim($format, '!');
+
             try {
 
                 $date = Carbon::createFromFormat($format, $date);
