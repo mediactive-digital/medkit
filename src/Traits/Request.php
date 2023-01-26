@@ -123,7 +123,7 @@ trait Request {
 
         $customDatas = $this->getCustomDatas();
 
-        $customDatas[$key] = $value;
+        Arr::set($customDatas, $key, $value);
 
         $this->setCustomDatas($customDatas);
 
@@ -153,7 +153,7 @@ trait Request {
      */
     public function getCustomData(string $key) {
 
-        return $this->customDatas[$key] ?? null;
+        return Arr::get($this->customDatas, $key);
     }
 
     /**
@@ -177,7 +177,7 @@ trait Request {
 
         $customDatas = $this->getCustomDatas();
 
-        unset($customDatas[$key]);
+        Arr::forget($customDatas, $key);
 
         $this->setCustomDatas($customDatas);
 
@@ -238,7 +238,7 @@ trait Request {
      */
     protected function setCustomDatas(array $customDatas) {
 
-        $this->customDatas = Arr::dot($customDatas);
+        $this->customDatas = Arr::undot($customDatas);
     }
 
     /**
