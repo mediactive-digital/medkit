@@ -26,7 +26,7 @@
         "ext-pdo": "*",
         "sentry/sentry-laravel": "*",
         "soved/laravel-gdpr": "^1.7",
-        "infyomlabs/laravel-generator": "9.x-dev",
+        "mediactive-digital/laravel-generator": "9.x-dev",
         "funkjedi/composer-include-files": "^1.1",
         "composer/composer": "^2.5",
         "yajra/laravel-datatables-oracle": "^10.3",
