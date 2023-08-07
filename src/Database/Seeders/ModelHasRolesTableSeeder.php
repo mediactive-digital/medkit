@@ -1,6 +1,6 @@
 <?php
 
-namespace MediactiveDigital\MedKit\Database\Seeds;
+namespace MediactiveDigital\MedKit\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 

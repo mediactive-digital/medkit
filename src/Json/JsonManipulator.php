@@ -22,7 +22,7 @@ class JsonManipulator extends ComposerJsonManipulator {
         $this->indent = $this->getReflectionProperty('indent');
     }
 
-    public function format($data, $depth = 0) {
+    public function format($data, int $depth = 0): string {
 
         if (is_array($data)) {
 

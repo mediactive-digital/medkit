@@ -129,7 +129,7 @@ class GenerateTranslationsCommand extends Command {
 
         if (!$this->filesystem->isDirectory($this->referencePath)) {
 
-            $this->filesystem->makeDirectory($this->referencePath);
+            $this->filesystem->makeDirectory($this->referencePath, 0755, true);
 
             $this->comment('Lang directory created : ' . $referencePathTrimed);
         }
