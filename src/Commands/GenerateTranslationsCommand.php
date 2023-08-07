@@ -92,7 +92,7 @@ class GenerateTranslationsCommand extends Command {
         $this->filesystem = $filesystem;
 
         $resourcePath = str_replace('\\', '/', lang_path()) . '/';
-        $vendorPath = str_replace('\\', '/', base_path('vendor/laravel-lang/lang/src/'));
+        $vendorPath = str_replace('\\', '/', base_path('vendor/laravel-lang/lang/locales/'));
 
         $this->fileloaders = [
             $resourcePath => new FileLoader($this->filesystem, $resourcePath),
@@ -195,12 +195,12 @@ class GenerateTranslationsCommand extends Command {
 
                                 unset($translations['custom']['attribute-name']);
 
-                                if (!$translations['custom']) {
+                                if (!($translations['custom'] ?? null)) {
 
                                     unset($translations['custom']);
                                 }
 
-                                if (!$translations['attributes']) {
+                                if (!($translations['attributes'] ?? null)) {
 
                                     unset($translations['attributes']);
                                 }

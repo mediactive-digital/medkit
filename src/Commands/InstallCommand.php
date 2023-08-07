@@ -303,8 +303,8 @@ class InstallCommand extends Command {
             $this->doCommand("php artisan medkit-theme:install --force");
         }
     }
-		
-	
+        
+    
     /**
      * Execute a command
      *
@@ -315,14 +315,14 @@ class InstallCommand extends Command {
     {
         $process = Process::fromShellCommandline($command);
         // process = new Process( [  base_path() , $command ]);
-		// process = new Process( [ 'cd '.base_path() . ' && ' .$command ]);
+        // process = new Process( [ 'cd '.base_path() . ' && ' .$command ]);
         $process->setTimeout(null); // Setting timeout to null to prevent installation from stopping at a certain point in time
-		// $process->setEnv([]);	
+        // $process->setEnv([]);    
         $process
-			->setWorkingDirectory( base_path() )
-			->run(function ($type, $buffer) {
+            ->setWorkingDirectory( base_path() )
+            ->run(function ($type, $buffer) {
             $this->line($buffer); 
-		});
+        });
     }
 
 
@@ -530,6 +530,13 @@ class InstallCommand extends Command {
      * @return void
      */
     private function generateTranslations() {
+
+        $locales = config('laravel-gettext.supported-locales');
+
+        foreach ($locales as $locale) {
+
+            $this->doCommand('php artisan lang:add ' . $locale);
+        }
 
         $this->doCommand('php artisan medkit:generate-translations');
     }
