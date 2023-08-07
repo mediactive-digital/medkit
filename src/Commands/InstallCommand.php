@@ -535,7 +535,10 @@ class InstallCommand extends Command {
 
         foreach ($locales as $locale) {
 
-            $this->doCommand('php artisan lang:add ' . $locale);
+            if (!file_exists(lang_path($locale))) {
+
+                $this->doCommand('php artisan lang:add ' . $locale);
+            }
         }
 
         $this->doCommand('php artisan medkit:generate-translations');
