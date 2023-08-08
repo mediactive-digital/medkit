@@ -96,7 +96,7 @@ class RoleDataTable extends YajraDataTable {
      *
      * @return string
      */
-    protected function filename() {
+    protected function filename(): string {
 
         return 'rolesdatatable_' . time();
     }

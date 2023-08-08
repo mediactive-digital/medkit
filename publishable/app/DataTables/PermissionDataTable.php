@@ -96,7 +96,7 @@ class PermissionDataTable extends YajraDataTable {
 	 *
 	 * @return string
 	 */
-	protected function filename() {
+	protected function filename(): string {
 
 		return 'permissionsdatatable_' . time();
 	}

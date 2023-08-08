@@ -32,7 +32,7 @@ class ResetPassword extends ResetPasswordContract
 
         $date = '';
 
-        if (($passwordReset = DB::table('password_resets')->where('email', $email)->first()) && Hash::check($token, $passwordReset->token)) {
+        if (($passwordReset = DB::table('password_reset_tokens')->where('email', $email)->first()) && Hash::check($token, $passwordReset->token)) {
 
             $date = date(_i('d/m/Y à H:i'), strtotime($passwordReset->created_at));
         }

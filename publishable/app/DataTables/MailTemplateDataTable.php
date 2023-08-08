@@ -117,7 +117,7 @@ class MailTemplateDataTable extends YajraDataTable {
      *
      * @return string
      */
-    protected function filename() {
+    protected function filename(): string {
 
         return 'mail_templatesdatatable_' . time();
     }
