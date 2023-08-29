@@ -53,13 +53,18 @@ class TranslationHelper {
 
             foreach ($files as $file) {
 
-                $name = Str::lower($file->getBasename('.' . $file->getExtension()));
+                $extension = $file->getExtension();
 
-                if ($first ? Str::startsWith($name, $locale) : $locale == $name) {
+                if ($extension == 'json') {
 
-                    $filePath = $file->getPathName();
+                    $name = Str::lower($file->getBasename('.' . $extension));
 
-                    break;
+                    if ($first ? Str::startsWith($name, $locale) : $locale == $name) {
+
+                        $filePath = $file->getPathName();
+
+                        break;
+                    }
                 }
             }
         }
