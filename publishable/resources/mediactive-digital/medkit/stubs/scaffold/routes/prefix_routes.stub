@@ -2,5 +2,5 @@
 
 Route::group(['prefix' => '$RAW_ROUTE_PREFIX$'], function() {
 
-    Route::resource('$MODEL_NAME_PLURAL_SNAKE$', '$CONTROLLER_PREFIX$$MODEL_NAME$Controller', ['as' => '$RAW_ROUTE_PREFIX$']);
+    Route::resource('$MODEL_NAME_PLURAL_SNAKE$', '$PATH_PREFIX$$MODEL_NAME$Controller', ['as' => '$RAW_ROUTE_PREFIX$']);
 });
