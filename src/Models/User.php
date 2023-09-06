@@ -10,6 +10,8 @@ use Soved\Laravel\Gdpr\Retentionable;
 
 use MediactiveDigital\MedKit\Notifications\ResetPassword;
 
+use Hash;
+
 abstract class User extends Authenticatable implements PortableContract {
 
     use Retentionable, Portable, Notifiable;
