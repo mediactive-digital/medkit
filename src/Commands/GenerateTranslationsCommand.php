@@ -56,6 +56,11 @@ class GenerateTranslationsCommand extends Command {
     protected $locale;
 
     /**
+     * @var array $domains
+     */
+    protected $domains;
+
+    /**
      * @var string $referencePath
      */
     protected $referencePath;
@@ -101,6 +106,8 @@ class GenerateTranslationsCommand extends Command {
 
         $this->locales = config('laravel-gettext.supported-locales');
         $this->locale = config('laravel-gettext.locale');
+
+        $this->domains = array_filter([config('laravel-gettext.domain')] + array_keys(config('laravel-gettext.source-paths')), 'is_string');
 
         $this->referencePath = str_replace('\\', '/', lang_path('po_laravel/'));
         $this->referenceFile = 'po_laravel.php';
@@ -153,23 +160,40 @@ class GenerateTranslationsCommand extends Command {
 
         foreach ($this->locales as $locale) {
 
-            $translationsDatas['langs'][$locale] = [
-                'translations' => []
-            ];
+            $hasCatalog = false;
 
-            $localePath = $path . $locale;
-            $translationsDatas['langs'][$locale]['file'] = $localePath . '/LC_MESSAGES/messages.po';
-            $translationsDatas['langs'][$locale]['catalog'] = file_exists($translationsDatas['langs'][$locale]['file']) ? Parser::parseFile($translationsDatas['langs'][$locale]['file']) : null;
+            foreach ($this->domains as $domain) {
+
+                $translationsDatas['langs'][$locale][$domain] = [
+                    'translations' => []
+                ];
+
+                $localePath = $path . $locale;
+                $translationsDatas['langs'][$locale][$domain]['file'] = $localePath . '/LC_MESSAGES/' . $domain . '.po';
+
+                $translationsDatas['langs'][$locale][$domain]['catalog'] = file_exists($translationsDatas['langs'][$locale][$domain]['file']) ? 
+                    Parser::parseFile($translationsDatas['langs'][$locale][$domain]['file']) : null;
+
+                $hasCatalog = $hasCatalog ?: (bool)$translationsDatas['langs'][$locale][$domain]['catalog'];
+            }
 
             if (in_array($locale, $createdLocales)) {
 
                 $this->comment('Locale directory created : ' . $localePath);
-                $this->comment('Locale file created : ' . $translationsDatas['langs'][$locale]['file']);
+
+                foreach ($this->domains as $domain) {
+
+                    $this->comment('Locale file created : ' . $translationsDatas['langs'][$locale][$domain]['file']);
+                }
             }
             else {
 
                 $this->comment('Locale directory already exists : ' . $localePath);
-                $this->comment('Locale file already exists : ' . $translationsDatas['langs'][$locale]['file']);
+
+                foreach ($this->domains as $domain) {
+
+                    $this->comment('Locale file already exists : ' . $translationsDatas['langs'][$locale][$domain]['file']);
+                }
             }
 
             $fileloader = $this->getFileloader($locale);
@@ -180,7 +204,7 @@ class GenerateTranslationsCommand extends Command {
 
                 $laravelTranslations = $this->filesystem->files($fileloader['path']);
 
-                if ($translationsDatas['langs'][$locale]['catalog']) {
+                if ($hasCatalog) {
 
                     foreach ($laravelTranslations as $laravelTranslation) {
 
@@ -211,7 +235,15 @@ class GenerateTranslationsCommand extends Command {
                             ];
 
                             $dotedTranslations = Arr::dot($translations);
-                            $translationsDatas['langs'][$locale]['translations'] = array_merge($translationsDatas['langs'][$locale]['translations'], $dotedTranslations);
+
+                            foreach ($this->domains as $domain) {
+
+                                if ($translationsDatas['langs'][$locale][$domain]['catalog']) {
+
+                                    $translationsDatas['langs'][$locale][$domain]['translations'] = array_merge($translationsDatas['langs'][$locale][$domain]['translations'], $dotedTranslations);
+                                }
+                            }
+                            
                             $translationsDatas['keys'] = array_merge($translationsDatas['keys'], array_keys($dotedTranslations));
                         }
                     }
@@ -224,46 +256,49 @@ class GenerateTranslationsCommand extends Command {
             $translationsDatas['keys'] = array_unique($translationsDatas['keys']);
             sort($translationsDatas['keys']);
 
-            foreach ($translationsDatas['langs'] as $lang => $datas) {
+            foreach ($translationsDatas['langs'] as $locale => $domains) {
 
-                if ($datas['catalog']) {
+                foreach ($domains as $domain => $datas) {
 
-                    foreach ($translationsDatas['keys'] as $key) {
+                    if ($datas['catalog']) {
 
-                        $translation = '';
+                        foreach ($translationsDatas['keys'] as $key) {
 
-                        if (isset($datas['translations'][$key]) && is_string($datas['translations'][$key])) {
+                            $translation = '';
 
-                            $translation = $datas['translations'][$key];
+                            if (isset($datas['translations'][$key]) && is_string($datas['translations'][$key])) {
+
+                                $translation = $datas['translations'][$key];
+                            }
+                            else if (Str::startsWith($key, 'validation')) {
+
+                                $translation = str_replace('_', ' ', Str::afterLast($key, '.'));
+                            }
+
+                            $entry = $datas['catalog']->getEntry($key);
+
+                            if ($entry && !$entry->getMsgStr()) {
+
+                                $entry->setMsgStr($translation);
+                            }
+
+                            $entry = $entry ?: new Entry($key, $translation);
+                            $references = $entry->getReference();
+
+                            if (!in_array($this->reference, $references)) {
+
+                                $references[] = $this->reference;
+                            }
+
+                            $entry->setReference($references);
+                            $datas['catalog']->addEntry($entry);
                         }
-                        else if (Str::startsWith($key, 'validation')) {
 
-                            $translation = str_replace('_', ' ', Str::afterLast($key, '.'));
-                        }
+                        $fileHandler = new SepiaFileSystem($datas['file']);
+                        $fileHandler->save($this->compiler->compile($datas['catalog']));
 
-                        $entry = $datas['catalog']->getEntry($key);
-
-                        if ($entry && !$entry->getMsgStr()) {
-
-                            $entry->setMsgStr($translation);
-                        }
-
-                        $entry = $entry ?: new Entry($key, $translation);
-                        $references = $entry->getReference();
-
-                        if (!in_array($this->reference, $references)) {
-
-                            $references[] = $this->reference;
-                        }
-
-                        $entry->setReference($references);
-                        $datas['catalog']->addEntry($entry);
+                        $this->comment('Locale file updated : ' . $datas['file']);
                     }
-
-                    $fileHandler = new SepiaFileSystem($datas['file']);
-                    $fileHandler->save($this->compiler->compile($datas['catalog']));
-
-                    $this->comment('Locale file updated : ' . $datas['file']);
                 }
             }
 
@@ -289,7 +324,7 @@ class GenerateTranslationsCommand extends Command {
         }
         else {
 
-            $this->error(' #ERR2 [SKIP] No translations found');
+            $this->error('No translations found');
         }
     }
 
