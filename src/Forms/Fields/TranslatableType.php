@@ -165,7 +165,6 @@ class TranslatableType extends FormField {
         }
 
         $this->options['value'] = $fields;
-        unset($this->options['subtype']);
 
         return parent::render($options, $showLabel, $showField, $showError);
     }
