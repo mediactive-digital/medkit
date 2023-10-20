@@ -140,7 +140,7 @@ class TranslatableType extends FormField {
 
             if ($this->options['subtype'] == 'textarea') {
 
-                $fields[$locale]['field']['value'] = isset($parameters['value']) ? $parameters['value'] : $value;
+                $fields[$locale]['field']['value'] = isset($fields[$locale]['field']['value']) ? $fields[$locale]['field']['value'] : $value;
                 $fields[$locale]['field']['attributes']['cols'] = isset($fields[$locale]['field']['attributes']['cols']) ? $fields[$locale]['field']['attributes']['cols'] : 50;
                 $fields[$locale]['field']['attributes']['rows'] = isset($fields[$locale]['field']['attributes']['rows']) ? $fields[$locale]['field']['attributes']['rows'] : 10;
                 $fields[$locale]['field']['ck_editor'] = $ckEditor;
@@ -153,7 +153,7 @@ class TranslatableType extends FormField {
                     $fields[$locale]['field']['attributes']['class'] .= ' js-ck-editor';
                 }
             }
-            elseif ($this->options['subtype'] == 'file' || $this->options['subtype'] == 'image' ) {
+            elseif ($this->options['subtype'] == 'file' || $this->options['subtype'] == 'image') {
 
                 $fields[$locale]['field']['attributes']['type'] = $this->options['subtype'];
                 $fields[$locale]['field']['attributes']['data-val'] = isset($fields[$locale]['field']['attributes']['data-val']) ? $fields[$locale]['field']['attributes']['data-val'] : $value;
