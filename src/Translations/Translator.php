@@ -92,15 +92,25 @@ class Translator extends IlluminateTranslator {
                             $key => $label
                         ];
 
-                        if ($field->getType() == 'translatable') {
+                        switch ($field->getType()) {
 
-                            $keys = [];
-                            $locales = config('laravel-gettext.supported-locales');
+                            case 'translatable' :
 
-                            foreach ($locales as $locale) {
+                                $keys = [];
+                                $locales = config('laravel-gettext.supported-locales');
 
-                                $keys[$key . '.' . $locale] = $label . ' ' . (FormatHelper::getLocaleTranslation($locale) ?: $locale);
-                            }
+                                foreach ($locales as $locale) {
+
+                                    $keys[$key . '.' . $locale] = $label . ' ' . (FormatHelper::getLocaleTranslation($locale) ?: $locale);
+                                }
+
+                            break;
+
+                            case 'select2' :
+
+                                $keys[$key . '.*'] = $label;
+
+                            break;
                         }
 
                         foreach ($keys as $key => $label) {
