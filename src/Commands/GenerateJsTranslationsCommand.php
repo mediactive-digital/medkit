@@ -3,11 +3,9 @@
 namespace MediactiveDigital\MedKit\Commands;
 
 use Illuminate\Console\Command;
-
 use Illuminate\Filesystem\Filesystem;
 
 use Sepia\PoParser\Parser;
-
 use MediactiveDigital\MedKit\Helpers\TranslationHelper;
 
 class GenerateJsTranslationsCommand extends Command {
@@ -26,9 +24,22 @@ class GenerateJsTranslationsCommand extends Command {
      */
     protected $description = 'Génère les fichiers JS qui permettent d\'avoir accès aux traductions';
 
+    /**
+     * Par ordre de prioritée
+     *
+     * @var array
+     */
+    protected $domains = [
+            // 'messages' ,
+//        'front',
+//        'back',
+    ];
+
     public function __construct(Filesystem $files) {
 
         parent::__construct();
+
+        $this->domains = array_filter([config('laravel-gettext.domain')] + array_keys(config('laravel-gettext.source-paths')), 'is_string');
 
         $this->files = $files;
     }
@@ -52,39 +63,39 @@ class GenerateJsTranslationsCommand extends Command {
         foreach ($locales as $locale) {
 
             if (in_array($locale, $defaultLocales)) {
+                foreach ( $this->domains as $domaine) {
 
-                $translations = [];
-                $file = lang_path() . '/i18n/' . $locale . '/LC_MESSAGES/messages.po';
-                $file = file_exists($file) ? Parser::parseFile($file)->getEntries() : [];
+                    $translations = [];
+                    $file = lang_path() . '/i18n/' . $locale . '/LC_MESSAGES/' . $domaine . '.po';
+                    $file = file_exists($file) ? Parser::parseFile($file)->getEntries() : [];
 
-                foreach ($file as $value) {
+                    foreach ($file as $value) {
 
-                    if (!$value->isObsolete()) {
+                        if (!$value->isObsolete()) {
 
-                        $msgId = $value->getMsgId();
-                        $msgIdPlural = $value->getMsgIdPlural();
+                            $msgId = $value->getMsgId();
+                            $msgIdPlural = $value->getMsgIdPlural();
 
-                        if ($msgIdPlural === null) {
+                            if ($msgIdPlural === null) {
 
-                            $translations[$msgId] = $value->getMsgStr();
-                        }
-                        else {
+                                $translations[$msgId] = $value->getMsgStr();
+                            } else {
 
-                            $msg = $msgPlural = '';
-                            $plurals = $value->getMsgStrPlurals();
+                                $msg = $msgPlural = '';
+                                $plurals = $value->getMsgStrPlurals();
 
-                            if ($plurals) {
+                                if ($plurals) {
 
-                                $msg = $plurals[0];
-                                $msgPlural = isset($plurals[1]) ? $plurals[1] : '';
+                                    $msg = $plurals[0];
+                                    $msgPlural = isset($plurals[1]) ? $plurals[1] : '';
+                                }
+
+                                $translations[$msgId] = $msg;
+                                $translations[$msgIdPlural] = $msgPlural;
                             }
-
-                            $translations[$msgId] = $msg;
-                            $translations[$msgIdPlural] = $msgPlural;
                         }
                     }
                 }
-
                 $translations = $translations ? json_encode($translations) : '{}';
                 $dataTableTranslations = ($dataTableTranslations = TranslationHelper::getDataTable($locale)) ? json_encode($dataTableTranslations) : '{}';
 
@@ -126,6 +137,11 @@ EOT;
         }
     }
 
+    /**
+     * 
+     * @param type $path
+     * @return type
+     */
     protected function makeDirectory($path) {
 
         if (!$this->files->isDirectory(dirname($path))) {
