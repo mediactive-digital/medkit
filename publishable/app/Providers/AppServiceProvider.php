@@ -3,6 +3,9 @@
 namespace App\Providers;
  
 use App\Observers\ModelTrackObserver;
+
+use MediactiveDigital\MedKit\Services\Iseed;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -14,7 +17,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind('iseed', function() {
+            return new Iseed;
+        });
     }
 
     /**
